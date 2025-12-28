@@ -2,12 +2,20 @@
 
 import Link from 'next/link';
 import * as React from 'react';
-import { IconUserFilled, IconFlameFilled, IconHelp, IconSearch, IconFlower, IconHomeFilled, IconHeartFilled } from '@tabler/icons-react';
+import {
+    IconUserFilled,
+    IconFlameFilled,
+    IconBrandInstagram,
+    IconFlower,
+    IconHomeFilled,
+    IconHeartFilled,
+    IconBrandTiktok,
+} from '@tabler/icons-react';
 
 import { NavSeries } from '@/components/nav-series';
 import { NavMain } from '@/components/nav-main';
 import { NavSecondary } from '@/components/nav-secondary';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 
 const data = {
     navMain: [
@@ -59,14 +67,14 @@ const data = {
     ],
     navSecondary: [
         {
-            title: 'Get Help',
-            url: '#',
-            icon: IconHelp,
+            title: 'Instagram',
+            url: 'https://www.instagram.com/triste__fleur/',
+            icon: IconBrandInstagram,
         },
         {
-            title: 'Search',
-            url: '#',
-            icon: IconSearch,
+            title: 'TikTok',
+            url: 'https://www.tiktok.com/@triste_fleur',
+            icon: IconBrandTiktok,
         },
     ],
 };
@@ -91,7 +99,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavSeries items={data.series} />
                 <NavSecondary items={data.navSecondary} className="mt-auto" />
             </SidebarContent>
-            <SidebarFooter>INSTAGRAM HERE</SidebarFooter>
         </Sidebar>
     );
 }
