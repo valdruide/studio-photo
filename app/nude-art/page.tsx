@@ -1,10 +1,5 @@
-import { MasonryProvider } from '@/components/masonry-provider';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import SectionCards from '@/components/sectionCards';
 
-export default function Page() {
-    return (
-        <div>
-            <MasonryProvider category="nude-art" />
-        </div>
-    );
+export default function Page({ params }: { params: { collection: string } }) {
+    return <SectionCards category="nude-art" query={params.collection} />;
 }

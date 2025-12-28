@@ -1,15 +1,22 @@
-import type { StaticImageData } from 'next/image';
+export type CategorySlug = string;
 
-export type CategorySlug = 'portraits' | 'nude-art'; // extensible
-
-// Item stocké dans une collection
+/**
+ * Photo individuelle prête à être affichée.
+ * Mapping d’un record de la collection `photos` (PocketBase).
+ * `src` est une URL construite depuis le champ `image`.
+ */
 export type CollectionItem = {
     id: string;
     name: string;
-    src: StaticImageData; // plus tard: string (BDD) ou StaticImageData (local)
+    src: string; // URL PocketBase (au lieu de StaticImageData)
     description?: string;
 };
 
+/**
+ * Collection de photos (série / album).
+ * Vue enrichie basée sur la collection `photo_collections` (PocketBase),
+ * avec les photos (`items`) assemblées depuis la collection `photos`.
+ */
 export type PhotoCollection = {
     slug: string;
     title: string;
@@ -18,11 +25,22 @@ export type PhotoCollection = {
     items: CollectionItem[];
 };
 
-// Item "prêt à afficher" dans une vue (ex: query=all) : on ajoute collectionSlug
+/**
+ * Photo utilisée dans une vue de catégorie (ex: query=all).
+ * Extension de `CollectionItem` avec des infos de routing.
+ * N’existe pas en BDD (objet purement front).
+ */
 export type PhotoItem = CollectionItem & {
     collectionSlug: string;
 };
 
+/**
+ * Vue complète d’une catégorie (page).
+ * Objet prêt à consommer par les pages Next.js.
+ * Peut représenter :
+ * - toutes les photos d’une catégorie (`query = "all"`)
+ * - ou une collection précise (`query = collection slug`)
+ */
 export type CategoryView = {
     category: CategorySlug;
     query: string; // "all" ou slug collection

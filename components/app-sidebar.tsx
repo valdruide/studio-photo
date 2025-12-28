@@ -38,12 +38,12 @@ const data = {
             items: [
                 {
                     title: 'All',
-                    url: '/portraits?query=all',
+                    url: '/portraits',
                 },
-                { title: '[ sickly ]', url: '/portraits?query=sickly' },
+                { title: '[ sickly ]', url: '/portraits/sickly' },
                 {
                     title: '[ fallen angels ]',
-                    url: '/portraits?query=fallen-angels',
+                    url: '/portraits/fallen-angels',
                 },
             ],
         },
