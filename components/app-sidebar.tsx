@@ -25,7 +25,6 @@ const data = {
     series: [
         {
             name: 'Portraits',
-            color: 'text-[#066FD1]',
             icon: IconUserFilled,
             isActive: true,
             items: [
@@ -46,8 +45,15 @@ const data = {
             icon: IconFlameFilled,
             isActive: false,
             items: [
-                { title: 'All', url: '/nude-art?query=all' },
                 { title: 'Mango', url: '/nude-art?query=mango' },
+                { title: 'Neon', url: '/nude-art?query=neon' },
+                { title: 'F-Girl', url: '/nude-art?query=f-girl' },
+                { title: 'Clair-Obscur', url: '/nude-art?query=clair-obscur' },
+                { title: 'Grunge', url: '/nude-art?query=grunge' },
+                { title: 'Pantheon', url: '/nude-art?query=pantheon' },
+                { title: 'hard-light', url: '/nude-art?query=hard-light' },
+                { title: 'cloak', url: '/nude-art?query=cloak' },
+                { title: 'Random', url: '/nude-art?query=random' },
             ],
         },
     ],

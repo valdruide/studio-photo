@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { IconDots, type Icon } from '@tabler/icons-react';
+import { cn } from '@/lib/utils';
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -37,8 +38,8 @@ export function NavSeries({
                         <SidebarMenuItem>
                             <CollapsibleTrigger asChild>
                                 <SidebarMenuButton tooltip={item.name}>
-                                    {item.icon && <item.icon className={`${item.color}`} />}
-                                    <span className={`${item.color}`}>{item.name}</span>
+                                    {item.icon && <item.icon className={cn(item.color ? item.color : 'text-primary')} />}
+                                    <span className={cn(item.color ? item.color : 'text-primary')}>{item.name}</span>
                                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                                 </SidebarMenuButton>
                             </CollapsibleTrigger>
