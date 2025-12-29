@@ -1,0 +1,137 @@
+{
+    "categories": [
+        {
+            "slug": "portraits",
+            "title": "Portraits",
+            "order": 1,
+            "isHidden": false,
+            "collections": [
+                {
+                    "slug": "sickly",
+                    "title": "[ Sickly ]",
+                    "descriptionHtml": "<p>A portrait series exploring themes of vulnerability, illness, and the human condition through evocative imagery</p>",
+                    "order": 1,
+                    "isHidden": false,
+                    "photos": [
+                        {
+                            "file": "public/series/Sickly/malade (1).png",
+                            "name": "Self portrait 1",
+                            "descriptionHtml": "<p>Auto portrait 1</p>",
+                            "order": 1,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Sickly/malade (2).png",
+                            "name": "Self portrait 2",
+                            "descriptionHtml": "<p>Auto portrait 2</p>",
+                            "order": 2,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Sickly/malade (3).png",
+                            "name": "Self portrait 3",
+                            "descriptionHtml": "<p>Auto portrait 3</p>",
+                            "order": 3,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Sickly/malade (4).png",
+                            "name": "Antagonist",
+                            "descriptionHtml": "<p>Antagoniste</p>",
+                            "order": 4,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Sickly/malade (5).png",
+                            "name": "Of fire 🔥",
+                            "descriptionHtml": "<p>De feu 🔥</p>",
+                            "order": 5,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Sickly/malade (6).png",
+                            "name": "Noir 🖤",
+                            "order": 6,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Sickly/malade (7).png",
+                            "name": "Penitent 1",
+                            "order": 7,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Sickly/malade (8).png",
+                            "name": "Penitent 2",
+                            "order": 8,
+                            "isHidden": false
+                        }
+                    ]
+                },
+                {
+                    "slug": "fallen-angels",
+                    "title": "[ Fallen Angels ]",
+                    "descriptionHtml": "<p>A portrait series delving into themes of divinity, rebellion, and redemption through ethereal and haunting imagery</p>",
+                    "order": 2,
+                    "isHidden": false,
+                    "photos": [
+                        {
+                            "file": "public/series/Fallen Angels/fallen (1).png",
+                            "name": "Disciple",
+                            "order": 1,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Fallen Angels/fallen (2).png",
+                            "name": "Saint",
+                            "order": 2,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Fallen Angels/fallen (3).png",
+                            "name": "Fallen Angel",
+                            "descriptionHtml": "<p>Ange déchu</p>",
+                            "order": 3,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Fallen Angels/fallen (4).png",
+                            "name": "Emissary",
+                            "descriptionHtml": "<p>Émissaire</p>",
+                            "order": 4,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Fallen Angels/fallen (5).png",
+                            "name": "Anchorite of the holy night",
+                            "descriptionHtml": "<p>Anachorète de la nuit sainte</p>",
+                            "order": 5,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Fallen Angels/fallen (6).png",
+                            "name": "Inner conflict",
+                            "descriptionHtml": "<p>Conflit interne</p>",
+                            "order": 6,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Fallen Angels/fallen (7).png",
+                            "name": "Prophetess of the Immaculate Veil",
+                            "descriptionHtml": "<p>Prophétesse du voile immaculé</p>",
+                            "order": 7,
+                            "isHidden": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "slug": "nude-art",
+            "title": "Nude Art",
+            "order": 2,
+            "isHidden": false,
+            "collections": []
+        }
+    ]
+}

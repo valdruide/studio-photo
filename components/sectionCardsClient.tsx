@@ -1,13 +1,24 @@
 'use client';
-
+import dynamic from 'next/dynamic';
+import { useState } from 'react';
 import Image from 'next/image';
 import { XMasonry, XBlock } from 'react-xmasonry';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-import type { CategoryView } from '@/lib/collections/types';
+import type { CategoryView, PhotoItem } from '@/lib/collections/types';
+
+const MasonryGrid = dynamic(() => import('./masonryGrid'), { ssr: false });
 
 export default function SectionCardsClient({ view, query }: { view: CategoryView; query: string }) {
+    const [open, setOpen] = useState(false);
+    const [active, setActive] = useState<PhotoItem | null>(null);
+
+    const onOpen = (item: PhotoItem) => {
+        setActive(item);
+        setOpen(true);
+    };
+
     return (
         <>
             <Card className="w-max mb-5 min-w-1/2">
@@ -20,37 +31,37 @@ export default function SectionCardsClient({ view, query }: { view: CategoryView
                 </CardContent>
             </Card>
 
-            <XMasonry>
-                {view.items.map((item) => (
-                    <XBlock key={item.id}>
-                        <Dialog>
-                            <DialogTrigger className="rounded-lg overflow-hidden m-2 border cursor-pointer">
-                                <div className="relative w-[320px] aspect-[3/4]">
-                                    <Image src={item.src} alt={item.name} fill className="object-cover" unoptimized sizes="320px" />
-                                </div>
-                            </DialogTrigger>
+            <MasonryGrid items={view.items} onOpen={onOpen} />
 
-                            <DialogContent>
-                                <div className="relative w-full aspect-[3/4]">
-                                    <Image
-                                        src={item.src}
-                                        alt={item.name}
-                                        fill
-                                        className="rounded-t-md object-contain"
-                                        unoptimized
-                                        sizes="(max-width: 768px) 90vw, 800px"
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent>
+                    {active && (
+                        <>
+                            <div className="relative">
+                                <Image
+                                    src={active.srcMedium}
+                                    alt={active.name}
+                                    width={active.width}
+                                    height={active.height}
+                                    unoptimized
+                                    className="rounded-t-md object-cover"
+                                    priority={false}
+                                />
+                            </div>
+
+                            <DialogHeader className="p-6">
+                                <DialogTitle>{active.name}</DialogTitle>
+                                {active.description && (
+                                    <DialogDescription
+                                        className="prose prose-invert max-w-none"
+                                        dangerouslySetInnerHTML={{ __html: active.description }}
                                     />
-                                </div>
-
-                                <DialogHeader className="p-6">
-                                    <DialogTitle>{item.name}</DialogTitle>
-                                    {item.description && <DialogDescription>{item.description}</DialogDescription>}
-                                </DialogHeader>
-                            </DialogContent>
-                        </Dialog>
-                    </XBlock>
-                ))}
-            </XMasonry>
+                                )}
+                            </DialogHeader>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

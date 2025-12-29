@@ -2,6 +2,7 @@ import type { CategorySlug, CategoryView, PhotoItem } from '@/lib/collections/ty
 import { getPB } from '@/lib/pb/server';
 import { normalizeSlug, pbFileUrl } from './pbUtils';
 import { sanitizeRichText } from '@/lib/security/sanitizeRichText';
+import { PB_THUMBS } from '../pb/thumbs';
 
 export async function getCategoryView(category: CategorySlug, query: string): Promise<CategoryView | null> {
     const pb = getPB();
@@ -28,7 +29,11 @@ export async function getCategoryView(category: CategorySlug, query: string): Pr
             id: p.id,
             name: (p as any).name ?? '',
             description: (p as any).description ?? undefined,
-            src: pbFileUrl(pb.baseUrl, p, 'image'),
+            srcThumb: pbFileUrl(pb.baseURL, p, 'image', PB_THUMBS.grid),
+            srcMedium: pbFileUrl(pb.baseURL, p, 'image', PB_THUMBS.modal),
+            srcOriginal: pbFileUrl(pb.baseURL, p, 'image'),
+            width: Number((p as any).width ?? 0),
+            height: Number((p as any).height ?? 0),
             collectionSlug: (p.expand as any)?.collection?.slug ?? '',
         }));
 
@@ -58,7 +63,11 @@ export async function getCategoryView(category: CategorySlug, query: string): Pr
         id: p.id,
         name: (p as any).name ?? '',
         description: sanitizeRichText((p as any).description) ?? undefined,
-        src: pbFileUrl(pb.baseUrl, p, 'image'),
+        srcThumb: pbFileUrl(pb.baseURL, p, 'image', PB_THUMBS.grid),
+        srcMedium: pbFileUrl(pb.baseURL, p, 'image', PB_THUMBS.modal),
+        srcOriginal: pbFileUrl(pb.baseURL, p, 'image'),
+        width: Number((p as any).width ?? 0),
+        height: Number((p as any).height ?? 0),
         collectionSlug: (collection as any).slug,
     }));
 

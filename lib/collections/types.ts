@@ -8,7 +8,11 @@ export type CategorySlug = string;
 export type CollectionItem = {
     id: string;
     name: string;
-    src: string; // URL PocketBase (au lieu de StaticImageData)
+    srcThumb: string; // URL PocketBase
+    srcMedium: string; // URL PocketBase
+    srcOriginal: string; // URL PocketBase
+    width: number;
+    height: number;
     description?: string;
 };
 

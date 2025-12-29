@@ -20,7 +20,9 @@ export async function getCollectionBySlug(slug: string): Promise<PhotoCollection
             id: p.id,
             name: (p as any).name ?? '',
             description: (p as any).description ?? undefined,
-            src: pbFileUrl(pb.baseUrl, p, 'image'),
+            src: pbFileUrl(pb.baseURL, p, 'image'),
+            width: (p as any).width ?? 0,
+            height: (p as any).height ?? 0,
         }));
 
         const categorySlug = (col.expand as any)?.category?.slug ?? '';
