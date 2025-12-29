@@ -7,7 +7,7 @@ export default async function SectionCards({ category, query }: { category: Cate
 
     if (!view) {
         return (
-            <div className="p-6 text-xl">
+            <div className="text-xl">
                 ⚠️ Can't find project : <span className="font-bold text-destructive">“{query}”</span>
             </div>
         );
