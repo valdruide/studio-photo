@@ -131,7 +131,347 @@
             "title": "Nude Art",
             "order": 2,
             "isHidden": false,
-            "collections": []
+            "collections": [
+                {
+                    "slug": "mango",
+                    "title": "Mango",
+                    "descriptionHtml": "<p>A vibrant collection celebrating the allure and beauty of mango-themed nude art photography</p>",
+                    "order": 1,
+                    "isHidden": false,
+                    "photos": [
+                        {
+                            "file": "public/series/Mango/mango (1).png",
+                            "name": "Mango 1",
+                            "order": 1,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Mango/mango (2).png",
+                            "name": "Mango 2",
+                            "order": 2,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Mango/mango (3).png",
+                            "name": "Mango 3",
+                            "order": 3,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Mango/mango (4).png",
+                            "name": "Mango 4",
+                            "order": 4,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Mango/mango (5).png",
+                            "name": "Mango 5",
+                            "order": 5,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Mango/mango (6).png",
+                            "name": "Mango 6",
+                            "order": 6,
+                            "isHidden": false
+                        }
+                    ]
+                },
+                {
+                    "slug": "neon",
+                    "title": "Neon",
+                    "descriptionHtml": "<p>A striking collection of nude art photography that explores the interplay of light, color, and the human form through neon aesthetics<p>",
+                    "order": 2,
+                    "isHidden": false,
+                    "photos": [
+                        {
+                            "file": "public/series/Neon/neon (1).png",
+                            "name": "Neon 1",
+                            "order": 1,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Neon/neon (2).png",
+                            "name": "Neon 2",
+                            "order": 2,
+                            "isHidden": false
+                        }
+                    ]
+                },
+                {
+                    "slug": "f-girl",
+                    "title": "F-Girl",
+                    "descriptionHtml": "<p>A collection of photography of 'F-Girl' that captures the essence of modern femininity, confidence, and self-expression</p>",
+                    "order": 3,
+                    "isHidden": false,
+                    "photos": [
+                        {
+                            "file": "public/series/F-girl/f-girl (1).png",
+                            "name": "F-Girl 1",
+                            "order": 1,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/F-girl/f-girl (2).png",
+                            "name": "F-Girl 2",
+                            "order": 2,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/F-girl/f-girl (3).png",
+                            "name": "F-Girl 3",
+                            "order": 3,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/F-girl/f-girl (4).png",
+                            "name": "F-Girl 4",
+                            "order": 4,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/F-girl/f-girl (5).png",
+                            "name": "F-Girl 5",
+                            "order": 5,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/F-girl/f-girl (6).png",
+                            "name": "F-Girl 6",
+                            "order": 6,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/F-girl/f-girl (7).png",
+                            "name": "F-Girl 7",
+                            "order": 7,
+                            "isHidden": false
+                        }
+                    ]
+                },
+                {
+                    "slug": "clair-obscur",
+                    "title": "Clair-Obscur",
+                    "descriptionHtml": "<p>A collection that plays with light and shadow to create dramatic nude art photography, highlighting the contours and forms of the human body</p>",
+                    "order": 4,
+                    "isHidden": false,
+                    "photos": [
+                        {
+                            "file": "public/series/Clair Obscur/clairObscur (1).png",
+                            "name": "Clair-Obscur 1",
+                            "order": 1,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Clair Obscur/clairObscur (2).png",
+                            "name": "Clair-Obscur 2",
+                            "order": 2,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Clair Obscur/clairObscur (4).png",
+                            "name": "Clair-Obscur 4",
+                            "order": 3,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Clair Obscur/clairObscur (5).png",
+                            "name": "Clair-Obscur 5",
+                            "order": 4,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Clair Obscur/clairObscur (7).png",
+                            "name": "Clair-Obscur 7",
+                            "order": 5,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Clair Obscur/clairObscur (8).png",
+                            "name": "Clair-Obscur 8",
+                            "order": 6,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Clair Obscur/clairObscur (10).png",
+                            "name": "Clair-Obscur 10",
+                            "order": 7,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Clair Obscur/clairObscur (11).png",
+                            "name": "Clair-Obscur 11",
+                            "order": 8,
+                            "isHidden": false
+                        }
+                    ]
+                },
+                {
+                    "slug": "grunge",
+                    "title": "Grunge",
+                    "descriptionHtml": "<p>An edgy collection that embraces the raw, unpolished aesthetic of the grunge movement, highlighting imperfection and authenticity</p>",
+                    "order": 5,
+                    "isHidden": false,
+                    "photos": [
+                        {
+                            "file": "public/series/Grunge/grunge (1).png",
+                            "name": "Grunge 1",
+                            "order": 1,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Grunge/grunge (2).png",
+                            "name": "Grunge 2",
+                            "order": 2,
+                            "isHidden": false
+                        }
+                    ]
+                },
+                {
+                    "slug": "pantheon",
+                    "title": "Pantheon",
+                    "descriptionHtml": "<p>An artistic exploration of the human form, drawing inspiration from classical sculptures and mythological themes</p>",
+                    "order": 6,
+                    "isHidden": false,
+                    "photos": [
+                        {
+                            "file": "public/series/Pantheon/pantheon1.png",
+                            "name": "Pantheon 1",
+                            "order": 1,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Pantheon/pantheon2.png",
+                            "name": "Pantheon 2",
+                            "order": 2,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Pantheon/pantheon3.png",
+                            "name": "Pantheon 3",
+                            "order": 3,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Pantheon/pantheon4.png",
+                            "name": "Pantheon 4",
+                            "order": 4,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Pantheon/pantheon5.png",
+                            "name": "Pantheon 5",
+                            "order": 5,
+                            "isHidden": false
+                        }
+                    ]
+                },
+                {
+                    "slug": "hard-light",
+                    "title": "Hard Light",
+                    "descriptionHtml": "<p>A bold collection of nude art photography that emphasizes sharp contrasts and defined lines to showcase the strength and beauty of the human body</p>",
+                    "order": 7,
+                    "isHidden": false,
+                    "photos": [
+                        {
+                            "file": "public/series/Hard Light/h (1).png",
+                            "name": "Hard Light 1",
+                            "order": 1,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Hard Light/h (2).png",
+                            "name": "Hard Light 2",
+                            "order": 2,
+                            "isHidden": false
+                        }
+                    ]
+                },
+                {
+                    "slug": "cloak",
+                    "title": "Cloak",
+                    "descriptionHtml": "<p>A mysterious and evocative collection of nude art photography that explores themes of concealment and revelation through the use of cloaks and drapery</p>",
+                    "order": 8,
+                    "isHidden": false,
+                    "photos": [
+                        {
+                            "file": "public/series/Cloak/cloak (1).png",
+                            "name": "Cloak 1",
+                            "order": 1,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Cloak/cloak (2).png",
+                            "name": "Cloak 2",
+                            "order": 2,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Cloak/cloak (3).png",
+                            "name": "Cloak 3",
+                            "order": 3,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Cloak/cloak (4).png",
+                            "name": "Cloak 4",
+                            "order": 4,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/Cloak/cloak (5).png",
+                            "name": "Cloak 5",
+                            "order": 5,
+                            "isHidden": false
+                        }
+                    ]
+                },
+                {
+                    "slug": "random",
+                    "title": "Random",
+                    "descriptionHtml": "<p>A diverse collection of nude art photography that defies categorization, showcasing a variety of styles, themes, and concepts</p>",
+                    "order": 9,
+                    "isHidden": false,
+                    "photos": [
+                        {
+                            "file": "public/series/random-nudes/r (2).png",
+                            "name": "Random 1",
+                            "order": 1,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/random-nudes/r (3).png",
+                            "name": "Random 2",
+                            "order": 2,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/random-nudes/r (4).png",
+                            "name": "Random 3",
+                            "order": 3,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/random-nudes/r (6).png",
+                            "name": "Random 4",
+                            "order": 4,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/random-nudes/r (7).png",
+                            "name": "Random 5",
+                            "order": 5,
+                            "isHidden": false
+                        },
+                        {
+                            "file": "public/series/random-nudes/r (8).png",
+                            "name": "Random 6",
+                            "order": 6,
+                            "isHidden": false
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

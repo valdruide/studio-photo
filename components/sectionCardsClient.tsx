@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 import type { CategoryView, PhotoItem } from '@/lib/collections/types';
+import { Button } from './ui/button';
 
 const MasonryGrid = dynamic(() => import('./masonryGrid'), { ssr: false });
 
@@ -49,15 +50,18 @@ export default function SectionCardsClient({ view, query }: { view: CategoryView
                                 />
                             </div>
 
-                            <DialogHeader className="p-6">
-                                <DialogTitle>{active.name}</DialogTitle>
-                                {active.description && (
-                                    <DialogDescription
-                                        className="prose prose-invert max-w-none"
-                                        dangerouslySetInnerHTML={{ __html: active.description }}
-                                    />
-                                )}
-                            </DialogHeader>
+                            <div className="flex justify-between p-6">
+                                <DialogHeader>
+                                    <DialogTitle>{active.name}</DialogTitle>
+                                    {active.description && (
+                                        <DialogDescription
+                                            className="prose prose-invert max-w-none"
+                                            dangerouslySetInnerHTML={{ __html: active.description }}
+                                        />
+                                    )}
+                                </DialogHeader>
+                                <Button>Show full HD</Button>
+                            </div>
                         </>
                     )}
                 </DialogContent>
