@@ -11,7 +11,7 @@ import {
     IconHeartFilled,
     IconBrandTiktok,
 } from '@tabler/icons-react';
-
+import AdminLink from '@/components/admin-link';
 import { NavSeries } from '@/components/nav-series';
 import { NavMain } from '@/components/nav-main';
 import { NavSecondary } from '@/components/nav-secondary';
@@ -98,6 +98,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavMain items={data.navMain} />
                 <NavSeries items={data.series} />
                 <NavSecondary items={data.navSecondary} className="mt-auto" />
+                <AdminLink />
             </SidebarContent>
         </Sidebar>
     );

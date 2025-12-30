@@ -1,9 +1,10 @@
 import type { PhotoCollection } from './types';
-import { getPB } from '@/lib/pb/server';
+import { getPBPublic } from '@/lib/pb/server';
 import { normalizeSlug, pbFileUrl } from './pbUtils';
+import { PB_THUMBS } from '@/lib/pb/thumbs';
 
 export async function getCollectionBySlug(slug: string): Promise<PhotoCollection | null> {
-    const pb = getPB();
+    const pb = getPBPublic();
     const s = normalizeSlug(slug);
 
     try {
@@ -20,7 +21,9 @@ export async function getCollectionBySlug(slug: string): Promise<PhotoCollection
             id: p.id,
             name: (p as any).name ?? '',
             description: (p as any).description ?? undefined,
-            src: pbFileUrl(pb.baseURL, p, 'image'),
+            srcThumb: pbFileUrl(pb.baseURL, p, 'image', PB_THUMBS.grid),
+            srcMedium: pbFileUrl(pb.baseURL, p, 'image', PB_THUMBS.modal),
+            srcOriginal: pbFileUrl(pb.baseURL, p, 'image'),
             width: (p as any).width ?? 0,
             height: (p as any).height ?? 0,
         }));
@@ -30,7 +33,7 @@ export async function getCollectionBySlug(slug: string): Promise<PhotoCollection
         return {
             slug: (col as any).slug,
             title: (col as any).title,
-            description: (col as any).description ?? undefined,
+            description: (col as any).description ?? '',
             category: categorySlug,
             items,
         };

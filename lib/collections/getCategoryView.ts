@@ -1,11 +1,11 @@
 import type { CategorySlug, CategoryView, PhotoItem } from '@/lib/collections/types';
-import { getPB } from '@/lib/pb/server';
+import { getPBPublic } from '@/lib/pb/server';
 import { normalizeSlug, pbFileUrl } from './pbUtils';
 import { sanitizeRichText } from '@/lib/security/sanitizeRichText';
 import { PB_THUMBS } from '../pb/thumbs';
 
 export async function getCategoryView(category: CategorySlug, query: string): Promise<CategoryView | null> {
-    const pb = getPB();
+    const pb = getPBPublic();
     const cat = normalizeSlug(category);
     const q = normalizeSlug(query || 'all');
 

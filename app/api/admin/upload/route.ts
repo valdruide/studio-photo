@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { getPB, requireAdmin } from '@/lib/pb/server';
+import { getPBAdmin, requireAdmin } from '@/lib/pb/adminServer';
 import { optimizeToJpeg } from '@/lib/images/optimize';
 
 export async function POST(req: Request) {
-    const pb = await getPB();
+    const pb = await getPBAdmin();
     if (!requireAdmin(pb)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const form = await req.formData();
