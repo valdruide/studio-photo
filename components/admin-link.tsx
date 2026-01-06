@@ -22,7 +22,7 @@ export default function AdminLinkClient() {
     if (!isAdmin) {
         return (
             <Button asChild>
-                <Link href="/admin/login">Login</Link>
+                <Link href="/login">Login</Link>
             </Button>
         );
     }

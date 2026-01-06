@@ -33,32 +33,37 @@ export function NavSeries({
         <SidebarGroup>
             <SidebarGroupLabel>Series</SidebarGroupLabel>
             <SidebarMenu>
-                {items.map((item) => (
-                    <Collapsible key={item.name} asChild defaultOpen={item.isActive} className="group/collapsible">
-                        <SidebarMenuItem>
-                            <CollapsibleTrigger asChild>
-                                <SidebarMenuButton tooltip={item.name}>
-                                    {item.icon && <item.icon className={cn(item.color ? item.color : 'text-primary')} />}
-                                    <span className={cn(item.color ? item.color : 'text-primary')}>{item.name}</span>
-                                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                                </SidebarMenuButton>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                                <SidebarMenuSub>
-                                    {item.items?.map((subItem) => (
-                                        <SidebarMenuSubItem key={subItem.title}>
-                                            <SidebarMenuSubButton asChild>
-                                                <Link className="uppercase" href={subItem.url}>
-                                                    {subItem.title}
-                                                </Link>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                    ))}
-                                </SidebarMenuSub>
-                            </CollapsibleContent>
-                        </SidebarMenuItem>
-                    </Collapsible>
-                ))}
+                {items.map((item) => {
+                    const colorStyle = item.color ? { color: item.color } : undefined;
+                    return (
+                        <Collapsible key={item.name} asChild defaultOpen={item.isActive} className="group/collapsible">
+                            <SidebarMenuItem>
+                                <CollapsibleTrigger asChild>
+                                    <SidebarMenuButton tooltip={item.name}>
+                                        {item.icon && <item.icon className="text-foreground" style={colorStyle} />}
+                                        <span className="text-foreground" style={colorStyle}>
+                                            {item.name}
+                                        </span>
+                                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                    </SidebarMenuButton>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                    <SidebarMenuSub>
+                                        {item.items?.map((subItem) => (
+                                            <SidebarMenuSubItem key={subItem.title}>
+                                                <SidebarMenuSubButton asChild>
+                                                    <Link className="uppercase" href={subItem.url}>
+                                                        {subItem.title}
+                                                    </Link>
+                                                </SidebarMenuSubButton>
+                                            </SidebarMenuSubItem>
+                                        ))}
+                                    </SidebarMenuSub>
+                                </CollapsibleContent>
+                            </SidebarMenuItem>
+                        </Collapsible>
+                    );
+                })}
             </SidebarMenu>
         </SidebarGroup>
     );

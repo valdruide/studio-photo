@@ -1,61 +1,84 @@
-import Link from 'next/link';
-import { getPBAdmin } from '@/lib/pb/adminServer';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+'use client';
 
-export default async function AdminHome() {
-    const pb = await getPBAdmin();
+import { useEffect, useState } from 'react';
+import { CategorieTable } from '@/components/admin/categorieTable';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-    const categories = await pb.collection('categories').getFullList({
-        sort: 'order',
-    });
+type Category = { id: string; title: string; slug?: string; isHidden?: boolean; icon?: string | null; color?: string | null };
 
-    // On récupère toutes les collections et on groupe par catégorie
-    const collections = await pb.collection('photo_collections').getFullList({
-        sort: 'order',
-    });
+export default function AdminHome() {
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const byCat = new Map<string, any[]>();
-    for (const col of collections) {
-        const catId = (col as any).category;
-        if (!byCat.has(catId)) byCat.set(catId, []);
-        byCat.get(catId)!.push(col);
+    async function load() {
+        setLoading(true);
+        const [catsRes] = await Promise.all([fetch('/api/admin/categories', { cache: 'no-store' })]);
+
+        if (!catsRes.ok) {
+            setLoading(false);
+            return;
+        }
+
+        const cats = await catsRes.json();
+
+        setCategories(cats.items ?? []);
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        load();
+    }, []);
+
+    async function onChangeVisibility(catId: string, isVisible: boolean) {
+        // Optimistic update
+        setCategories((prev) => prev.map((c) => (c.id === catId ? { ...c, isHidden: !isVisible } : c)));
+
+        const res = await fetch(`/api/admin/categories/${catId}`, {
+            method: 'PATCH',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ isHidden: !isVisible }),
+        });
+
+        if (!res.ok) {
+            // rollback si erreur
+            setCategories((prev) => prev.map((c) => (c.id === catId ? { ...c, isHidden: isVisible } : c)));
+        }
+    }
+
+    async function onToggleAllowAll(catId: string, allowAll: boolean) {
+        // Optimistic update
+        setCategories((prev) => prev.map((c) => (c.id === catId ? { ...c, allowAll } : c)));
+
+        const res = await fetch(`/api/admin/categories/${catId}`, {
+            method: 'PATCH',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ allowAll }),
+        });
+
+        if (!res.ok) {
+            // rollback si erreur
+            setCategories((prev) => prev.map((c) => (c.id === catId ? { ...c, allowAll: !allowAll } : c)));
+        }
     }
 
     return (
         <>
             <h1 className="text-2xl font-semibold">Dashboard</h1>
-            <div className="space-y-4 mt-5">
-                {categories.map((cat: any) => (
-                    <Card key={cat.id}>
+
+            {loading ? (
+                <div className="mt-5 text-sm opacity-70">Loading…</div>
+            ) : (
+                <div className="space-y-4 mt-5">
+                    <Card>
                         <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <CardTitle className="text-3xl capitalize text-primary">{cat.title}</CardTitle>
-                                    <CardDescription>slug: {cat.slug}</CardDescription>
-                                </div>
-                                <div className="text-sm opacity-70">{cat.isHidden ? 'hidden' : 'visible'}</div>
-                            </div>
+                            <CardTitle>Categories</CardTitle>
                         </CardHeader>
-                        <CardContent className=" divide-y">
-                            {(byCat.get(cat.id) ?? []).map((col: any) => (
-                                <div key={col.id} className="flex items-center justify-between py-2">
-                                    <div>
-                                        <div className="font-medium">{col.title}</div>
-                                        <div className="text-sm opacity-70">slug: {col.slug}</div>
-                                    </div>
-                                    <Button asChild>
-                                        <Link className="" href={`/admin/collections/${col.id}`}>
-                                            Gérer →
-                                        </Link>
-                                    </Button>
-                                </div>
-                            ))}
-                            {(byCat.get(cat.id) ?? []).length === 0 && <div className="text-sm opacity-60">Aucune collection</div>}
+                        <CardContent>
+                            <CategorieTable categories={categories} onToggleVisible={onChangeVisibility} onToggleAllowAll={onToggleAllowAll} />
                         </CardContent>
                     </Card>
-                ))}
-            </div>
+                </div>
+            )}
         </>
     );
 }

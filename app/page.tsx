@@ -1,5 +1,4 @@
 'use client';
-import { MasonryProvider } from '@/components/masonry-provider';
 
 export default function Page() {
     return (
