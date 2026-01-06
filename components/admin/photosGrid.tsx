@@ -77,7 +77,7 @@ function SortableCard({
             <div className="absolute left-2 top-2 rounded bg-background px-2 py-1 text-sm border-2 aspect-square text-foreground">
                 {photo.order ?? '-'}
             </div>
-            <DropdownMenu data-no-dnd>
+            <DropdownMenu data-no-dnd modal={false}>
                 <DropdownMenuTrigger
                     asChild
                     className="absolute top-2 right-2"
@@ -101,7 +101,7 @@ function SortableCard({
                         Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                        className="text-destructive focus:text-destructive"
+                        variant="destructive"
                         onSelect={(e) => {
                             e.preventDefault();
                             onDelete?.(photo.id);
