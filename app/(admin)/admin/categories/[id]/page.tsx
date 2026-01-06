@@ -102,7 +102,7 @@ export default function AdminCategoryEditPage() {
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-semibold">Edit category</h1>
                 <Button onClick={save} disabled={saving}>
-                    {saving ? 'Saving…' : 'Save'}
+                    Save
                 </Button>
             </div>
 

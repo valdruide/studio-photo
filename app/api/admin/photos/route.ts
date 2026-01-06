@@ -1,37 +1,47 @@
 import { NextResponse } from 'next/server';
 import { withAdmin } from '@/lib/pb/adminApi';
 
-export async function GET() {
+export async function GET(req: Request) {
     return withAdmin(async (pb) => {
-        const page = 1;
-        const perPage = 50;
+        const url = new URL(req.url);
+        const collectionId = url.searchParams.get('collectionId');
 
-        const res = await pb.collection('photos').getList(page, perPage);
+        if (!collectionId) {
+            return new NextResponse('Missing collectionId', { status: 400 });
+        }
 
-        return NextResponse.json({
-            items: res.items,
-            page: res.page,
-            perPage: res.perPage,
-            totalItems: res.totalItems,
-            totalPages: res.totalPages,
+        const items = await pb.collection('photos').getFullList({
+            sort: 'order',
+            filter: `collection="${collectionId}"`,
         });
+
+        return NextResponse.json({ items });
     });
 }
 
-export async function POST(req: Request) {
+/**
+ * Body attendu :
+ * { updates: [{ id: string, order: number }, ...] }
+ */
+export async function PATCH(req: Request) {
     return withAdmin(async (pb) => {
-        const form = await req.formData();
+        const body = await req.json().catch(() => ({}));
+        const updates = Array.isArray(body?.updates) ? body.updates : [];
 
-        // Exemple: "file" pour l'image
-        const file = form.get('file');
-        if (!(file instanceof File)) {
-            return new NextResponse('Missing file', { status: 400 });
+        if (!updates.length) {
+            return new NextResponse('Missing updates', { status: 400 });
         }
 
-        // Ajoute tes champs PocketBase ici (categoryId, collectionId, order, etc.)
-        // const category = form.get('category')?.toString()
+        // MVP: updates séquentiels (ça suffit très largement)
+        for (const u of updates) {
+            if (!u?.id) continue;
+            const n = Number(u.order);
+            if (!Number.isFinite(n)) {
+                return new NextResponse('Invalid order', { status: 400 });
+            }
+            await pb.collection('photos').update(u.id, { order: n });
+        }
 
-        const created = await pb.collection('photos').create(form);
-        return NextResponse.json(created, { status: 201 });
+        return NextResponse.json({ ok: true, count: updates.length });
     });
 }
