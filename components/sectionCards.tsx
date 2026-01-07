@@ -1,8 +1,7 @@
-import type { CategorySlug } from '@/lib/collections/types';
 import { getCategoryView } from '@/lib/collections/getCategoryView';
 import SectionCardsClient from './sectionCardsClient';
 
-export default async function SectionCards({ category, query }: { category: CategorySlug; query: string }) {
+export default async function SectionCards({ category, query }: { category: string; query: string }) {
     const view = await getCategoryView(category, query);
 
     if (!view) {

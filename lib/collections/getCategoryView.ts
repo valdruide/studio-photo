@@ -1,26 +1,37 @@
-import type { CategorySlug, CategoryView, PhotoItem } from '@/lib/collections/types';
+import type { CategoryView, PhotoItem } from '@/lib/collections/types';
 import { getPBPublic } from '@/lib/pb/server';
 import { normalizeSlug, pbFileUrl } from './pbUtils';
 import { sanitizeRichText } from '@/lib/security/sanitizeRichText';
 import { PB_THUMBS } from '../pb/thumbs';
 
-export async function getCategoryView(category: CategorySlug, query: string): Promise<CategoryView | null> {
+export async function getCategoryView(category: string, query: string): Promise<CategoryView | null> {
     const pb = getPBPublic();
     const cat = normalizeSlug(category);
     const q = normalizeSlug(query || 'all');
 
+    console.log('[getCategoryView]', {
+        rawCategory: category,
+        rawQuery: query,
+        normalizedCategory: cat,
+        normalizedQuery: q,
+    });
+
     // Vérifie que la catégorie existe et n’est pas hidden
     let catRecord: any;
     try {
-        catRecord = await pb.collection('categories').getFirstListItem(`slug="${cat}" && isHidden=false`);
+        catRecord = await pb.collection('categories').getFirstListItem(`slug="${cat}" && isHidden = false`);
     } catch {
         return null;
     }
 
+    const allowAll = Boolean(catRecord.allowAll ?? true);
+
     // Cas ALL : on récupère toutes les photos des collections de cette catégorie
     if (q === 'all') {
+        if (!allowAll) return null;
+
         const photos = await pb.collection('photos').getFullList({
-            filter: `isHidden=false && collection.category="${catRecord.id}" && collection.isHidden=false`,
+            filter: `isHidden = false && collection.category="${catRecord.id}" && collection.isHidden = false`,
             sort: 'order',
             expand: 'collection',
         });

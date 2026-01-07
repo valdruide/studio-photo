@@ -3,12 +3,16 @@
 import { useEffect, useState } from 'react';
 import { CategorieTable } from '@/components/admin/categorieTable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { AddCategory } from '@/components/admin/addCategory';
 
 type Category = { id: string; title: string; slug?: string; isHidden?: boolean; icon?: string | null; color?: string | null };
 
 export default function AdminHome() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const [AddCategoryOpen, setAddCategoryOpen] = useState(false);
 
     async function load() {
         setLoading(true);
@@ -63,6 +67,14 @@ export default function AdminHome() {
 
     return (
         <>
+            <AddCategory
+                open={AddCategoryOpen}
+                onOpenChange={setAddCategoryOpen}
+                onAdded={() => {
+                    load();
+                }}
+            />
+
             <h1 className="text-2xl font-semibold">Dashboard</h1>
 
             {loading ? (
@@ -70,11 +82,17 @@ export default function AdminHome() {
             ) : (
                 <div className="space-y-4 mt-5">
                     <Card>
-                        <CardHeader>
+                        <CardHeader className="flex justify-between">
                             <CardTitle>Categories</CardTitle>
+                            <Button onClick={() => setAddCategoryOpen(true)}>Create category</Button>
                         </CardHeader>
                         <CardContent>
-                            <CategorieTable categories={categories} onToggleVisible={onChangeVisibility} onToggleAllowAll={onToggleAllowAll} />
+                            <CategorieTable
+                                categories={categories}
+                                onToggleVisible={onChangeVisibility}
+                                onToggleAllowAll={onToggleAllowAll}
+                                onDeleted={(catId) => setCategories((prev) => prev.filter((c) => c.id !== catId))}
+                            />
                         </CardContent>
                     </Card>
                 </div>

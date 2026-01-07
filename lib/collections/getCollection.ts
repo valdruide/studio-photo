@@ -6,10 +6,11 @@ import { PB_THUMBS } from '@/lib/pb/thumbs';
 export async function getCollectionBySlug(slug: string): Promise<PhotoCollection | null> {
     const pb = getPBPublic();
     const s = normalizeSlug(slug);
+    if (!s) return null;
 
     try {
         // 1) collection
-        const col = await pb.collection('photo_collections').getFirstListItem(`slug="${s}" && isHidden=false`, { expand: 'category' });
+        const col = await pb.collection('photo_collections').getFirstListItem(`slug="${s}" && isHidden = false`, { expand: 'category' });
 
         // 2) photos
         const photos = await pb.collection('photos').getFullList({

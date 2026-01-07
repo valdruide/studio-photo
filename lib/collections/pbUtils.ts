@@ -1,7 +1,14 @@
 import type { RecordModel } from 'pocketbase';
 
-export function normalizeSlug(v: string) {
-    return (v || '').trim().toLowerCase().replace(/\s+/g, '-');
+export function normalizeSlug(input: string) {
+    return String(input ?? '')
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9-]+/g, '-')
+        .replace(/-{2,}/g, '-')
+        .replace(/^-+|-+$/g, '');
 }
 
 export function pbFileUrl(pbBaseUrl: string, record: RecordModel, fileField: string, thumb?: string) {

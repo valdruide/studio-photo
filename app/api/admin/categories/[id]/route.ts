@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { withAdmin } from '@/lib/pb/adminApi';
 
+export const runtime = 'nodejs';
+
 export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }> }) {
     return withAdmin(async (pb) => {
         const { id } = await ctx.params;
@@ -38,5 +40,46 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
         const { id } = await ctx.params;
         const cat = await pb.collection('categories').getOne(id);
         return NextResponse.json(cat);
+    });
+}
+
+export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string }> }) {
+    return withAdmin(async (pb) => {
+        const { id } = await ctx.params;
+        if (!id) return new NextResponse('Missing id', { status: 400 });
+
+        try {
+            // 1) récupérer les collections de la catégorie
+            const cols = await pb.collection('photo_collections').getFullList({
+                filter: `category="${id}"`,
+                fields: 'id',
+            });
+
+            let deletedPhotos = 0;
+
+            // 2) pour chaque collection -> delete photos -> delete collection
+            for (const col of cols) {
+                const photos = await pb.collection('photos').getFullList({
+                    filter: `collection="${col.id}"`,
+                    fields: 'id',
+                });
+
+                for (const p of photos) {
+                    await pb.collection('photos').delete(p.id);
+                    deletedPhotos++;
+                }
+
+                await pb.collection('photo_collections').delete(col.id);
+            }
+
+            // 3) delete catégorie
+            await pb.collection('categories').delete(id);
+
+            return NextResponse.json({ ok: true, deletedCollections: cols.length, deletedPhotos });
+        } catch (err: any) {
+            console.error('DELETE /api/admin/categories/[id] failed:', err);
+            console.error('PB response:', err?.response);
+            return NextResponse.json({ message: err?.message ?? 'Internal Server Error', pb: err?.response ?? null }, { status: 500 });
+        }
     });
 }

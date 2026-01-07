@@ -60,7 +60,7 @@ export default function SectionCardsClient({ view, query }: { view: CategoryView
                                         />
                                     )}
                                 </DialogHeader>
-                                <Button>Show full HD</Button>
+                                {/* <Button>Show full HD</Button> */}
                             </div>
                         </>
                     )}
