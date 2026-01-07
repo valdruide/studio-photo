@@ -11,6 +11,7 @@ import { CollectionsTable, type CollectionRow } from '@/components/admin/collect
 import { IconPickerDialog } from '@/components/admin/iconPickerDialog';
 import { ColorPickerDialog } from '@/components/admin/colorPickerDialog';
 import { AddCollection } from '@/components/admin/addCollection';
+import { IconDeviceFloppy } from '@tabler/icons-react';
 
 type Category = {
     id: string;
@@ -106,8 +107,8 @@ export default function AdminCategoryEditPage() {
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Edit category</h1>
-                    <Button onClick={save} disabled={saving}>
-                        Save
+                    <Button onClick={save} disabled={saving} className="text-md">
+                        <IconDeviceFloppy className="size-6" /> Save category
                     </Button>
                 </div>
 

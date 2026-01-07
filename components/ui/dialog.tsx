@@ -69,6 +69,43 @@ function DialogContent({
     );
 }
 
+function DialogContentWide({
+    className,
+    children,
+    showCloseButton = true,
+    ...props
+}: React.ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean }) {
+    return (
+        <DialogPortal>
+            <DialogOverlay />
+            <DialogPrimitive.Content
+                data-slot="dialog-content-wide"
+                className={cn(
+                    // ✅ lightbox sizing
+                    'bg-background fixed top-[50%] left-[50%] z-50 translate-x-[-50%] translate-y-[-50%] rounded-lg border shadow-lg outline-none',
+                    // ✅ big + responsive, not limited to sm:max-w-lg
+                    'w-[95vw] max-w-[95vw] md:w-[90vw] md:max-w-[90vw] lg:w-[80vw] lg:max-w-[80vw]',
+                    // ✅ no padding by default
+                    'p-0',
+                    className
+                )}
+                {...props}
+            >
+                {children}
+                {showCloseButton && (
+                    <DialogPrimitive.Close
+                        data-slot="dialog-close"
+                        className="cursor-pointer ring-offset-background border p-1 rounded-full absolute top-4 right-4 bg-accent hover:bg-muted-foreground transition-colors focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0"
+                    >
+                        <XIcon className="size-5" />
+                        <span className="sr-only">Close</span>
+                    </DialogPrimitive.Close>
+                )}
+            </DialogPrimitive.Content>
+        </DialogPortal>
+    );
+}
+
 function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
     return <div data-slot="dialog-header" className={cn('flex flex-col gap-2 text-center sm:text-left', className)} {...props} />;
 }
@@ -85,4 +122,16 @@ function DialogDescription({ className, ...props }: React.ComponentProps<typeof 
     return <DialogPrimitive.Description data-slot="dialog-description" className={cn('text-muted-foreground text-sm', className)} {...props} />;
 }
 
-export { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger };
+export {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogContentWide,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogOverlay,
+    DialogPortal,
+    DialogTitle,
+    DialogTrigger,
+};

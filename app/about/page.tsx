@@ -3,7 +3,7 @@
 export default function Page() {
     return (
         <div>
-            <div>Bonjour</div>
+            <div>About</div>
         </div>
     );
 }

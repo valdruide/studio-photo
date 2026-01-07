@@ -13,6 +13,7 @@ import { PhotosGrid, type Photo } from '@/components/admin/photosGrid';
 import { AddPhotos } from '@/components/admin/addPhotos';
 import { PhotoEditorSheet } from '@/components/admin/photoEditorSheet';
 import { useDeletePhotoDialog } from '@/components/admin/deletePhotoDialog';
+import { IconDeviceFloppy, IconPlus } from '@tabler/icons-react';
 
 type Category = {
     id: string;
@@ -185,7 +186,7 @@ export default function AdminCollectionEditPage() {
                     </div>
 
                     <Button onClick={save} disabled={saving}>
-                        Save
+                        <IconDeviceFloppy className="size-6" /> Save collection
                     </Button>
                 </div>
 
@@ -256,9 +257,15 @@ export default function AdminCollectionEditPage() {
                     <CardHeader className="flex justify-between gap-5">
                         <div className="space-y-2">
                             <CardTitle>Photos</CardTitle>
-                            <CardDescription>ℹ️ Drag and drop to reorder photos.</CardDescription>
+                            <CardDescription>
+                                ℹ️ Drag and drop to reorder photos. <br />
+                                ⚠️ Don't forget to save the collection after making changes!
+                            </CardDescription>
                         </div>
-                        <Button onClick={() => setAddPhotosOpen(true)}>Add photos</Button>
+                        <Button onClick={() => setAddPhotosOpen(true)}>
+                            <IconPlus className="size-5" />
+                            Add photos
+                        </Button>
                     </CardHeader>
                     <CardContent className="space-y-3">
                         {photos.length === 0 ? (
