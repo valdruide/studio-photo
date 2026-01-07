@@ -1,13 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { IconAlertOctagonFilled } from '@tabler/icons-react';
+import { IconAlertOctagonFilled, IconUpload } from '@tabler/icons-react';
 
 type Photo = {
     id: string;
@@ -25,34 +25,33 @@ type AddPhotosProps = {
 };
 
 export function AddPhotos({ open, onOpenChange, collectionId, onAdded }: AddPhotosProps) {
-    const [file, setFile] = useState<File | null>(null);
+    const [files, setFiles] = useState<File[]>([]);
     const [uploading, setUploading] = useState(false);
     const [err, setErr] = useState<string | null>(null);
 
-    const [name, setName] = useState('');
+    // Optionnel: “metadata commun” appliqué à toutes les photos
+    const [namePrefix, setNamePrefix] = useState(''); // ex: "Shooting-Paris"
     const [description, setDescription] = useState('');
-    const [order, setOrder] = useState<string>('');
 
-    const sizeMb = useMemo(() => {
-        if (!file) return 0;
-        return Math.round((file.size / 1024 / 1024) * 10) / 10;
-    }, [file]);
+    const inputRef = useRef<HTMLInputElement | null>(null);
+    const [isDragActive, setIsDragActive] = useState(false);
+
+    const totalMb = useMemo(() => {
+        if (!files.length) return 0;
+        const bytes = files.reduce((acc, f) => acc + f.size, 0);
+        return Math.round((bytes / 1024 / 1024) * 10) / 10;
+    }, [files]);
 
     function reset() {
-        setFile(null);
-        setName('');
+        setFiles([]);
+        setNamePrefix('');
         setDescription('');
-        setOrder('');
         setErr(null);
         setUploading(false);
     }
 
     async function upload() {
-        if (!file) return;
-        if (!name.trim()) {
-            setErr('Name is required.');
-            return;
-        }
+        if (!files.length) return;
 
         setUploading(true);
         setErr(null);
@@ -61,14 +60,12 @@ export function AddPhotos({ open, onOpenChange, collectionId, onAdded }: AddPhot
             const fd = new FormData();
             fd.set('collectionId', collectionId);
 
-            fd.set('name', name.trim());
+            // metadata "commun" (ton backend peut les ignorer / les utiliser)
+            fd.set('namePrefix', namePrefix.trim()); // nouveau champ, optionnel
             fd.set('description', description ?? '');
 
-            // order optionnel : si vide, le backend mettra last+1
-            if (order.trim() !== '') fd.set('order', String(Number(order)));
-
-            // on garde la clé "files" pour matcher ton POST
-            fd.append('files', file);
+            // multi
+            for (const f of files) fd.append('files', f);
 
             const res = await fetch('/api/admin/photos', {
                 method: 'POST',
@@ -87,11 +84,33 @@ export function AddPhotos({ open, onOpenChange, collectionId, onAdded }: AddPhot
             onOpenChange(false);
             reset();
         } catch (e: any) {
-            // ton backend renvoie parfois du JSON {message,pb}, donc on essaie de l’afficher proprement
-            const raw = e?.message || 'Upload failed';
-            setErr(raw);
+            setErr(e?.message || 'Upload failed');
         } finally {
             setUploading(false);
+        }
+    }
+
+    function addFiles(next: File[]) {
+        if (!next.length) return;
+
+        // garde seulement des images
+        const images = next.filter((f) => f.type.startsWith('image/'));
+        if (!images.length) return;
+
+        setErr(null);
+
+        setFiles((prev) => {
+            // merge + anti-doublons basique (nom+taille+lastModified)
+            const map = new Map<string, File>();
+            for (const f of prev) map.set(`${f.name}-${f.size}-${f.lastModified}`, f);
+            for (const f of images) map.set(`${f.name}-${f.size}-${f.lastModified}`, f);
+            return Array.from(map.values());
+        });
+
+        // auto namePrefix si vide
+        if (!namePrefix.trim()) {
+            const base = images[0].name.replace(/\.[^/.]+$/, '');
+            setNamePrefix(base);
         }
     }
 
@@ -112,52 +131,111 @@ export function AddPhotos({ open, onOpenChange, collectionId, onAdded }: AddPhot
                 <div className="space-y-3 mt-5">
                     <div className="space-y-2">
                         <Label>Files</Label>
-                        <Input
+
+                        {/* input réel caché */}
+                        <input
+                            ref={inputRef}
                             type="file"
                             accept="image/*"
+                            multiple
+                            className="hidden"
                             onChange={(e) => {
-                                const f = e.target.files?.[0] ?? null;
-                                setFile(f);
-                                setErr(null);
-
-                                // petit confort : auto-name à partir du fichier si champ vide
-                                if (f && !name.trim()) {
-                                    const base = f.name.replace(/\.[^/.]+$/, '');
-                                    setName(base);
-                                }
+                                addFiles(Array.from(e.target.files ?? []));
+                                // permet de re-sélectionner le même fichier juste après
+                                e.currentTarget.value = '';
                             }}
                         />
-                        <div className="text-sm text-muted-foreground">{!file ? 'No file selected.' : `${file.name} • ${sizeMb} MB`}</div>
+
+                        {/* dropzone */}
+                        <button
+                            type="button"
+                            onClick={() => inputRef.current?.click()}
+                            onDragEnter={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsDragActive(true);
+                            }}
+                            onDragOver={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsDragActive(true);
+                            }}
+                            onDragLeave={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsDragActive(false);
+                            }}
+                            onDrop={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsDragActive(false);
+
+                                const dropped = Array.from(e.dataTransfer.files ?? []);
+                                addFiles(dropped);
+                            }}
+                            className={[
+                                'w-full rounded-lg border border-dashed p-6 text-left transition',
+                                'hover:bg-muted/50',
+                                isDragActive ? 'border-primary bg-muted/60' : 'border-muted-foreground/25',
+                                uploading ? 'pointer-events-none opacity-60' : '',
+                            ].join(' ')}
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-background">
+                                    <IconUpload />
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="text-sm font-medium">{isDragActive ? 'Drop your photos here' : 'Drag & drop photos here'}</div>
+                                    <div className="text-sm text-muted-foreground">or click to browse</div>
+                                </div>
+                            </div>
+                        </button>
+
+                        <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
+                            <div>{!files.length ? 'No files selected.' : `${files.length} file(s) • ${totalMb} MB`}</div>
+
+                            {files.length ? (
+                                <Button
+                                    variant="link"
+                                    className="text-sm underline underline-offset-2"
+                                    onClick={() => setFiles([])}
+                                    disabled={uploading}
+                                >
+                                    Clear
+                                </Button>
+                            ) : null}
+                        </div>
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Name</Label>
-                        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Photo name" />
+                        <Label>Name prefix (optional)</Label>
+                        <Input
+                            value={namePrefix}
+                            onChange={(e) => setNamePrefix(e.target.value)}
+                            placeholder='Applied to all (ex: "Shooting-Paris")'
+                        />
+                        <div className="text-xs opacity-70">If empty, server can default to each filename (recommended).</div>
                     </div>
 
                     <div className="space-y-2">
-                        <Label>Description</Label>
+                        <Label>Description (optional)</Label>
                         <Textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Rich text description"
+                            placeholder="Rich text description (applied to all)"
                             className="min-h-[120px]"
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label>Order (optional)</Label>
-                        <Input type="number" inputMode="numeric" value={order} onChange={(e) => setOrder(e.target.value)} placeholder="Auto" />
-                        <div className="text-xs opacity-70">If empty, the server will append it at the end.</div>
-                    </div>
-
-                    {file ? (
+                    {files.length ? (
                         <div className="max-h-40 overflow-auto rounded-md border p-2 text-sm">
                             <ul className="space-y-1">
-                                <li key={`${file.name}-${file.size}`} className="flex items-center justify-between gap-2">
-                                    <span className="truncate">{file.name}</span>
-                                    <span className="opacity-60">{Math.round((file.size / 1024 / 1024) * 10) / 10} MB</span>
-                                </li>
+                                {files.map((f) => (
+                                    <li key={`${f.name}-${f.size}-${f.lastModified}`} className="flex items-center justify-between gap-2">
+                                        <span className="truncate">{f.name}</span>
+                                        <span className="opacity-60">{Math.round((f.size / 1024 / 1024) * 10) / 10} MB</span>
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     ) : null}
@@ -172,11 +250,8 @@ export function AddPhotos({ open, onOpenChange, collectionId, onAdded }: AddPhot
                 </div>
 
                 <DialogFooter className="mt-5">
-                    <Button variant="secondary" onClick={() => onOpenChange(false)} disabled={uploading}>
-                        Cancel
-                    </Button>
-                    <Button onClick={upload} disabled={uploading || !file || !name.trim()}>
-                        {uploading ? 'Uploading…' : 'Upload'}
+                    <Button onClick={upload} disabled={uploading || files.length === 0}>
+                        Upload
                     </Button>
                 </DialogFooter>
             </DialogContent>

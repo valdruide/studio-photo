@@ -52,7 +52,7 @@ export function NavSeries({
                                         {item.items?.map((subItem) => (
                                             <SidebarMenuSubItem key={subItem.title}>
                                                 <SidebarMenuSubButton asChild>
-                                                    <Link className="uppercase" href={subItem.url}>
+                                                    <Link className="capitalize" href={subItem.url}>
                                                         {subItem.title}
                                                     </Link>
                                                 </SidebarMenuSubButton>

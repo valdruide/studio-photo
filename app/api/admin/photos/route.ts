@@ -4,6 +4,23 @@ import { optimizeToJpeg } from '@/lib/images/optimize';
 
 export const runtime = 'nodejs';
 
+function baseName(filename: string) {
+    // "photo.jpg" -> "photo"
+    return filename.replace(/\.[^/.]+$/, '').trim() || 'photo';
+}
+
+//  helper pour éviter les collisions dans la même batch (mêmes noms)
+function uniqueName(proposed: string, used: Set<string>) {
+    let name = proposed;
+    let i = 2;
+    while (used.has(name)) {
+        name = `${proposed} (${i})`;
+        i++;
+    }
+    used.add(name);
+    return name;
+}
+
 export async function GET(req: Request) {
     return withAdmin(async (pb) => {
         const url = new URL(req.url);
@@ -60,47 +77,40 @@ export async function POST(req: Request) {
             const files = form.getAll('files').filter((v) => v instanceof File) as File[];
             if (!files.length) return new NextResponse('Missing files', { status: 400 });
 
-            const name = String(form.get('name') ?? '').trim();
-            if (!name) return new NextResponse('Missing name', { status: 400 });
-
             const description = String(form.get('description') ?? '');
 
-            const orderRaw = String(form.get('order') ?? '').trim();
-            const orderFromClient = orderRaw !== '' ? Number(orderRaw) : null;
-            if (orderFromClient !== null && !Number.isFinite(orderFromClient)) {
-                return new NextResponse('Invalid order', { status: 400 });
-            }
+            const namePrefix = String(form.get('namePrefix') ?? '').trim();
 
-            // last order + 1
+            // ✅ Order = last + 1 (serveur only)
             const last = await pb.collection('photos').getList(1, 1, {
                 sort: '-order',
-                filter: `collection~"${collectionId}" || collection="${collectionId}"`,
+                filter: `collection="${collectionId}" || collection~"${collectionId}"`,
             });
 
             let nextOrder = (last.items?.[0]?.order ?? 0) + 1;
 
             const created: any[] = [];
+            const usedNames = new Set<string>();
 
             for (const file of files) {
                 // 1) Optimise en JPEG + récupère width/height
                 const inputAB = await file.arrayBuffer();
                 const opt = await optimizeToJpeg(inputAB);
 
-                const outName = file.name.replace(/\.[^/.]+$/, '') + '.' + opt.filenameExt;
-
-                // File (Node) à partir du buffer optimisé
+                const outName = baseName(file.name) + '.' + opt.filenameExt;
                 const outFile = new File([opt.buffer], outName, { type: 'image/jpeg' });
+
+                // ✅ NEW: name = prefix + filename (ou filename seul)
+                const rawBase = baseName(file.name);
+                const proposed = namePrefix ? `${namePrefix}-${rawBase}` : rawBase;
+                const name = uniqueName(proposed, usedNames);
 
                 // 2) Build FormData pour PocketBase
                 const fd = new FormData();
-
-                // order final : soit celui du client, soit "append"
-                const orderToUse = orderFromClient !== null ? orderFromClient : nextOrder;
-
-                fd.set('collection', collectionId);
+                fd.set('collection', collectionId); // tentative relation single
                 fd.set('name', name);
                 fd.set('description', description);
-                fd.set('order', String(orderToUse));
+                fd.set('order', String(nextOrder));
                 fd.set('isHidden', 'false');
                 fd.set('width', String(opt.width ?? 0));
                 fd.set('height', String(opt.height ?? 0));
@@ -115,7 +125,7 @@ export async function POST(req: Request) {
                     fd2.set('collection', JSON.stringify([collectionId]));
                     fd2.set('name', name);
                     fd2.set('description', description);
-                    fd2.set('order', String(orderToUse));
+                    fd2.set('order', String(nextOrder));
                     fd2.set('isHidden', 'false');
                     fd2.set('width', String(opt.width ?? 0));
                     fd2.set('height', String(opt.height ?? 0));
