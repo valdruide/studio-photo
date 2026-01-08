@@ -102,7 +102,7 @@ export default function SectionCardsClient({ view, query }: { view: CategoryView
                                                         imgWidth={active.width}
                                                         imgHeight={active.height}
                                                         className="h-full w-full"
-                                                        zoom={2}
+                                                        zoom={1.5}
                                                         lensSize={200}
                                                     >
                                                         <Image
