@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { CategorieTable } from '@/components/admin/categorieTable';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AddCategory } from '@/components/admin/addCategory';
+import { IconDeviceFloppy } from '@tabler/icons-react';
 
 type Category = { id: string; title: string; slug?: string; isHidden?: boolean; icon?: string | null; color?: string | null };
 
@@ -94,6 +95,18 @@ export default function AdminHome() {
                                 onDeleted={(catId) => setCategories((prev) => prev.filter((c) => c.id !== catId))}
                             />
                         </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex justify-between">
+                            <div className="space-y-1">
+                                <CardTitle>Settings</CardTitle>
+                                <CardDescription>Settings will be here soon.</CardDescription>
+                            </div>
+                            <Button>
+                                <IconDeviceFloppy className="size-6" /> Save settings
+                            </Button>
+                        </CardHeader>
+                        <CardContent>Instagram - TikTok - Site name - Logo etc...</CardContent>
                     </Card>
                 </div>
             )}

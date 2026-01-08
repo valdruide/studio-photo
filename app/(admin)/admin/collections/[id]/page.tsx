@@ -196,7 +196,7 @@ export default function AdminCollectionEditPage() {
                     </CardHeader>
 
                     <CardContent className="space-y-4">
-                        <div className="grid gap-4 md:grid-cols-3">
+                        <div className="grid gap-4 md:grid-cols-5">
                             <div className="space-y-2">
                                 <Label>Title</Label>
                                 <Input value={col.title ?? ''} onChange={(e) => setCol({ ...col, title: e.target.value })} />
@@ -217,28 +217,10 @@ export default function AdminCollectionEditPage() {
                                 />
                             </div>
 
-                            <div className="space-y-2 md:col-span-3">
-                                <Label>Description</Label>
-                                <Textarea
-                                    value={col.description ?? ''}
-                                    onChange={(e) => setCol({ ...col, description: e.target.value })}
-                                    placeholder="Rich text (HTML)…"
-                                    className="min-h-[160px]"
-                                />
-                            </div>
-
                             <div className="space-y-2">
-                                <Label>Visibility</Label>
-                                <div className="flex items-center gap-3 mt-4">
-                                    <Switch checked={!col.isHidden} onCheckedChange={(v) => setCol({ ...col, isHidden: !v })} />
-                                    <Label>Visible</Label>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2 md:col-span-2">
                                 <Label>Category</Label>
                                 <Select value={col.category ?? ''} onValueChange={(value) => setCol({ ...col, category: value })}>
-                                    <SelectTrigger>
+                                    <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select category…" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -249,6 +231,24 @@ export default function AdminCollectionEditPage() {
                                         ))}
                                     </SelectContent>
                                 </Select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>Visibility</Label>
+                                <div className="flex items-center gap-3 mt-4">
+                                    <Switch checked={!col.isHidden} onCheckedChange={(v) => setCol({ ...col, isHidden: !v })} />
+                                    <Label>Visible</Label>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2 md:col-span-5">
+                                <Label>Description</Label>
+                                <Textarea
+                                    value={col.description ?? ''}
+                                    onChange={(e) => setCol({ ...col, description: e.target.value })}
+                                    placeholder="Rich text (HTML)…"
+                                    className="min-h-[160px]"
+                                />
                             </div>
                         </div>
                     </CardContent>

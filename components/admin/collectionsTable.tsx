@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { IconDots } from '@tabler/icons-react';
+import { IconDots, IconGripVertical } from '@tabler/icons-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,6 +19,7 @@ export type CollectionRow = {
     title: string;
     description?: string;
     slug?: string;
+    order?: number;
     isHidden?: boolean;
 };
 
@@ -44,10 +45,11 @@ export function CollectionsTable({ collections, onDeleted }: { collections: Coll
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[150px]">Title</TableHead>
-                            <TableHead>Description</TableHead>
+                            <TableHead className="w-[120px]">Change order</TableHead>
+                            <TableHead>Title</TableHead>
                             <TableHead>Slug</TableHead>
-                            <TableHead>Hidden</TableHead>
+                            <TableCell>Order</TableCell>
+                            <TableHead>Visible</TableHead>
                             <TableHead className="text-right w-[120px]">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -55,10 +57,13 @@ export function CollectionsTable({ collections, onDeleted }: { collections: Coll
                     <TableBody>
                         {collections.map((col) => (
                             <TableRow key={col.id}>
+                                <TableCell>
+                                    <IconGripVertical className="text-muted-foreground cursor-grab" />
+                                </TableCell>
                                 <TableCell className="font-medium">{col.title}</TableCell>
-                                <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{col.description ?? '-'}</TableCell>
-                                <TableCell className="text-sm opacity-70">{col.slug ?? '-'}</TableCell>
-                                <TableCell className="text-sm opacity-70">{col.isHidden ? 'Yes' : 'No'}</TableCell>
+                                <TableCell className="text-sm text-muted-foreground">{col.slug ?? '-'}</TableCell>
+                                <TableCell className="text-sm text-muted-foreground">{col.order}</TableCell>
+                                <TableCell className="text-sm text-muted-foreground">{col.isHidden ? 'No' : 'Yes'}</TableCell>
                                 <TableCell className="text-right">
                                     <DropdownMenu modal={false}>
                                         <DropdownMenuTrigger asChild>

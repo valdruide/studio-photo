@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ICONS_MAP } from '@/lib/categories/iconsMap';
-import { IconFolderFilled, IconDots } from '@tabler/icons-react';
+import { IconFolderFilled, IconDots, IconGripVertical } from '@tabler/icons-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -57,6 +57,7 @@ export function CategorieTable({
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead className="w-[120px]">Change Order</TableHead>
                             <TableHead>Title</TableHead>
                             <TableHead>Slug</TableHead>
                             <TableHead>Icon</TableHead>
@@ -76,6 +77,9 @@ export function CategorieTable({
 
                             return (
                                 <TableRow key={cat.id}>
+                                    <TableCell>
+                                        <IconGripVertical className="text-muted-foreground cursor-grab" />
+                                    </TableCell>
                                     <TableCell className="font-medium">{cat.title}</TableCell>
                                     <TableCell className="text-sm text-muted-foreground">{cat.slug ?? '-'}</TableCell>
                                     <TableCell>
@@ -101,14 +105,14 @@ export function CategorieTable({
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Switch checked={visible} onCheckedChange={(v) => onToggleVisible(cat.id, v)} />
-                                            <Label className="opacity-80">Visible</Label>
+                                            <Label className="text-muted-foreground">Visible</Label>
                                         </div>
                                     </TableCell>
 
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Switch checked={Boolean(cat.allowAll)} onCheckedChange={(v) => onToggleAllowAll(cat.id, v)} />
-                                            <Label className="opacity-80">Allow</Label>
+                                            <Label className="text-muted-foreground">Allow</Label>
                                         </div>
                                     </TableCell>
 
