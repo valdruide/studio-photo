@@ -106,7 +106,7 @@ export default function AdminHome() {
                                 <IconDeviceFloppy className="size-6" /> Save settings
                             </Button>
                         </CardHeader>
-                        <CardContent>Instagram - TikTok - Site name - Logo etc...</CardContent>
+                        <CardContent>Instagram - TikTok - Site name - Portfolio Name "series" editor - Logo etc...</CardContent>
                     </Card>
                 </div>
             )}
