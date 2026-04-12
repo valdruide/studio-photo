@@ -98,7 +98,7 @@ export async function POST(req: Request) {
                 const opt = await optimizeToJpeg(inputAB);
 
                 const outName = baseName(file.name) + '.' + opt.filenameExt;
-                const outFile = new File([opt.buffer], outName, { type: 'image/jpeg' });
+                const outFile = new File([new Uint8Array(opt.buffer)], outName, { type: 'image/jpeg' });
 
                 // ✅ NEW: name = prefix + filename (ou filename seul)
                 const rawBase = baseName(file.name);

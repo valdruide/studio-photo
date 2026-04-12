@@ -1,0 +1,16 @@
+services:
+  studio-photo:
+    build: .
+    container_name: studio-photo
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.studio-photo.rule=Host(`studio-photo.local`)"
+      - "traefik.http.routers.studio-photo.entrypoints=web"
+      - "traefik.http.services.studio-photo.loadbalancer.server.port=3000"
+
+networks:
+  proxy:
+    external: true
