@@ -2,5 +2,5 @@
 export const PB_THUMBS = {
     blur: '32x0',
     grid: '320x0',
-    modal: '1000x1000f',
+    modal: '2000x2000f',
 } as const;

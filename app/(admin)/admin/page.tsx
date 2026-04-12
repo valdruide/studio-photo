@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CategorieTable } from '@/components/admin/categorieTable';
+import { CategorieTable, CategoryRow } from '@/components/admin/categorieTable';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AddCategory } from '@/components/admin/addCategory';
 import { IconDeviceFloppy } from '@tabler/icons-react';
 
-type Category = { id: string; title: string; slug?: string; isHidden?: boolean; icon?: string | null; color?: string | null };
+// type Category = { id: string; title: string; slug?: string; isHidden?: boolean; icon?: string | null; color?: string | null };
+type Category = CategoryRow;
 
 export default function AdminHome() {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -66,6 +67,28 @@ export default function AdminHome() {
         }
     }
 
+    async function onReorder(next: Category[]) {
+        const previous = categories;
+
+        setCategories(next);
+
+        const res = await fetch('/api/admin/categories/reorder', {
+            method: 'PATCH',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+                items: next.map((cat) => ({
+                    id: cat.id,
+                    order: cat.order ?? 0,
+                })),
+            }),
+        });
+
+        if (!res.ok) {
+            setCategories(previous);
+            console.error('Failed to reorder categories');
+        }
+    }
+
     return (
         <>
             <AddCategory
@@ -92,6 +115,7 @@ export default function AdminHome() {
                                 categories={categories}
                                 onToggleVisible={onChangeVisibility}
                                 onToggleAllowAll={onToggleAllowAll}
+                                onReorder={onReorder}
                                 onDeleted={(catId) => setCategories((prev) => prev.filter((c) => c.id !== catId))}
                             />
                         </CardContent>

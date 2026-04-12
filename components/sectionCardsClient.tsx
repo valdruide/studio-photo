@@ -1,24 +1,20 @@
 'use client';
 import dynamic from 'next/dynamic';
-import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
+import { useMemo, useState } from 'react';
 import { Dialog, DialogContentWide, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 import type { CategoryView, PhotoItem } from '@/lib/collections/types';
 import { Button } from '@/components/ui/button';
 import { ZoomLens } from './zoomLens';
-import { Kbd, KbdGroup } from '@/components/ui/kbd';
+import { Kbd } from '@/components/ui/kbd';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const MasonryGrid = dynamic(() => import('./masonryGrid'), { ssr: false });
 
 export default function SectionCardsClient({ view, query }: { view: CategoryView; query: string }) {
     const [open, setOpen] = useState(false);
-    const [startIndex, setStartIndex] = useState(0);
     const [activeId, setActiveId] = useState<string | null>(null);
-    const [api, setApi] = useState<CarouselApi | null>(null);
-    const [selectedSnap, setSelectedSnap] = useState(0);
-    const [snapCount, setSnapCount] = useState(0);
 
     const activeIndex = useMemo(() => {
         if (!activeId) return 0;
@@ -29,37 +25,24 @@ export default function SectionCardsClient({ view, query }: { view: CategoryView
     const active = view.items[activeIndex];
 
     const onOpen = (item: PhotoItem) => {
-        const i = view.items.findIndex((x) => x.id === item.id);
-        setStartIndex(i >= 0 ? i : 0);
         setActiveId(item.id);
         setOpen(true);
     };
 
-    useEffect(() => {
-        if (!api) return;
+    const goTo = (index: number) => {
+        const item = view.items[index];
+        if (item) setActiveId(item.id);
+    };
 
-        const onInit = () => {
-            setSnapCount(api.scrollSnapList().length);
-            setSelectedSnap(api.selectedScrollSnap());
-        };
+    const goPrev = () => {
+        const prevIndex = activeIndex === 0 ? view.items.length - 1 : activeIndex - 1;
+        goTo(prevIndex);
+    };
 
-        const onSelect = () => {
-            const i = api.selectedScrollSnap();
-            setSelectedSnap(i);
-            const item = view.items[i];
-            if (item) setActiveId(item.id);
-        };
-
-        api.on('reInit', onInit);
-        api.on('select', onSelect);
-
-        onInit();
-
-        return () => {
-            api.off('reInit', onInit);
-            api.off('select', onSelect);
-        };
-    }, [api, view.items]);
+    const goNext = () => {
+        const nextIndex = activeIndex === view.items.length - 1 ? 0 : activeIndex + 1;
+        goTo(nextIndex);
+    };
 
     return (
         <>
@@ -77,92 +60,88 @@ export default function SectionCardsClient({ view, query }: { view: CategoryView
 
             <MasonryGrid items={view.items} onOpen={onOpen} />
 
+        
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContentWide>
-                    {open && (
+                    {open && active && (
                         <>
-                            {/* zone image = 80vh -> paysage aussi grand que portrait */}
-                            <div className="relative w-full h-[80vh] bg-black/60 rounded-t-lg overflow-hidden">
-                                <Carousel
-                                    setApi={setApi}
-                                    opts={{
-                                        align: 'center',
-                                        loop: true,
-                                        startIndex,
-                                        duration: 25,
-                                    }}
-                                    className="h-full"
-                                >
-                                    <CarouselContent className="h-full">
-                                        {view.items.map((item) => (
-                                            <CarouselItem key={item.id} className="basis-full h-full">
-                                                <div className="relative h-[80vh] w-full">
-                                                    <ZoomLens
-                                                        src={active.srcOriginal ?? active.srcMedium}
-                                                        imgWidth={active.width}
-                                                        imgHeight={active.height}
-                                                        className="h-full w-full"
-                                                        zoom={1.5}
-                                                        lensSize={200}
-                                                    >
-                                                        <Image
-                                                            src={item.srcMedium}
-                                                            alt={item.name}
-                                                            fill
-                                                            sizes="80vw"
-                                                            unoptimized
-                                                            className="object-contain"
-                                                        />
-                                                    </ZoomLens>
-                                                </div>
-                                            </CarouselItem>
-                                        ))}
-                                    </CarouselContent>
-                                    <div className="hidden lg:block bg-background/70 backdrop-blur-[2px] p-2 rounded-md absolute right-5 space-y-1 bottom-5 text-muted-foreground text-sm">
-                                        <p>
-                                            <Kbd>Scroll</Kbd> : Increase lens size
-                                        </p>
-                                        <p>
-                                            <Kbd>Shift + Scroll</Kbd> : Increase zoom
-                                        </p>
-                                    </div>
+                            <div className="relative w-full h-[95vh] bg-black/60 rounded-lg overflow-hidden">
+                                <div className="relative h-full w-full">
+                                    <ZoomLens
+                                        src={active.srcOriginal}
+                                        imgWidth={active.width}
+                                        imgHeight={active.height}
+                                        className="h-full w-full"
+                                        zoom={1.5}
+                                        lensSize={200}
+                                    >
+                                        <img
+                                            src={active.srcOriginal}
+                                            alt={active.name}
+                                            className="h-full w-full object-contain select-none"
+                                            draggable={false}
+                                        />
+                                    </ZoomLens>
+                                </div>
 
-                                    {/* boutons de nav */}
-                                    <CarouselPrevious className="left-4" />
-                                    <CarouselNext className="right-4" />
-                                </Carousel>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="absolute left-4 top-1/2 z-20 -translate-y-1/2 rounded-full"
+                                    onClick={goPrev}
+                                >
+                                    <ChevronLeft />
+                                </Button>
+
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="absolute right-4 top-1/2 z-20 -translate-y-1/2 rounded-full"
+                                    onClick={goNext}
+                                >
+                                    <ChevronRight />
+                                </Button>
+
+                                <div className="hidden lg:block bg-background/70 backdrop-blur-[2px] p-2 rounded-md border absolute right-5 space-y-1 bottom-5 text-muted-foreground text-sm z-20">
+                                    <p>
+                                        <Kbd>Scroll</Kbd> : Increase lens size
+                                    </p>
+                                    <p>
+                                        <Kbd>Shift + Scroll</Kbd> : Increase zoom
+                                    </p>
+                                </div>
                             </div>
-                            <div className="mt-3 flex items-center justify-center gap-2">
-                                {Array.from({ length: snapCount }).map((_, i) => (
+
+                            <div className="absolute left-1/2 -translate-x-1/2 bottom-3 flex items-center justify-center gap-2 z-20">
+                                {view.items.map((item, i) => (
                                     <button
-                                        key={i}
+                                        key={item.id}
                                         type="button"
                                         aria-label={`Go to slide ${i + 1}`}
-                                        onClick={() => api?.scrollTo(i)}
+                                        onClick={() => goTo(i)}
                                         className={[
                                             'size-3 rounded-full transition',
-                                            i === selectedSnap
+                                            i === activeIndex
                                                 ? 'bg-primary cursor-default ring-1 ring-primary ring-offset-2 ring-offset-background'
-                                                : 'bg-secondary hover:bg-primary/70 cursor-pointer',
+                                                : 'bg-secondary hover:bg-primary/70 cursor-pointer border',
                                         ].join(' ')}
                                     />
                                 ))}
                             </div>
 
-                            {/* texte basé sur la slide active */}
-                            {active && (
-                                <div className="flex justify-between p-6">
-                                    <DialogHeader>
-                                        <DialogTitle>{active.name}</DialogTitle>
-                                        {active.description && (
-                                            <DialogDescription
-                                                className="prose prose-invert max-w-none"
-                                                dangerouslySetInnerHTML={{ __html: active.description }}
-                                            />
-                                        )}
-                                    </DialogHeader>
-                                </div>
-                            )}
+                            <div className="absolute bottom-5 left-5 flex justify-between z-20">
+                                <DialogHeader>
+                                    <DialogTitle>{active.name}</DialogTitle>
+                                    {active.description && (
+                                        <DialogDescription
+                                            className="prose prose-invert max-w-none"
+                                            dangerouslySetInnerHTML={{ __html: active.description }}
+                                        />
+                                    )}
+                                </DialogHeader>
+                            </div>
                         </>
                     )}
                 </DialogContentWide>

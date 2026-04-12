@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { XIcon } from 'lucide-react';
+import { XIcon, FullscreenIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -28,11 +28,20 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
             data-slot="dialog-overlay"
             className={cn(
                 'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80 backdrop-blur-sm',
-                className
+                className,
             )}
             {...props}
         />
     );
+}
+
+function showFullScreen() {
+    // Implement full-screen functionality here
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else {
+        document.documentElement.requestFullscreen();
+    }
 }
 
 function DialogContent({
@@ -50,7 +59,7 @@ function DialogContent({
                 data-slot="dialog-content"
                 className={cn(
                     'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] rounded-lg border shadow-lg duration-200 outline-none sm:max-w-lg',
-                    className
+                    className,
                 )}
                 {...props}
             >
@@ -73,8 +82,9 @@ function DialogContentWide({
     className,
     children,
     showCloseButton = true,
+    showFullScreenButton = true,
     ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean }) {
+}: React.ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean; showFullScreenButton?: boolean }) {
     return (
         <DialogPortal>
             <DialogOverlay />
@@ -82,12 +92,12 @@ function DialogContentWide({
                 data-slot="dialog-content-wide"
                 className={cn(
                     // ✅ lightbox sizing
-                    'bg-background fixed top-[50%] left-[50%] z-50 translate-x-[-50%] translate-y-[-50%] rounded-lg border shadow-lg outline-none',
+                    'bg-background fixed top-[50%] left-[50%] z-50 translate-x-[-50%] translate-y-[-50%] rounded-lg shadow-lg outline-none',
                     // ✅ big + responsive, not limited to sm:max-w-lg
-                    'w-[95vw] max-w-[95vw] md:w-[90vw] md:max-w-[90vw] lg:w-[80vw] lg:max-w-[80vw]',
+                    'w-[95vw] max-w-[95vw] md:w-[90vw] md:max-w-[90vw] lg:w-[95vw] lg:max-w-[95vw]',
                     // ✅ no padding by default
                     'p-0',
-                    className
+                    className,
                 )}
                 {...props}
             >
@@ -100,6 +110,16 @@ function DialogContentWide({
                         <XIcon className="size-5" />
                         <span className="sr-only">Close</span>
                     </DialogPrimitive.Close>
+                )}
+                {showFullScreenButton && (
+                    <button
+                        type="button"
+                        className="cursor-pointer ring-offset-background border p-1 rounded-full absolute top-4 right-14 bg-accent hover:bg-muted-foreground transition-colors focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0"
+                        onClick={showFullScreen}
+                    >
+                        <FullscreenIcon className="size-5" />
+                        <span className="sr-only">Full Screen</span>
+                    </button>
                 )}
             </DialogPrimitive.Content>
         </DialogPortal>

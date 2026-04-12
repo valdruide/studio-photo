@@ -66,6 +66,28 @@ export default function AdminCategoryEditPage() {
         load();
     }, [id]);
 
+    async function onReorderCollections(next: CollectionRow[]) {
+        const previous = collections;
+
+        setCollections(next);
+
+        const res = await fetch('/api/admin/collections/reorder', {
+            method: 'PATCH',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+                items: next.map((col) => ({
+                    id: col.id,
+                    order: col.order ?? 0,
+                })),
+            }),
+        });
+
+        if (!res.ok) {
+            setCollections(previous);
+            console.error('Failed to reorder collections');
+        }
+    }
+
     async function save() {
         if (!cat) return;
         setSaving(true);
@@ -117,7 +139,7 @@ export default function AdminCategoryEditPage() {
                         <CardTitle>Category</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="grid gap-4 md:grid-cols-3">
+                        <div className="flex gap-6 md:grid-cols-4">
                             <div className="space-y-2">
                                 <Label>Title</Label>
                                 <Input value={cat.title ?? ''} onChange={(e) => setCat({ ...cat, title: e.target.value })} />
@@ -129,23 +151,8 @@ export default function AdminCategoryEditPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label>Order</Label>
-                                <Input
-                                    type="number"
-                                    inputMode="numeric"
-                                    value={cat.order ?? 0}
-                                    onChange={(e) =>
-                                        setCat({
-                                            ...cat,
-                                            order: e.target.value === '' ? 0 : Number(e.target.value),
-                                        })
-                                    }
-                                />
-                            </div>
-
-                            <div className="space-y-2">
                                 <Label>Icon</Label>
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2">
                                     <IconPickerDialog
                                         value={cat.icon ?? 'IconFolderFilled'}
                                         onChange={(iconName) => setCat({ ...cat, icon: iconName })}
@@ -161,7 +168,7 @@ export default function AdminCategoryEditPage() {
 
                             <div className="space-y-2">
                                 <Label>Color</Label>
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2">
                                     <ColorPickerDialog
                                         value={cat.color}
                                         onChange={(color) => setCat({ ...cat, color })}
@@ -201,6 +208,7 @@ export default function AdminCategoryEditPage() {
                         ) : (
                             <CollectionsTable
                                 collections={collections}
+                                onReorder={onReorderCollections}
                                 onDeleted={(collectionId) => {
                                     setCollections((prev) => prev.filter((c) => c.id !== collectionId));
                                 }}

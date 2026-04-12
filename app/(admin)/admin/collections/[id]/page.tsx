@@ -208,16 +208,6 @@ export default function AdminCollectionEditPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label>Order</Label>
-                                <Input
-                                    type="number"
-                                    inputMode="numeric"
-                                    value={col.order ?? 0}
-                                    onChange={(e) => setCol({ ...col, order: e.target.value === '' ? 0 : Number(e.target.value) })}
-                                />
-                            </div>
-
-                            <div className="space-y-2">
                                 <Label>Category</Label>
                                 <Select value={col.category ?? ''} onValueChange={(value) => setCol({ ...col, category: value })}>
                                     <SelectTrigger className="w-full">
