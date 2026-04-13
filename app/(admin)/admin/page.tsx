@@ -11,6 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import type { ComponentType } from 'react';
 import { toast } from 'sonner';
+import { THEMES, DEFAULT_THEME, type ThemeName } from '@/lib/themes';
+import { Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
     IconBrandInstagram,
     IconBrandTiktok,
@@ -36,6 +39,7 @@ type SettingsForm = {
     dribbble: string;
     behance: string;
     reddit: string;
+    site_theme: ThemeName;
 };
 const EMPTY_SETTINGS: SettingsForm = {
     site_name: '',
@@ -50,9 +54,14 @@ const EMPTY_SETTINGS: SettingsForm = {
     dribbble: '',
     behance: '',
     reddit: '',
+    site_theme: DEFAULT_THEME,
 };
 
 type Category = CategoryRow;
+
+function isValidTheme(value: string | undefined | null): value is ThemeName {
+    return !!value && THEMES.some((theme) => theme.name === value);
+}
 
 export default function AdminHome() {
     const [categories, setCategories] = useState<Category[]>([]);
@@ -83,7 +92,7 @@ export default function AdminHome() {
                 const settingsData = await settingsRes.json();
                 const item = settingsData.item;
 
-                setSettings({
+                const nextSettings: SettingsForm = {
                     site_name: item?.site_name ?? '',
                     portfolio_name: item?.portfolio_name ?? '',
                     title: item?.title ?? '',
@@ -96,7 +105,13 @@ export default function AdminHome() {
                     dribbble: item?.dribbble ?? '',
                     behance: item?.behance ?? '',
                     reddit: item?.reddit ?? '',
-                });
+                    site_theme: isValidTheme(item?.site_theme) ? item.site_theme : DEFAULT_THEME,
+                };
+
+                setSettings(nextSettings);
+
+                // Preview immédiate dans l'admin
+                document.documentElement.setAttribute('data-theme', nextSettings.site_theme);
             } else {
                 const errorText = await settingsRes.text();
                 console.error('Failed to load settings:', settingsRes.status, errorText);
@@ -121,6 +136,16 @@ export default function AdminHome() {
         }));
     }
 
+    function onSelectTheme(themeName: ThemeName) {
+        setSettings((prev) => ({
+            ...prev,
+            site_theme: themeName,
+        }));
+
+        // Preview immédiate dans l'admin avant sauvegarde
+        document.documentElement.setAttribute('data-theme', themeName);
+    }
+
     async function onSaveSettings() {
         try {
             setSavingSettings(true);
@@ -139,7 +164,7 @@ export default function AdminHome() {
             const data = await res.json();
             const item = data.item;
 
-            setSettings({
+            const nextSettings: SettingsForm = {
                 site_name: item?.site_name ?? '',
                 portfolio_name: item?.portfolio_name ?? '',
                 title: item?.title ?? '',
@@ -152,7 +177,11 @@ export default function AdminHome() {
                 dribbble: item?.dribbble ?? '',
                 behance: item?.behance ?? '',
                 reddit: item?.reddit ?? '',
-            });
+                site_theme: isValidTheme(item?.site_theme) ? item.site_theme : DEFAULT_THEME,
+            };
+
+            setSettings(nextSettings);
+            document.documentElement.setAttribute('data-theme', nextSettings.site_theme);
             toast.success('Settings saved successfully');
         } catch (error) {
             console.error(error);
@@ -358,7 +387,7 @@ export default function AdminHome() {
                                     <Input placeholder="Coming soon" disabled />
                                 </div>
                             </div>
-                            <Separator className="my-4" />
+                            <Separator className="my-10" />
                             <p className="font-semibold">Social Media Links</p>
                             <div className="grid grid-cols-4 gap-4 mt-4">
                                 {possibleSocialMedia.map((media) => (
@@ -374,6 +403,92 @@ export default function AdminHome() {
                                         />
                                     </div>
                                 ))}
+                            </div>
+                            <Separator className="my-10" />
+                            <div className="space-y-3">
+                                <div>
+                                    <p className="font-semibold">Theme</p>
+                                    <p className="text-sm text-muted-foreground">Choose the global theme applied to the whole site.</p>
+                                </div>
+
+                                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+                                    {THEMES.map((item) => {
+                                        const isActive = item.name === settings.site_theme;
+
+                                        return (
+                                            <button key={item.name} type="button" onClick={() => onSelectTheme(item.name)} className="text-left">
+                                                <Card
+                                                    className={cn(
+                                                        'cursor-pointer border transition-all hover:bg-primary/10',
+                                                        isActive && 'border-primary bg-primary/10',
+                                                    )}
+                                                >
+                                                    <CardHeader className="flex flex-row items-center justify-between">
+                                                        <CardTitle className="text-base">{item.label}</CardTitle>
+                                                        {isActive ? <Check className="size-6 text-primary" /> : null}
+                                                    </CardHeader>
+
+                                                    <CardContent>
+                                                        <div
+                                                            className="space-y-3 rounded-xl border p-3"
+                                                            style={{
+                                                                background: item.preview.background,
+                                                                borderColor: item.preview.border,
+                                                                color: item.preview.foreground,
+                                                            }}
+                                                        >
+                                                            <div className="flex items-center justify-between">
+                                                                <div
+                                                                    className="h-3 w-20 rounded-full"
+                                                                    style={{
+                                                                        background: item.preview.foreground ?? 'white',
+                                                                        opacity: 0.9,
+                                                                    }}
+                                                                />
+                                                                <div className="h-3 w-3 rounded-full" style={{ background: item.preview.primary }} />
+                                                            </div>
+
+                                                            <div
+                                                                className="space-y-2 rounded-lg border p-3"
+                                                                style={{
+                                                                    background: item.preview.card,
+                                                                    borderColor: item.preview.border,
+                                                                }}
+                                                            >
+                                                                <div
+                                                                    className="h-3 w-16 rounded-full"
+                                                                    style={{
+                                                                        background: item.preview.foreground ?? 'white',
+                                                                        opacity: 0.9,
+                                                                    }}
+                                                                />
+                                                                <div
+                                                                    className="h-2 w-full rounded-full"
+                                                                    style={{
+                                                                        background: item.preview.foreground ?? 'white',
+                                                                        opacity: 0.15,
+                                                                    }}
+                                                                />
+                                                                <div
+                                                                    className="h-2 w-3/4 rounded-full"
+                                                                    style={{
+                                                                        background: item.preview.foreground ?? 'white',
+                                                                        opacity: 0.1,
+                                                                    }}
+                                                                />
+                                                            </div>
+
+                                                            <div className="flex gap-2">
+                                                                <div className="h-8 flex-1 rounded-md" style={{ background: item.preview.primary }} />
+                                                                <div className="h-8 w-10 rounded-md" style={{ background: item.preview.accent }} />
+                                                            </div>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         </CardContent>
                     </Card>

@@ -14,19 +14,19 @@ const pillars = [
         title: 'Sensibilité',
         description: 'Chaque série commence par une intention: une émotion, un silence à faire exister',
         icon: Flower2,
-        color: 'bg-purple-800 text-purple-50',
+        color: 'bg-primary/80 text-primary-foreground',
     },
     {
         title: 'Construction visuelle',
         description: 'La lumière et le cadre sont travaillés comme des éléments narratifs à part entière',
         icon: Layers3,
-        color: 'bg-purple-900 text-purple-100',
+        color: 'bg-primary/80 text-primary-foreground',
     },
     {
         title: 'Expérimentation',
         description: 'Textures, flous et superpositions nourrissent une esthétique plus organique',
         icon: WandSparkles,
-        color: 'bg-purple-950 text-purple-200',
+        color: 'bg-primary/80 text-primary-foreground',
     },
 ];
 
@@ -106,7 +106,7 @@ export default function AboutPage() {
                             <Card key={pillar.title} className={`rounded-2xl ${pillar.color}`}>
                                 <CardContent className="space-y-4 p-6 flex justify-center items-center flex-col h-full">
                                     <div className="flex mx-auto size-16 items-center justify-center rounded-xl bg-background/60">
-                                        <Icon className="size-6" />
+                                        <Icon className="size-6 text-foreground" />
                                     </div>
                                     <div className="space-y-2">
                                         <h3 className="text-xl font-medium">{pillar.title}</h3>

@@ -14,6 +14,7 @@ type SettingsPayload = {
     dribbble?: string;
     behance?: string;
     reddit?: string;
+    site_theme?: string;
 };
 
 function sanitizeSettings(input: any): SettingsPayload {
@@ -30,6 +31,7 @@ function sanitizeSettings(input: any): SettingsPayload {
         dribbble: typeof input.dribbble === 'string' ? input.dribbble.trim() : '',
         behance: typeof input.behance === 'string' ? input.behance.trim() : '',
         reddit: typeof input.reddit === 'string' ? input.reddit.trim() : '',
+        site_theme: typeof input.site_theme === 'string' ? input.site_theme.trim() : '',
     };
 }
 

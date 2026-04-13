@@ -4,6 +4,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import './globals.css';
+import { getGlobalTheme } from '@/lib/pb/site-settings';
 import { Toaster } from '@/components/ui/sonner';
 
 const geistSans = Geist({
@@ -21,14 +22,16 @@ export const metadata: Metadata = {
     description: 'Studio photo Triste Fleur',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const theme = await getGlobalTheme();
+
     return (
-        <html lang="fr">
-            <body className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}>
+        <html lang="en" data-theme={theme}>
+            <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                 <SidebarProvider
                     style={
                         {
