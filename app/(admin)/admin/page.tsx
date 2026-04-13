@@ -26,6 +26,7 @@ import {
 type SettingsForm = {
     site_name: string;
     portfolio_name: string;
+    title: string;
     instagram: string;
     tiktok: string;
     facebook: string;
@@ -39,6 +40,7 @@ type SettingsForm = {
 const EMPTY_SETTINGS: SettingsForm = {
     site_name: '',
     portfolio_name: '',
+    title: '',
     instagram: '',
     tiktok: '',
     facebook: '',
@@ -84,6 +86,7 @@ export default function AdminHome() {
                 setSettings({
                     site_name: item?.site_name ?? '',
                     portfolio_name: item?.portfolio_name ?? '',
+                    title: item?.title ?? '',
                     instagram: item?.instagram ?? '',
                     tiktok: item?.tiktok ?? '',
                     facebook: item?.facebook ?? '',
@@ -139,6 +142,7 @@ export default function AdminHome() {
             setSettings({
                 site_name: item?.site_name ?? '',
                 portfolio_name: item?.portfolio_name ?? '',
+                title: item?.title ?? '',
                 instagram: item?.instagram ?? '',
                 tiktok: item?.tiktok ?? '',
                 facebook: item?.facebook ?? '',
@@ -287,7 +291,7 @@ export default function AdminHome() {
                 }}
             />
 
-            <h1 className="text-2xl font-semibold">Dashboard</h1>
+            <p className="text-2xl font-semibold">Dashboard</p>
 
             {loading ? (
                 <div className="mt-5 text-sm opacity-70">Loading…</div>
@@ -335,6 +339,14 @@ export default function AdminHome() {
                                         placeholder="Portfolio Name"
                                         value={settings.portfolio_name}
                                         onChange={(e) => updateSetting('portfolio_name', e.target.value)}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-sm">Title</Label>
+                                    <Input
+                                        placeholder="Your name - Photography"
+                                        value={settings.title}
+                                        onChange={(e) => updateSetting('title', e.target.value)}
                                     />
                                 </div>
                                 <div className="space-y-2">

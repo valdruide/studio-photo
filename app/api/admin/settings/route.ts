@@ -4,6 +4,7 @@ import { withAdmin } from '@/lib/pb/adminApi';
 type SettingsPayload = {
     site_name?: string;
     portfolio_name?: string;
+    title?: string;
     instagram?: string;
     tiktok?: string;
     facebook?: string;
@@ -19,6 +20,7 @@ function sanitizeSettings(input: any): SettingsPayload {
     return {
         site_name: typeof input.site_name === 'string' ? input.site_name.trim() : '',
         portfolio_name: typeof input.portfolio_name === 'string' ? input.portfolio_name.trim() : '',
+        title: typeof input.title === 'string' ? input.title.trim() : '',
         instagram: typeof input.instagram === 'string' ? input.instagram.trim() : '',
         tiktok: typeof input.tiktok === 'string' ? input.tiktok.trim() : '',
         facebook: typeof input.facebook === 'string' ? input.facebook.trim() : '',

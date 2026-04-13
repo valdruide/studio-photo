@@ -70,9 +70,9 @@ export default function HomePage() {
                             ))}
                         </div>
                         <div className="space-y-5 ">
-                            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+                            <p className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
                                 Des images, des matières et des ambiances pensées comme des pièces à part entière
-                            </h1>
+                            </p>
                             <p className="text-base leading-7 text-muted-foreground sm:text-lg">
                                 J'explore la photographie et la création visuelle à travers des compositions sensibles, texturées et parfois plus
                                 expérimentales. Cette page présente un aperçu de mon univers, entre séries, recherches esthétiques et images

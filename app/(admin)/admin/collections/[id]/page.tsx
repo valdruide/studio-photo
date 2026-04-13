@@ -187,7 +187,7 @@ export default function AdminCollectionEditPage() {
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <div className="space-y-1">
-                        <h1 className="text-2xl font-semibold">Edit collection</h1>
+                        <p className="text-2xl font-semibold">Edit collection</p>
                     </div>
 
                     <Button onClick={save} disabled={saving}>

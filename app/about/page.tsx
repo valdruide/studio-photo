@@ -56,9 +56,9 @@ export default function AboutPage() {
                     <div className="max-w-3xl space-y-8 w-full lg:w-2/3">
                         <div className="space-y-5">
                             <p className="text-sm uppercase tracking-[0.28em] text-muted-foreground">Triste Fleur</p>
-                            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+                            <p className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
                                 Créateur de de mélancolie et d'atmosphères à travers la photographie
-                            </h1>
+                            </p>
                             <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
                                 Triste Fleur est un projet de création visuelle qui explore les émotions, les textures et les ambiances à travers la
                                 photographie. Avec une approche sensible et expérimentale, Je cherche à capturer des émotions, des détails et des

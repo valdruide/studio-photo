@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
 
     return (
         <div className="max-w-sm mx-auto p-6">
-            <h1 className="text-2xl mb-4">Admin login</h1>
+            <p className="text-2xl mb-4">Admin login</p>
             <form onSubmit={onSubmit} className="space-y-3">
                 <Input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 <Input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
