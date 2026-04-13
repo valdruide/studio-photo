@@ -23,7 +23,7 @@ export default function AdminLinkClient() {
         <div className="relative flex w-full flex-col p-2">
             {isAdmin ? (
                 <Button variant="destructive" asChild>
-                    <Link href="/admin">Admin</Link>
+                    <Link href="/admin/settings">Admin</Link>
                 </Button>
             ) : (
                 <Button asChild>

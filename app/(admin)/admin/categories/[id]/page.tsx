@@ -150,7 +150,7 @@ export default function AdminCategoryEditPage() {
                         <CardTitle>Category</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex gap-10 md:grid-cols-4">
+                        <div className="grid gap-10 md:grid-cols-4">
                             <div className="space-y-2">
                                 <Label>Title</Label>
                                 <Input value={cat.title ?? ''} onChange={(e) => setCat({ ...cat, title: e.target.value })} />
