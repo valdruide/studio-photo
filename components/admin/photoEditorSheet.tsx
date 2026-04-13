@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { toast } from 'sonner';
 
 export type PhotoEdit = {
     id: string;
@@ -91,11 +92,16 @@ export function PhotoEditorSheet({ open, onOpenChange, photoId, collectionId, ge
                 }),
             });
 
-            if (!res.ok) return;
+            if (!res.ok) {
+                const errorText = await res.text();
+                toast.error(`Failed to save photo: ${res.status} ${errorText}`);
+                return;
+            }
 
             const updated = await res.json();
             setPhotoDraft(updated);
             onSaved?.(updated);
+            toast.success('Photo saved successfully');
         } finally {
             setPhotoSaving(false);
         }

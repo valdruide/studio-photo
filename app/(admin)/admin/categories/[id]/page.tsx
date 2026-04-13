@@ -11,6 +11,7 @@ import { CollectionsTable, type CollectionRow } from '@/components/admin/collect
 import { IconPickerDialog } from '@/components/admin/iconPickerDialog';
 import { ColorPickerDialog } from '@/components/admin/colorPickerDialog';
 import { AddCollection } from '@/components/admin/addCollection';
+import { toast } from 'sonner';
 import { IconDeviceFloppy } from '@tabler/icons-react';
 
 type Category = {
@@ -109,6 +110,10 @@ export default function AdminCategoryEditPage() {
         setSaving(false);
         if (res.ok) {
             await load(); // recharge collections etc si besoin
+            toast.success('Category saved successfully');
+        } else {
+            const errorText = await res.text();
+            toast.error(`Failed to save category: ${res.status} ${errorText}`);
         }
     }
 

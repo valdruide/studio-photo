@@ -17,6 +17,7 @@ import { ChevronRight } from 'lucide-react';
 
 export function NavSeries({
     items,
+    label,
 }: {
     items: {
         name: string;
@@ -28,10 +29,11 @@ export function NavSeries({
             url: string;
         }[];
     }[];
+    label: string;
 }) {
     return (
         <SidebarGroup>
-            <SidebarGroupLabel>Series</SidebarGroupLabel>
+            <SidebarGroupLabel>{label || 'Series'}</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => {
                     const colorStyle = item.color ? { color: item.color } : undefined;

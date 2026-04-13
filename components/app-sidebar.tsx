@@ -4,14 +4,19 @@ import Link from 'next/link';
 import * as React from 'react';
 import PocketBase from 'pocketbase';
 import {
-    IconUserFilled,
-    IconFlameFilled,
-    IconFolderFilled,
     IconBrandInstagram,
     IconFlower,
     IconHomeFilled,
     IconHeartFilled,
     IconBrandTiktok,
+    IconBrandFacebook,
+    IconBrandX,
+    IconBrandYoutube,
+    IconBrandPinterest,
+    IconBrandDribbble,
+    IconBrandBehance,
+    IconBrandReddit,
+    IconFolderFilled,
 } from '@tabler/icons-react';
 import { ICONS_MAP } from '@/lib/categories/iconsMap';
 import AdminLink from '@/components/admin-link';
@@ -36,10 +41,6 @@ const data = {
         { title: 'Home', url: '/', icon: IconHomeFilled },
         { title: 'About', url: '/about', icon: IconHeartFilled },
     ],
-    navSecondary: [
-        { title: 'Instagram', url: 'https://www.instagram.com/triste__fleur/', icon: IconBrandInstagram },
-        { title: 'TikTok', url: 'https://www.tiktok.com/@triste_fleur', icon: IconBrandTiktok },
-    ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -50,6 +51,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             color?: string;
             isActive?: boolean;
             items?: { title: string; url: string }[];
+        }[]
+    >([]);
+    const [siteName, setSiteName] = React.useState('My site');
+    const [portfolioName, setPortfolioName] = React.useState('Series');
+    const [navSecondaryItems, setNavSecondaryItems] = React.useState<
+        {
+            title: string;
+            url: string;
+            icon: any;
         }[]
     >([]);
 
@@ -106,6 +116,55 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         };
     }, []);
 
+    React.useEffect(() => {
+        let cancelled = false;
+
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/public/settings', {
+                    cache: 'no-store',
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+
+                if (!cancelled) {
+                    const item = data.item;
+
+                    setSiteName(item?.site_name || 'My site');
+                    setPortfolioName(item?.portfolio_name || 'Series');
+
+                    const socials = [
+                        item?.instagram ? { title: 'Instagram', url: item.instagram, icon: IconBrandInstagram } : null,
+                        item?.tiktok ? { title: 'TikTok', url: item.tiktok, icon: IconBrandTiktok } : null,
+                        item?.facebook ? { title: 'Facebook', url: item.facebook, icon: IconBrandFacebook } : null,
+                        item?.x ? { title: 'X', url: item.x, icon: IconBrandX } : null,
+                        item?.youtube ? { title: 'YouTube', url: item.youtube, icon: IconBrandYoutube } : null,
+                        item?.pinterest ? { title: 'Pinterest', url: item.pinterest, icon: IconBrandPinterest } : null,
+                        item?.dribbble ? { title: 'Dribbble', url: item.dribbble, icon: IconBrandDribbble } : null,
+                        item?.behance ? { title: 'Behance', url: item.behance, icon: IconBrandBehance } : null,
+                        item?.reddit ? { title: 'Reddit', url: item.reddit, icon: IconBrandReddit } : null,
+                    ].filter(Boolean) as {
+                        title: string;
+                        url: string;
+                        icon: any;
+                    }[];
+
+                    setNavSecondaryItems(socials);
+                }
+            } catch (error) {
+                console.error('Failed to load site settings:', error);
+            }
+        }
+
+        loadSettings();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
     return (
         <Sidebar collapsible="offcanvas" {...props}>
             <SidebarHeader>
@@ -114,7 +173,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
                             <Link href="/">
                                 <IconFlower className="!size-5" />
-                                <span className="text-base font-semibold">Triste Fleur</span>
+                                <span className="text-base font-semibold">{siteName}</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -122,8 +181,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={data.navMain} />
-                <NavSeries items={series} />
-                <NavSecondary items={data.navSecondary} className="mt-auto" />
+                <NavSeries items={series} label={portfolioName} />
+                <NavSecondary items={navSecondaryItems} className="mt-auto" />
                 <AdminLink />
             </SidebarContent>
         </Sidebar>

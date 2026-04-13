@@ -4,6 +4,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -40,6 +41,7 @@ export default function RootLayout({
                     <SidebarInset className="overflow-hidden">
                         <SiteHeader />
                         <div className="p-5">{children}</div>
+                        <Toaster position="top-right" />
                     </SidebarInset>
                 </SidebarProvider>
             </body>

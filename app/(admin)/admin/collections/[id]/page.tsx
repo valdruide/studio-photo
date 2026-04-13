@@ -14,6 +14,7 @@ import { AddPhotos } from '@/components/admin/addPhotos';
 import { PhotoEditorSheet } from '@/components/admin/photoEditorSheet';
 import { useDeletePhotoDialog } from '@/components/admin/deletePhotoDialog';
 import { IconDeviceFloppy, IconPlus } from '@tabler/icons-react';
+import { toast } from 'sonner';
 
 type Category = {
     id: string;
@@ -120,7 +121,11 @@ export default function AdminCollectionEditPage() {
                 });
             }
 
+            toast.success('Collection saved successfully');
             await load();
+        } else {
+            const errorText = await res.text();
+            toast.error(`Failed to save collection: ${res.status} ${errorText}`);
         }
     }
 

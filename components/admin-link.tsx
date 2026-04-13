@@ -19,17 +19,17 @@ export default function AdminLinkClient() {
         check();
     }, [check, pathname]); // ✅ re-check à chaque navigation
 
-    if (!isAdmin) {
-        return (
-            <Button asChild>
-                <Link href="/login">Login</Link>
-            </Button>
-        );
-    }
-
     return (
-        <Button variant="destructive" asChild>
-            <Link href="/admin">Admin</Link>
-        </Button>
+        <div className="relative flex w-full flex-col p-2">
+            {isAdmin ? (
+                <Button variant="destructive" asChild>
+                    <Link href="/admin">Admin</Link>
+                </Button>
+            ) : (
+                <Button asChild>
+                    <Link href="/login">Login</Link>
+                </Button>
+            )}
+        </div>
     );
 }
