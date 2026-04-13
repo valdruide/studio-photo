@@ -8,12 +8,8 @@ export async function getPBAdmin() {
 
     const pb = new PocketBase(url);
 
-    const cookieStore = await cookies(); // ✅ pas async
-    const pbCookie = cookieStore.get('pb_auth')?.value;
-
-    if (pbCookie) {
-        pb.authStore.loadFromCookie(`pb_auth=${pbCookie}`);
-    }
+    const cookieStore = await cookies();
+    pb.authStore.loadFromCookie(cookieStore.toString());
 
     return pb;
 }

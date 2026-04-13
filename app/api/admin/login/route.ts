@@ -11,7 +11,7 @@ export async function POST(req: Request) {
 
         const cookie = pb.authStore.exportToCookie({
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: false,
             sameSite: 'lax',
             path: '/',
         });
