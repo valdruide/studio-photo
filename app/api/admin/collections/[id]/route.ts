@@ -20,6 +20,8 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
             slug: body?.slug,
             description: body?.description,
             isHidden: Boolean(body?.isHidden),
+            lockedByPassword: Boolean(body?.lockedByPassword),
+            password: body?.password,
             category: body?.category,
         };
 

@@ -39,6 +39,7 @@ export type CollectionRow = {
     slug?: string;
     order?: number;
     isHidden?: boolean;
+    lockedByPassword?: boolean;
 };
 
 function SortableCollectionRow({ col, onDelete }: { col: CollectionRow; onDelete: (collectionId: string) => void }) {
@@ -68,8 +69,8 @@ function SortableCollectionRow({ col, onDelete }: { col: CollectionRow; onDelete
 
             <TableCell className="font-medium">{col.title}</TableCell>
             <TableCell className="text-sm text-muted-foreground">{col.slug ?? '-'}</TableCell>
-            <TableCell className="text-sm text-muted-foreground">{col.order ?? '-'}</TableCell>
             <TableCell className="text-sm text-muted-foreground">{col.isHidden ? 'No' : 'Yes'}</TableCell>
+            <TableCell className="text-sm text-muted-foreground">{col.lockedByPassword ? 'Yes' : 'No'}</TableCell>
 
             <TableCell className="text-right">
                 <DropdownMenu modal={false}>
@@ -155,8 +156,8 @@ export function CollectionsTable({
                                 <TableHead className="w-[120px]">Change order</TableHead>
                                 <TableHead>Title</TableHead>
                                 <TableHead>Slug</TableHead>
-                                <TableHead>Order</TableHead>
                                 <TableHead>Visible</TableHead>
+                                <TableHead>Locked by password</TableHead>
                                 <TableHead className="text-right w-[120px]">Actions</TableHead>
                             </TableRow>
                         </TableHeader>

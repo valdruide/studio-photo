@@ -86,6 +86,7 @@ export async function POST(req: Request) {
                 slug,
                 description,
                 order: orderToUse,
+                lockedByPassword: false,
                 isHidden: false,
             };
 

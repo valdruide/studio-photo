@@ -72,6 +72,8 @@ export async function POST(req: Request) {
 
             const isHidden = toBool01(form.get('isHidden'));
             const allowAll = toBool01(form.get('allowAll'));
+            const lockedByPassword = toBool01(form.get('lockedByPassword'));
+            const password = String(form.get('password') ?? '').trim() || null;
 
             const baseData: any = {
                 title,
@@ -80,6 +82,8 @@ export async function POST(req: Request) {
                 order: orderToUse,
                 isHidden,
                 allowAll,
+                lockedByPassword,
+                password,
             };
 
             // create avec slug, retry si collision (slug unique)

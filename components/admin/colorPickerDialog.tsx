@@ -51,7 +51,7 @@ export function ColorPickerDialog({ value, onChange, triggerLabel = 'Choose colo
         <Dialog>
             <DialogTrigger asChild>
                 <Button variant="secondary">
-                    <span className="size-5 rounded-sm" style={{ backgroundColor: current }} />
+                    <span className="size-5 rounded-[4px] border border-border/50" style={{ backgroundColor: current }} />
                     {triggerLabel}
                 </Button>
             </DialogTrigger>

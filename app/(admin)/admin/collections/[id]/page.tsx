@@ -29,6 +29,7 @@ type PhotoCollection = {
     description?: string | null;
     order?: number;
     isHidden?: boolean;
+    lockedByPassword?: boolean;
     category?: string;
 };
 
@@ -49,6 +50,8 @@ export default function AdminCollectionEditPage() {
     const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
 
     const [addPhotosOpen, setAddPhotosOpen] = useState(false);
+
+    const [newPassword, setNewPassword] = useState('');
 
     const PB_URL = (process.env.NEXT_PUBLIC_PB_URL ?? '').replace(/\/$/, '');
 
@@ -99,6 +102,8 @@ export default function AdminCollectionEditPage() {
                 description: col.description ?? '',
                 order: col.order,
                 isHidden: Boolean(col.isHidden),
+                lockedByPassword: Boolean(col.lockedByPassword),
+                password: newPassword || undefined,
                 category: col.category,
             }),
         });
@@ -107,6 +112,7 @@ export default function AdminCollectionEditPage() {
         if (res.ok) {
             const updated = await res.json();
             setCol(updated);
+            setNewPassword('');
 
             if (photosDirty) {
                 await fetch('/api/admin/photos', {
@@ -201,7 +207,7 @@ export default function AdminCollectionEditPage() {
                     </CardHeader>
 
                     <CardContent className="space-y-4">
-                        <div className="grid gap-4 md:grid-cols-5">
+                        <div className="grid gap-10 md:grid-cols-3 lg:grid-cols-6">
                             <div className="space-y-2">
                                 <Label>Title</Label>
                                 <Input value={col.title ?? ''} onChange={(e) => setCol({ ...col, title: e.target.value })} />
@@ -236,7 +242,23 @@ export default function AdminCollectionEditPage() {
                                 </div>
                             </div>
 
-                            <div className="space-y-2 md:col-span-5">
+                            <div className="space-y-2">
+                                <Label>Locked by password</Label>
+                                <div className="flex items-center gap-3 mt-4">
+                                    <Switch
+                                        checked={Boolean(col.lockedByPassword)}
+                                        onCheckedChange={(v) => setCol({ ...col, lockedByPassword: v })}
+                                    />
+                                    <Label>Yes</Label>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>New password</Label>
+                                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                            </div>
+
+                            <div className="space-y-2 md:col-span-3 lg:col-span-6">
                                 <Label>Description</Label>
                                 <Textarea
                                     value={col.description ?? ''}

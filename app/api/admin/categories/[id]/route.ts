@@ -17,6 +17,8 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
             color: body?.color,
             isHidden: Boolean(body?.isHidden),
             allowAll: Boolean(body?.allowAll),
+            lockedByPassword: Boolean(body?.lockedByPassword),
+            password: body?.password,
         };
 
         if (body?.order !== undefined && body?.order !== null && body?.order !== '') {

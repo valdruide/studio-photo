@@ -3,6 +3,8 @@ import { getPBPublic } from '@/lib/pb/server';
 import { normalizeSlug, pbFileUrl } from './pbUtils';
 import { sanitizeRichText } from '@/lib/security/sanitizeRichText';
 import { PB_THUMBS } from '../pb/thumbs';
+import { cookies } from 'next/headers';
+import { verifyCollectionAccessToken } from '@/lib/accessWhenLockedByPassword';
 
 export async function getCategoryView(category: string, query: string): Promise<CategoryView | null> {
     const pb = getPBPublic();
@@ -30,8 +32,38 @@ export async function getCategoryView(category: string, query: string): Promise<
     if (q === 'all') {
         if (!allowAll) return null;
 
+        const cookieStore = await cookies();
+
+        // 1) récupérer toutes les collections visibles de la catégorie
+        const collections = await pb.collection('photo_collections').getFullList({
+            filter: `category="${catRecord.id}" && isHidden=false`,
+            sort: 'order',
+        });
+
+        // 2) garder seulement celles accessibles
+        const allowedCollections = collections.filter((col: any) => {
+            const isLocked = Boolean(col.lockedByPassword);
+            if (!isLocked) return true;
+
+            const token = cookieStore.get(`col_access_${col.id}`)?.value;
+            return token ? verifyCollectionAccessToken(token, col.id) : false;
+        });
+
+        if (allowedCollections.length === 0) {
+            return {
+                category: cat,
+                query: 'all',
+                title: 'All projects',
+                description: 'All series and photos in the category',
+                items: [],
+            };
+        }
+
+        const collectionIdsFilter = allowedCollections.map((col: any) => `collection="${col.id}"`).join(' || ');
+
+        // 3) récupérer uniquement les photos des collections autorisées
         const photos = await pb.collection('photos').getFullList({
-            filter: `isHidden = false && collection.category="${catRecord.id}" && collection.isHidden = false`,
+            filter: `isHidden=false && (${collectionIdsFilter})`,
             sort: 'order',
             expand: 'collection',
         });

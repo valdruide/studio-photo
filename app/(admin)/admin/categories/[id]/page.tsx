@@ -23,6 +23,7 @@ type Category = {
     icon?: string | null;
     color?: string | null;
     allowAll?: boolean;
+    lockedByPassword?: boolean;
 };
 
 export default function AdminCategoryEditPage() {
@@ -36,6 +37,8 @@ export default function AdminCategoryEditPage() {
     const [collections, setCollections] = useState<CollectionRow[]>([]);
 
     const [addCollectionOpen, setAddCollectionOpen] = useState(false);
+
+    const [newPassword, setNewPassword] = useState('');
 
     async function load() {
         setLoading(true);
@@ -104,11 +107,14 @@ export default function AdminCategoryEditPage() {
                 color: cat.color,
                 isHidden: Boolean(cat.isHidden),
                 allowAll: Boolean(cat.allowAll),
+                lockedByPassword: Boolean(cat.lockedByPassword),
+                password: newPassword || undefined,
             }),
         });
 
         setSaving(false);
         if (res.ok) {
+            setNewPassword('');
             await load(); // recharge collections etc si besoin
             toast.success('Category saved successfully');
         } else {
@@ -144,7 +150,7 @@ export default function AdminCategoryEditPage() {
                         <CardTitle>Category</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex gap-6 md:grid-cols-4">
+                        <div className="flex gap-10 md:grid-cols-4">
                             <div className="space-y-2">
                                 <Label>Title</Label>
                                 <Input value={cat.title ?? ''} onChange={(e) => setCat({ ...cat, title: e.target.value })} />
@@ -191,6 +197,20 @@ export default function AdminCategoryEditPage() {
                                     <Switch checked={!cat.isHidden} onCheckedChange={(v) => setCat({ ...cat, isHidden: !v })} />
                                     <Label>Visible</Label>
                                 </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Locked by password</Label>
+                                <div className="flex items-center gap-3 mt-4">
+                                    <Switch
+                                        checked={Boolean(cat.lockedByPassword)}
+                                        onCheckedChange={(v) => setCat({ ...cat, lockedByPassword: v })}
+                                    />
+                                    <Label>Yes</Label>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>New password</Label>
+                                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                             </div>
                         </div>
                     </CardContent>

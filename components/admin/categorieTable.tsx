@@ -45,6 +45,7 @@ export type CategoryRow = {
     color?: string | null;
     icon?: string | null;
     allowAll?: boolean;
+    lockedByPassword?: boolean;
 };
 
 function SortableCategoryRow({
@@ -124,7 +125,7 @@ function SortableCategoryRow({
                 </div>
             </TableCell>
 
-            <TableCell className="text-sm text-muted-foreground">{cat.order ?? '-'}</TableCell>
+            <TableCell className="text-sm text-muted-foreground">{cat.lockedByPassword ? 'Yes' : 'No'}</TableCell>
 
             <TableCell className="text-right">
                 <DropdownMenu modal={false}>
@@ -216,7 +217,7 @@ export function CategorieTable({
                                 <TableHead>Color</TableHead>
                                 <TableHead>Visible</TableHead>
                                 <TableHead>Allow "All" collection</TableHead>
-                                <TableHead>Order</TableHead>
+                                <TableHead>Locked by password</TableHead>
                                 <TableHead className="text-right w-[120px]">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
