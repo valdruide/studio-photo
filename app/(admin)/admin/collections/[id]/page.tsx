@@ -190,20 +190,16 @@ export default function AdminCollectionEditPage() {
                     });
                 }}
             />
-            <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                        <p className="text-2xl font-semibold">Edit collection</p>
-                    </div>
-
-                    <Button onClick={save} disabled={saving}>
-                        <IconDeviceFloppy className="size-6" /> Save collection
-                    </Button>
-                </div>
-
+            <div className="space-y-5">
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Collection</CardTitle>
+                    <CardHeader className="flex justify-between">
+                        <div className="space-y-2">
+                            <CardTitle>Collection</CardTitle>
+                            <CardDescription>Edit the collection details, manage photos and visual settings</CardDescription>
+                        </div>
+                        <Button onClick={save} disabled={saving}>
+                            <IconDeviceFloppy className="size-5" /> Save collection
+                        </Button>
                     </CardHeader>
 
                     <CardContent className="space-y-4">

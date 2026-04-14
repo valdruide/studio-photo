@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -77,21 +77,18 @@ export function useDeleteCategoryDialog({ onDelete }: UseDeleteCategoryDialogOpt
         }
     }, [categoryId, deleting, onDelete]);
 
-    const dialog = useMemo(
-        () => (
-            <DeleteCategoryDialog
-                open={open}
-                onOpenChange={(v) => {
-                    if (!v) close();
-                    else setOpen(true);
-                }}
-                deleting={deleting}
-                onCancel={close}
-                onConfirm={confirm}
-            />
-        ),
-        [open, deleting, close, confirm]
+    const dialog = (
+        <DeleteCategoryDialog
+            open={open}
+            onOpenChange={(v) => {
+                if (!v) close();
+                else setOpen(true);
+            }}
+            deleting={deleting}
+            onCancel={close}
+            onConfirm={confirm}
+        />
     );
 
-    return { request, dialog, deleting, categoryId };
+    return { request, dialog, deleting };
 }

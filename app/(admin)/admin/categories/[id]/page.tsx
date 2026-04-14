@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useParams, useRouter } from 'next/navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,9 @@ import { ColorPickerDialog } from '@/components/admin/colorPickerDialog';
 import { AddCollection } from '@/components/admin/addCollection';
 import { toast } from 'sonner';
 import { IconDeviceFloppy } from '@tabler/icons-react';
+import { Plus, Trash2 } from 'lucide-react';
+import { useDeleteCategoryDialog } from '@/components/admin/deleteCategoryDialog';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type Category = {
     id: string;
@@ -28,6 +31,7 @@ type Category = {
 
 export default function AdminCategoryEditPage() {
     const params = useParams<{ id: string }>();
+    const router = useRouter();
     const id = params.id;
 
     const [loading, setLoading] = useState(true);
@@ -123,7 +127,28 @@ export default function AdminCategoryEditPage() {
         }
     }
 
-    if (loading) return <div className="text-sm opacity-70">Loading…</div>;
+    const deleteDialog = useDeleteCategoryDialog({
+        onDelete: async (catId: string) => {
+            const res = await fetch(`/api/admin/categories/${catId}`, { method: 'DELETE' });
+
+            if (!res.ok) {
+                const msg = await res.text().catch(() => '');
+                toast.error(msg || 'Delete failed');
+                throw new Error(msg || 'Delete failed');
+            }
+
+            toast.success('Category deleted successfully');
+            router.push('/admin/settings');
+        },
+    });
+
+    if (loading)
+        return (
+            <div className="space-y-5">
+                <Skeleton className="w-full h-68 bg-card" />
+                <Skeleton className="w-full h-64 bg-card" />
+            </div>
+        );
     if (!cat) return <div className="text-sm text-red-500">Category not found.</div>;
 
     return (
@@ -137,17 +162,23 @@ export default function AdminCategoryEditPage() {
                     load();
                 }}
             />
-            <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <p className="text-2xl font-semibold">Edit category</p>
-                    <Button onClick={save} disabled={saving} className="text-md">
-                        <IconDeviceFloppy className="size-6" /> Save category
-                    </Button>
-                </div>
-
+            {deleteDialog.dialog}
+            <div className="space-y-5">
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Category</CardTitle>
+                    <CardHeader className="flex justify-between w-full">
+                        <div className="space-y-2">
+                            <CardTitle>Category</CardTitle>
+                            <CardDescription>Edit the category details and visual settings</CardDescription>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button onClick={save} disabled={saving}>
+                                <IconDeviceFloppy className="size-5" /> Save category
+                            </Button>
+                            <Button variant="destructive" onClick={() => deleteDialog.request(cat.id)}>
+                                <Trash2 className="size-5" />
+                                Delete category
+                            </Button>
+                        </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid gap-10 md:grid-cols-4">
@@ -223,7 +254,10 @@ export default function AdminCategoryEditPage() {
                             <div className="flex items-center gap-3">
                                 <Label className="text-base">Allow &quot;All&quot; collection</Label>
                                 <Switch checked={Boolean(cat.allowAll)} onCheckedChange={(v) => setCat({ ...cat, allowAll: v })} />
-                                <Button onClick={() => setAddCollectionOpen(true)}>Create collection</Button>
+                                <Button onClick={() => setAddCollectionOpen(true)}>
+                                    <Plus />
+                                    Create collection
+                                </Button>
                             </div>
                         </div>
                     </CardHeader>

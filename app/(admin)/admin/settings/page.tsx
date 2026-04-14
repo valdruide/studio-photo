@@ -249,8 +249,8 @@ export default function AdminSettingsPage() {
                             <CardDescription>Update your site information and social media links</CardDescription>
                         </div>
                         <Button onClick={onSaveSettings} disabled={savingSettings}>
-                            <IconDeviceFloppy className="size-6" />
-                            {savingSettings ? 'Saving...' : 'Save settings'}
+                            <IconDeviceFloppy className="size-5" />
+                            Save settings
                         </Button>
                     </CardHeader>
                     <CardContent>
@@ -320,16 +320,16 @@ export default function AdminSettingsPage() {
                                         <button key={item.name} type="button" onClick={() => onSelectTheme(item.name)} className="text-left">
                                             <Card
                                                 className={cn(
-                                                    'cursor-pointer border transition-all hover:bg-primary/10',
+                                                    'cursor-pointer border transition-all hover:bg-primary/10 p-2',
                                                     isActive && 'border-primary bg-primary/10',
                                                 )}
                                             >
-                                                <CardHeader className="flex flex-row items-center justify-between">
+                                                <CardHeader className="flex flex-row items-center justify-between px-2">
                                                     <CardTitle className="text-base">{item.label}</CardTitle>
                                                     {isActive ? <Check className="size-6 text-primary" /> : null}
                                                 </CardHeader>
 
-                                                <CardContent>
+                                                <CardContent className="px-2">
                                                     <div
                                                         className="space-y-3 rounded-xl border p-3"
                                                         style={{
