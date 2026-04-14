@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { withAdmin } from '@/lib/pb/adminApi';
+import { hashLockPassword, sanitizeLockedRecord } from '@/lib/passwordLock';
 
 export const runtime = 'nodejs';
 
@@ -8,8 +9,10 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
         const { id } = await ctx.params;
         const body = await req.json().catch(() => ({}));
 
+        const lockedByPassword = Boolean(body?.lockedByPassword);
+
         // whitelist des champs autorisés (important)
-        const data = {
+        const data: Record<string, any> = {
             title: body?.title,
             slug: body?.slug,
             order: undefined as number | undefined,
@@ -17,8 +20,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
             color: body?.color,
             isHidden: Boolean(body?.isHidden),
             allowAll: Boolean(body?.allowAll),
-            lockedByPassword: Boolean(body?.lockedByPassword),
-            password: body?.password,
+            lockedByPassword,
         };
 
         if (body?.order !== undefined && body?.order !== null && body?.order !== '') {
@@ -29,11 +31,23 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
             data.order = n;
         }
 
+        const rawPassword = typeof body?.password === 'string' ? body.password.trim() : undefined;
+
+        if (!lockedByPassword) {
+            data.passwordHash = '';
+        } else if (rawPassword !== undefined) {
+            if (!rawPassword) {
+                return NextResponse.json({ ok: false, message: 'Password cannot be empty when protection is enabled' }, { status: 400 });
+            }
+
+            data.passwordHash = await hashLockPassword(rawPassword);
+        }
+
         // Nettoyage optionnel: éviter d'envoyer undefined
         Object.keys(data).forEach((k) => (data as any)[k] === undefined && delete (data as any)[k]);
 
         const updated = await pb.collection('categories').update(id, data);
-        return NextResponse.json(updated);
+        return NextResponse.json(sanitizeLockedRecord(updated));
     });
 }
 
@@ -41,7 +55,10 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     return withAdmin(async (pb) => {
         const { id } = await ctx.params;
         const cat = await pb.collection('categories').getOne(id);
-        return NextResponse.json(cat);
+        return NextResponse.json({
+            ...sanitizeLockedRecord(cat),
+            hasPassword: Boolean(cat.passwordHash),
+        });
     });
 }
 

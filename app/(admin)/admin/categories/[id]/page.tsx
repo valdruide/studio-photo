@@ -239,10 +239,12 @@ export default function AdminCategoryEditPage() {
                                     <Label>Yes</Label>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label>New password</Label>
-                                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-                            </div>
+                            {cat.lockedByPassword && (
+                                <div className="space-y-2">
+                                    <Label>New password</Label>
+                                    <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>

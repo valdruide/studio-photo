@@ -69,7 +69,7 @@ function LockedCategoryView({ categorySlug, categoryTitle }: { categorySlug: str
     const submitPassword = async () => {
         setUnlocking(true);
 
-        const res = await fetch('/api/admin/categories/unlock', {
+        const res = await fetch('/api/public/categories/unlock', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({
@@ -287,7 +287,7 @@ function LockedCollectionView({ collectionSlug, collectionTitle }: { collectionS
     const submitPassword = async () => {
         setUnlocking(true);
 
-        const res = await fetch('/api/admin/collections/unlock', {
+        const res = await fetch('/api/public/collections/unlock', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({

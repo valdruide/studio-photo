@@ -249,10 +249,12 @@ export default function AdminCollectionEditPage() {
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label>New password</Label>
-                                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-                            </div>
+                            {col.lockedByPassword && (
+                                <div className="space-y-2">
+                                    <Label>New password</Label>
+                                    <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                                </div>
+                            )}
 
                             <div className="space-y-2 md:col-span-3 lg:col-span-6">
                                 <Label>Description</Label>

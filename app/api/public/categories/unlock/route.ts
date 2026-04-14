@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
-import { withAdmin } from '@/lib/pb/adminApi';
-import { makeCategoryAccessToken } from '@/lib/accessWhenLockedByPassword';
+import PocketBase from 'pocketbase';
+import { makeCategoryAccessToken, LOCK_ACCESS_TTL_SECONDS } from '@/lib/accessWhenLockedByPassword';
+import { verifyLockPassword } from '@/lib/passwordLock';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: Request) {
-    return withAdmin(async (pb) => {
+    try {
         const body = await req.json().catch(() => ({}));
         const slug = String(body?.slug ?? '').trim();
         const password = String(body?.password ?? '').trim();
@@ -13,6 +14,9 @@ export async function POST(req: Request) {
         if (!slug || !password) {
             return NextResponse.json({ ok: false, message: 'Missing slug or password' }, { status: 400 });
         }
+
+        const pb = new PocketBase(process.env.NEXT_PUBLIC_PB_URL);
+        await pb.collection('_superusers').authWithPassword(process.env.PB_ADMIN_EMAIL!, process.env.PB_ADMIN_PASSWORD!);
 
         let category: any;
         try {
@@ -25,9 +29,19 @@ export async function POST(req: Request) {
             return NextResponse.json({ ok: true });
         }
 
-        const savedPassword = String(category.password ?? '').trim();
+        const passwordHash = String(category.passwordHash ?? '').trim();
 
-        if (!savedPassword || savedPassword !== password) {
+        if (!passwordHash) {
+            console.error('Category lock misconfigured', {
+                id: category.id,
+                slug: category.slug,
+            });
+            return NextResponse.json({ ok: false, message: 'Password protection misconfigured' }, { status: 500 });
+        }
+
+        const isValid = await verifyLockPassword(password, passwordHash);
+
+        if (!isValid) {
             return NextResponse.json({ ok: false, message: 'Invalid password' }, { status: 401 });
         }
 
@@ -39,9 +53,12 @@ export async function POST(req: Request) {
             sameSite: 'lax',
             secure: process.env.NODE_ENV === 'production',
             path: '/',
-            maxAge: 60 * 60 * 24 * 30, // 30 jours
+            maxAge: LOCK_ACCESS_TTL_SECONDS,
         });
 
         return res;
-    });
+    } catch (err) {
+        console.error('POST /api/public/categories/unlock failed:', err);
+        return NextResponse.json({ ok: false, message: 'Internal server error' }, { status: 500 });
+    }
 }

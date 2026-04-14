@@ -72,7 +72,7 @@ function SortableCategoryItem({ category, pathname }: SortableCategoryItemProps)
         <SidebarMenuItem ref={setNodeRef} style={style}>
             <div
                 className={cn(
-                    'flex items-center gap-2 rounded-md hover:bg-sidebar-accent',
+                    'flex items-center rounded-md hover:bg-sidebar-accent',
                     pathname === `/admin/categories/${category.id}` && 'bg-sidebar-accent',
                 )}
             >

@@ -2,10 +2,6 @@
 @import 'tw-animate-css';
 @import '../styles/themes.css';
 
-html[data-theme='ivory-light'] {
-    color-scheme: light;
-}
-
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -67,4 +63,27 @@ html[data-theme='ivory-light'] {
     body {
         @apply bg-background text-foreground;
     }
+}
+
+/* ---------------------------- custom scrollbars --------------------------- */
+
+/* width */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: var(--color-sidebar);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--color-secondary);
+    border-radius: 15px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
 }

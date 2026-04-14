@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server';
 import { withAdmin } from '@/lib/pb/adminApi';
+import { hashLockPassword, sanitizeLockedRecord } from '@/lib/passwordLock';
 
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
     return withAdmin(async (pb) => {
         const { id } = await ctx.params;
         const col = await pb.collection('photo_collections').getOne(id);
-        return NextResponse.json(col);
+
+        return NextResponse.json({
+            ...sanitizeLockedRecord(col),
+            hasPassword: Boolean(col.passwordHash),
+        });
     });
 }
 
@@ -14,14 +19,15 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
         const { id } = await ctx.params;
         const body = await req.json().catch(() => ({}));
 
+        const lockedByPassword = Boolean(body?.lockedByPassword);
+
         // whitelist champs autorisés
-        const data: any = {
+        const data: Record<string, any> = {
             title: body?.title,
             slug: body?.slug,
             description: body?.description,
             isHidden: Boolean(body?.isHidden),
-            lockedByPassword: Boolean(body?.lockedByPassword),
-            password: body?.password,
+            lockedByPassword,
             category: body?.category,
         };
 
@@ -31,10 +37,22 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
             data.order = n;
         }
 
+        const rawPassword = typeof body?.password === 'string' ? body.password.trim() : undefined;
+
+        if (!lockedByPassword) {
+            data.passwordHash = '';
+        } else if (rawPassword !== undefined) {
+            if (!rawPassword) {
+                return NextResponse.json({ ok: false, message: 'Password cannot be empty when protection is enabled' }, { status: 400 });
+            }
+
+            data.passwordHash = await hashLockPassword(rawPassword);
+        }
+
         Object.keys(data).forEach((k) => data[k] === undefined && delete data[k]);
 
         const updated = await pb.collection('photo_collections').update(id, data);
-        return NextResponse.json(updated);
+        return NextResponse.json(sanitizeLockedRecord(updated));
     });
 }
 
