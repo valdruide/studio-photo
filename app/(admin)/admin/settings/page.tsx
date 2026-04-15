@@ -12,7 +12,7 @@ import {
     IconBrandReddit,
     IconBrandBehance,
 } from '@tabler/icons-react';
-import { Check } from 'lucide-react';
+import { Check, Paintbrush, Settings2, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardTitle, CardDescription, CardHeader } from '@/components/ui/card';
@@ -245,7 +245,10 @@ export default function AdminSettingsPage() {
                 <>
                     <CardHeader className="flex justify-between">
                         <div className="space-y-1">
-                            <CardTitle>Settings</CardTitle>
+                            <CardTitle className="flex items-center gap-2 text-2xl">
+                                <Settings2 className="size-6 text-primary" />
+                                Settings
+                            </CardTitle>
                             <CardDescription>Update your site information and social media links</CardDescription>
                         </div>
                         <Button onClick={onSaveSettings} disabled={savingSettings}>
@@ -289,7 +292,10 @@ export default function AdminSettingsPage() {
                             </div>
                         </div>
                         <Separator className="my-10" />
-                        <p className="font-semibold">Social Media Links</p>
+                        <CardTitle className="flex items-center gap-2 text-2xl">
+                            <Share2 className="size-6 text-primary" />
+                            Social media links
+                        </CardTitle>
                         <div className="grid grid-cols-4 gap-4 mt-4">
                             {possibleSocialMedia.map((media) => (
                                 <div key={media.name} className="space-y-2">
@@ -308,7 +314,10 @@ export default function AdminSettingsPage() {
                         <Separator className="my-10" />
                         <div className="space-y-3">
                             <div>
-                                <p className="font-semibold">Theme</p>
+                                <CardTitle className="flex items-center gap-2 text-2xl">
+                                    <Paintbrush className="size-6 text-primary" />
+                                    Theme
+                                </CardTitle>
                                 <p className="text-sm text-muted-foreground">Choose the global theme applied to the whole site.</p>
                             </div>
 

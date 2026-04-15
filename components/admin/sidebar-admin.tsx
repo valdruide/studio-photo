@@ -15,7 +15,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
-import { Plus, Settings2 } from 'lucide-react';
+import { Plus, Settings2, HelpCircle } from 'lucide-react';
 import { AddCategory } from './addCategory';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
@@ -178,7 +178,7 @@ export default function SidebarAdmin() {
                     load();
                 }}
             />
-            <Sidebar collapsible="none" className="h-[90vh] rounded-xl p-4">
+            <Sidebar collapsible="none" className="h-[90vh] rounded-xl p-4 bg-card">
                 <SidebarHeader>
                     <Button onClick={() => setAddCategoryOpen(true)}>
                         <Plus />
@@ -216,6 +216,14 @@ export default function SidebarAdmin() {
                                         <Link href={`/admin/settings`}>
                                             <Settings2 className="size-5" />
                                             <span>Settings</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem className={cn({ 'bg-sidebar-accent rounded-md': pathname === `/admin/help` })}>
+                                    <SidebarMenuButton tooltip="Help" asChild>
+                                        <Link href={`/admin/help`}>
+                                            <HelpCircle className="size-5" />
+                                            <span>Help</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
