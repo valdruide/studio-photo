@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
-import { Plus, Settings2, HelpCircle, Import, LogOut } from 'lucide-react';
+import { Plus, Settings2, HelpCircle, Import, LogOut, ChartColumnBig } from 'lucide-react';
 import { AddCategory } from './addCategory';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
@@ -53,6 +53,14 @@ const nav2 = [
         title: 'Help',
         href: '/admin/help',
         icon: HelpCircle,
+    },
+];
+
+const nav3 = [
+    {
+        title: 'Statistics',
+        href: '/admin/statistics',
+        icon: ChartColumnBig,
     },
 ];
 
@@ -243,6 +251,23 @@ export default function SidebarAdmin() {
                                         </SortableContext>
                                     </DndContext>
                                 )}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                    <Separator className="my-2" />
+                    <SidebarGroup>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {nav3.map((item) => (
+                                    <SidebarMenuItem key={item.href} className={cn({ 'bg-sidebar-accent rounded-md': pathname === item.href })}>
+                                        <SidebarMenuButton tooltip={item.title} asChild>
+                                            <Link href={item.href}>
+                                                <item.icon className="size-5" />
+                                                <span>{item.title}</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>

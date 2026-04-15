@@ -1,7 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { registerPhotoView } from '@/lib/stats/registerPhotoView';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContentWide, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -153,6 +154,16 @@ function UnlockedCategoryView({ view }: { view: CategoryView }) {
 
     const active = view.items[activeIndex];
 
+    useEffect(() => {
+        if (!open || !active) return;
+
+        registerPhotoView({
+            photoId: active.id,
+            collectionId: active.collectionId,
+            categoryId: active.categoryId,
+        });
+    }, [open, active?.id]);
+
     const onOpen = (item: PhotoItem) => {
         setActiveId(item.id);
         setOpen(true);
@@ -193,7 +204,7 @@ function UnlockedCategoryView({ view }: { view: CategoryView }) {
                 <DialogContentWide>
                     {open && active && (
                         <>
-                            <div className="relative w-full h-[95vh] bg-black/60 rounded-lg overflow-hidden">
+                            <div className="relative h-screen bg-black/60 rounded-lg overflow-hidden">
                                 <div className="relative h-full w-full">
                                     <ZoomLens
                                         src={active.srcOriginal}

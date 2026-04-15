@@ -48,12 +48,7 @@ export default function AdminHelpPage() {
     return (
         <div className="space-y-4">
             <Card className="overflow-hidden">
-                <CardHeader className="gap-4">
-                    <div className="flex flex-wrap items-center gap-2">
-                        <Badge variant="secondary">Admin Help</Badge>
-                        <Badge variant="outline">Need Help?</Badge>
-                    </div>
-
+                <CardHeader>
                     <div className="space-y-2">
                         <CardTitle className="flex items-center gap-2 text-2xl">
                             <LifeBuoy className="size-6 text-primary" />

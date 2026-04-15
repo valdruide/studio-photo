@@ -94,7 +94,7 @@ function DialogContentWide({
                     // ✅ lightbox sizing
                     'bg-background fixed top-[50%] left-[50%] z-50 translate-x-[-50%] translate-y-[-50%] rounded-lg shadow-lg outline-none',
                     // ✅ big + responsive, not limited to sm:max-w-lg
-                    'w-[95vw] max-w-[95vw] md:w-[90vw] md:max-w-[90vw] lg:w-[95vw] lg:max-w-[95vw]',
+                    'w-screen max-w-screen',
                     // ✅ no padding by default
                     'p-0',
                     className,

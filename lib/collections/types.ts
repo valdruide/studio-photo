@@ -35,7 +35,10 @@ export type PhotoCollection = {
  * N’existe pas en BDD (objet purement front).
  */
 export type PhotoItem = CollectionItem & {
+    collectionId: string;
     collectionSlug: string;
+    categoryId: string;
+    categorySlug: string;
 };
 
 /**

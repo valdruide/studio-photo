@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { IconDots } from '@tabler/icons-react';
+import { EyeOff } from 'lucide-react';
 
 class SmartPointerSensor extends PointerSensor {
     static activators = [
@@ -73,6 +74,11 @@ function SortableCard({
             {...listeners}
         >
             <Image src={src} alt="photo" fill className="object-cover" sizes="200px" unoptimized />
+            {photo.isHidden && (
+                <div className="absolute inset-0 bg-black/60 flex justify-center items-center">
+                    <EyeOff className="mx-auto text-white/90 size-12" />
+                </div>
+            )}
 
             <div className="absolute left-2 top-2 rounded bg-background px-2 py-1 text-sm border-2 aspect-square text-foreground">
                 {photo.order ?? '-'}

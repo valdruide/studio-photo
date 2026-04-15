@@ -71,13 +71,16 @@ export async function getCategoryView(category: string, query: string): Promise<
         const items: PhotoItem[] = photos.map((p) => ({
             id: p.id,
             name: (p as any).name ?? '',
-            description: (p as any).description ?? undefined,
+            description: sanitizeRichText((p as any).description) ?? undefined,
             srcThumb: pbFileUrl(pb.baseURL, p, 'image', PB_THUMBS.grid),
             srcMedium: pbFileUrl(pb.baseURL, p, 'image', PB_THUMBS.modal),
             srcOriginal: pbFileUrl(pb.baseURL, p, 'image'),
             width: Number((p as any).width ?? 0),
             height: Number((p as any).height ?? 0),
+            collectionId: (p as any).collection ?? '',
             collectionSlug: (p.expand as any)?.collection?.slug ?? '',
+            categoryId: catRecord.id,
+            categorySlug: cat,
         }));
 
         return {
@@ -111,7 +114,10 @@ export async function getCategoryView(category: string, query: string): Promise<
         srcOriginal: pbFileUrl(pb.baseURL, p, 'image'),
         width: Number((p as any).width ?? 0),
         height: Number((p as any).height ?? 0),
+        collectionId: collection.id,
         collectionSlug: (collection as any).slug,
+        categoryId: catRecord.id,
+        categorySlug: cat,
     }));
 
     return {
