@@ -15,7 +15,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
-import { Plus, Settings2, HelpCircle } from 'lucide-react';
+import { Plus, Settings2, HelpCircle, Import } from 'lucide-react';
 import { AddCategory } from './addCategory';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
@@ -36,6 +36,24 @@ type CategoryRow = {
     allowAll?: boolean;
     lockedByPassword?: boolean;
 };
+
+const nav2 = [
+    {
+        title: 'Settings',
+        href: '/admin/settings',
+        icon: Settings2,
+    },
+    {
+        title: 'Mass Import',
+        href: '/admin/mass-import',
+        icon: Import,
+    },
+    {
+        title: 'Help',
+        href: '/admin/help',
+        icon: HelpCircle,
+    },
+];
 
 class SmartPointerSensor extends PointerSensor {
     static activators = [
@@ -211,22 +229,16 @@ export default function SidebarAdmin() {
                     <SidebarGroup>
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                <SidebarMenuItem className={cn({ 'bg-sidebar-accent rounded-md': pathname === `/admin/settings` })}>
-                                    <SidebarMenuButton tooltip="Settings" asChild>
-                                        <Link href={`/admin/settings`}>
-                                            <Settings2 className="size-5" />
-                                            <span>Settings</span>
-                                        </Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                                <SidebarMenuItem className={cn({ 'bg-sidebar-accent rounded-md': pathname === `/admin/help` })}>
-                                    <SidebarMenuButton tooltip="Help" asChild>
-                                        <Link href={`/admin/help`}>
-                                            <HelpCircle className="size-5" />
-                                            <span>Help</span>
-                                        </Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
+                                {nav2.map((item) => (
+                                    <SidebarMenuItem key={item.href} className={cn({ 'bg-sidebar-accent rounded-md': pathname === item.href })}>
+                                        <SidebarMenuButton tooltip={item.title} asChild>
+                                            <Link href={item.href}>
+                                                <item.icon className="size-5" />
+                                                <span>{item.title}</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>
