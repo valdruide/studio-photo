@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
     Sidebar,
@@ -15,7 +16,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
-import { Plus, Settings2, HelpCircle, Import } from 'lucide-react';
+import { Plus, Settings2, HelpCircle, Import, LogOut } from 'lucide-react';
 import { AddCategory } from './addCategory';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
@@ -121,6 +122,7 @@ export default function SidebarAdmin() {
     const [loading, setLoading] = useState(true);
 
     const pathname = usePathname();
+    const router = useRouter();
     const sensors = useSensors(useSensor(SmartPointerSensor));
 
     async function load() {
@@ -146,6 +148,25 @@ export default function SidebarAdmin() {
     useEffect(() => {
         load();
     }, []);
+
+    async function handleLogout() {
+        try {
+            const res = await fetch('/api/admin/logout', {
+                method: 'POST',
+            });
+
+            if (!res.ok) {
+                toast.error('Logout failed');
+                return;
+            }
+
+            router.push('/');
+            router.refresh();
+        } catch (error) {
+            console.error('Logout failed:', error);
+            toast.error('Logout failed');
+        }
+    }
 
     async function onReorder(next: CategoryRow[]) {
         const previous = categories;
@@ -239,6 +260,23 @@ export default function SidebarAdmin() {
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                    <Separator className="my-2" />
+                    <SidebarGroup>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton
+                                        tooltip="logout"
+                                        onClick={handleLogout}
+                                        className="cursor-pointer text-destructive-foreground bg-destructive/60 hover:bg-destructive/90 hover:text-destructive-foreground"
+                                    >
+                                        <LogOut className="size-5" />
+                                        <span>Logout</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>
