@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
-import { Plus, Settings2, HelpCircle, Import, LogOut, ChartColumnBig } from 'lucide-react';
+import { Plus, Settings2, HelpCircle, Import, LogOut, ChartColumnBig, Lock } from 'lucide-react';
 import { AddCategory } from './addCategory';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
@@ -117,6 +117,7 @@ function SortableCategoryItem({ category, pathname }: SortableCategoryItemProps)
                 <SidebarMenuButton tooltip={category.title} asChild className="flex-1">
                     <Link href={`/admin/categories/${category.id}`}>
                         <span>{category.title}</span>
+                        {category.lockedByPassword && <Lock className="ml-1 text-muted-foreground" />}
                     </Link>
                 </SidebarMenuButton>
             </div>

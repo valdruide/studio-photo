@@ -69,8 +69,12 @@ function SortableCollectionRow({ col, onDelete }: { col: CollectionRow; onDelete
 
             <TableCell className="font-medium">{col.title}</TableCell>
             <TableCell className="text-sm text-muted-foreground">{col.slug ?? '-'}</TableCell>
-            <TableCell className="text-sm text-muted-foreground">{col.isHidden ? 'No' : 'Yes'}</TableCell>
-            <TableCell className="text-sm text-muted-foreground">{col.lockedByPassword ? 'Yes' : 'No'}</TableCell>
+            <TableCell className={cn('text-sm text-muted-foreground', col.isHidden && 'text-destructive')}>
+                {col.isHidden ? 'Hidden' : 'Yes'}
+            </TableCell>
+            <TableCell className={cn('text-sm text-muted-foreground', col.lockedByPassword && 'text-destructive')}>
+                {col.lockedByPassword ? 'Locked' : 'No'}
+            </TableCell>
 
             <TableCell className="text-right">
                 <DropdownMenu modal={false}>
