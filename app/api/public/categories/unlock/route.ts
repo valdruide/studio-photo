@@ -47,11 +47,14 @@ export async function POST(req: Request) {
 
         const token = makeCategoryAccessToken(category.id);
         const res = NextResponse.json({ ok: true });
+        const isHttps =
+            process.env.NODE_ENV === 'production' &&
+            (process.env.APP_URL?.startsWith('https://') || process.env.NEXT_PUBLIC_APP_URL?.startsWith('https://'));
 
         res.cookies.set(`cat_access_${category.id}`, token, {
             httpOnly: true,
             sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'production',
+            secure: isHttps,
             path: '/',
             maxAge: LOCK_ACCESS_TTL_SECONDS,
         });
