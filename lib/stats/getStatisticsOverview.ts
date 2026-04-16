@@ -55,7 +55,12 @@ function incrementCounter(map: CounterMap, id: string, name: string, srcThumb?: 
     });
 }
 
-export async function getStatisticsOverview(): Promise<StatisticsOverview> {
+type StatisticsRange = {
+    from?: string;
+    to?: string;
+};
+
+export async function getStatisticsOverview(range?: StatisticsRange): Promise<StatisticsOverview> {
     const pb = await getPBAdmin();
 
     const allPhotos = await pb.collection('photos').getFullList({
@@ -63,9 +68,21 @@ export async function getStatisticsOverview(): Promise<StatisticsOverview> {
         sort: 'order',
         expand: 'collection,collection.category',
     });
+
+    const filters: string[] = [];
+
+    if (range?.from) {
+        filters.push(`created >= "${range.from}"`);
+    }
+
+    if (range?.to) {
+        filters.push(`created <= "${range.to}"`);
+    }
+
     const records = await pb.collection('photos_statistics').getFullList({
         sort: '-created',
         expand: 'photo,collection,category',
+        filter: filters.length ? filters.join(' && ') : undefined,
     });
 
     const photosMap: CounterMap = new Map();
@@ -134,7 +151,7 @@ export async function getStatisticsOverview(): Promise<StatisticsOverview> {
             if (a.views !== b.views) return a.views - b.views;
             return a.name.localeCompare(b.name);
         })
-        .slice(0, 5);
+        .slice(0, 10);
 
     const topCollections = Array.from(collectionsMap.values())
         .sort((a, b) => b.views - a.views)
