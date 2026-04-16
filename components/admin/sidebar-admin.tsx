@@ -226,7 +226,7 @@ export default function SidebarAdmin() {
                     load();
                 }}
             />
-            <Sidebar collapsible="none" className="h-[90vh] rounded-xl p-4 bg-card">
+            <Sidebar collapsible="none" className="h-[90vh] rounded-xl p-4 bg-card w-full">
                 <SidebarHeader>
                     <Button onClick={() => setAddCategoryOpen(true)}>
                         <Plus />

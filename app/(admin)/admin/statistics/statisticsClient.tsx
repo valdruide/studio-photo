@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Folder, ImageIcon, Layers3, Medal, TrendingUp, TrendingDown, Lock, Calendar1, Funnel } from 'lucide-react';
+import { Eye, Folder, ImageIcon, Layers3, Medal, TrendingUp, TrendingDown, Lock, Calendar1, Funnel, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import type { StatisticsOverview } from '@/lib/stats/getStatisticsOverview';
@@ -144,134 +144,140 @@ export function StatisticsClient({ stats, initialPreset, initialFrom, initialTo 
 
     return (
         <div className="space-y-6">
-            <div className="flex gap-2">
-                <Drawer direction="right">
-                    <DrawerTrigger asChild>
-                        <Button size="lg" variant="outline">
-                            <Funnel className="size-5" />
-                            Filter options
-                        </Button>
-                    </DrawerTrigger>
-                    <DrawerContent>
-                        <DrawerHeader>
-                            <DrawerTitle className="flex items-center gap-2">
-                                <Calendar1 className="size-6 text-green-500" />
-                                Filter by date
-                            </DrawerTitle>
-                            <DrawerDescription>
-                                {rangePreset === 'all'
-                                    ? 'Showing all-time statistics.'
-                                    : rangePreset === 'custom'
-                                      ? 'Showing statistics for a custom date range.'
-                                      : `Showing statistics for the last ${rangePreset}.`}
-                            </DrawerDescription>
-                        </DrawerHeader>
-                        <div className="no-scrollbar overflow-y-auto space-y-5 mt-4">
-                            <div className="flex flex-wrap items-center justify-center bg-secondary gap-2 py-2 px-4">
-                                <Button
-                                    size="sm"
-                                    variant={rangePreset === 'all' ? 'default' : 'outline'}
-                                    className="border"
-                                    onClick={() => applyPreset('all')}
-                                >
-                                    All time
-                                </Button>
-                                <Button
-                                    size="sm"
-                                    variant={rangePreset === '24h' ? 'default' : 'outline'}
-                                    className="border"
-                                    onClick={() => applyPreset('24h')}
-                                >
-                                    24h
-                                </Button>
-                                <Button
-                                    size="sm"
-                                    variant={rangePreset === '7d' ? 'default' : 'outline'}
-                                    className="border"
-                                    onClick={() => applyPreset('7d')}
-                                >
-                                    7d
-                                </Button>
-                                <Button
-                                    size="sm"
-                                    variant={rangePreset === '30d' ? 'default' : 'outline'}
-                                    className="border"
-                                    onClick={() => applyPreset('30d')}
-                                >
-                                    30d
-                                </Button>
-                                <Button
-                                    size="sm"
-                                    variant={rangePreset === 'custom' ? 'default' : 'outline'}
-                                    className="border"
-                                    onClick={() => applyPreset('custom')}
-                                >
-                                    Custom
-                                </Button>
-                            </div>
-                            <div className="space-y-5 px-4">
-                                <div className="flex flex-wrap items-center gap-1 justify-center text-sm">
-                                    <span className="text-muted-foreground">Current range:</span>
+            <div className="flex justify-between items-end">
+                <div className="flex gap-2">
+                    <Drawer direction="right">
+                        <DrawerTrigger asChild>
+                            <Button size="lg" variant="outline">
+                                <Funnel className="size-5" />
+                                Filter options
+                            </Button>
+                        </DrawerTrigger>
+                        <DrawerContent>
+                            <DrawerHeader>
+                                <DrawerTitle className="flex items-center gap-2">
+                                    <Calendar1 className="size-6 text-green-500" />
+                                    Filter by date
+                                </DrawerTitle>
+                                <DrawerDescription>
+                                    {rangePreset === 'all'
+                                        ? 'Showing all-time statistics.'
+                                        : rangePreset === 'custom'
+                                          ? 'Showing statistics for a custom date range.'
+                                          : `Showing statistics for the last ${rangePreset}.`}
+                                </DrawerDescription>
+                            </DrawerHeader>
+                            <div className="no-scrollbar overflow-y-auto space-y-5 mt-4">
+                                <div className="flex flex-wrap items-center justify-center bg-secondary gap-2 py-2 px-4">
+                                    <Button
+                                        size="sm"
+                                        variant={rangePreset === 'all' ? 'default' : 'outline'}
+                                        className="border"
+                                        onClick={() => applyPreset('all')}
+                                    >
+                                        All time
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant={rangePreset === '24h' ? 'default' : 'outline'}
+                                        className="border"
+                                        onClick={() => applyPreset('24h')}
+                                    >
+                                        24h
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant={rangePreset === '7d' ? 'default' : 'outline'}
+                                        className="border"
+                                        onClick={() => applyPreset('7d')}
+                                    >
+                                        7d
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant={rangePreset === '30d' ? 'default' : 'outline'}
+                                        className="border"
+                                        onClick={() => applyPreset('30d')}
+                                    >
+                                        30d
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant={rangePreset === 'custom' ? 'default' : 'outline'}
+                                        className="border"
+                                        onClick={() => applyPreset('custom')}
+                                    >
+                                        Custom
+                                    </Button>
+                                </div>
+                                <div className="space-y-5 px-4">
+                                    <div className="flex flex-wrap items-center gap-1 justify-center text-sm">
+                                        <span className="text-muted-foreground">Current range:</span>
 
-                                    {rangePreset === 'all' ? (
-                                        <Badge variant="secondary">All time</Badge>
-                                    ) : (
-                                        <>
-                                            <Badge variant="secondary">{formatDate(dateRange?.from)}</Badge>
-                                            <span className="text-muted-foreground">→</span>
-                                            <Badge variant="secondary">{formatDate(dateRange?.to)}</Badge>
-                                        </>
+                                        {rangePreset === 'all' ? (
+                                            <Badge variant="secondary">All time</Badge>
+                                        ) : (
+                                            <>
+                                                <Badge variant="secondary">{formatDate(dateRange?.from)}</Badge>
+                                                <span className="text-muted-foreground">→</span>
+                                                <Badge variant="secondary">{formatDate(dateRange?.to)}</Badge>
+                                            </>
+                                        )}
+                                    </div>
+                                    {rangePreset !== 'all' && (
+                                        <div className="flex justify-center w-full">
+                                            <div className="rounded-xl border p-3 w-fit">
+                                                <Calendar
+                                                    onDayClick={() => applyPreset('custom')}
+                                                    mode="range"
+                                                    showOutsideDays
+                                                    selected={dateRange}
+                                                    onSelect={(range) => {
+                                                        setDateRange(range);
+                                                        if (range?.from && range?.to) {
+                                                            setRangePreset('custom');
+                                                            updateUrl({
+                                                                preset: 'custom',
+                                                                from: range.from,
+                                                                to: range.to,
+                                                            });
+                                                        }
+                                                    }}
+                                                    captionLayout="dropdown"
+                                                    disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                                                    className="rounded-lg"
+                                                />
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
-                                {rangePreset !== 'all' && (
-                                    <div className="flex justify-center w-full">
-                                        <div className="rounded-xl border p-3 w-fit">
-                                            <Calendar
-                                                onDayClick={() => applyPreset('custom')}
-                                                mode="range"
-                                                showOutsideDays
-                                                selected={dateRange}
-                                                onSelect={(range) => {
-                                                    setDateRange(range);
-                                                    if (range?.from && range?.to) {
-                                                        setRangePreset('custom');
-                                                        updateUrl({
-                                                            preset: 'custom',
-                                                            from: range.from,
-                                                            to: range.to,
-                                                        });
-                                                    }
-                                                }}
-                                                captionLayout="dropdown"
-                                                disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
-                                                className="rounded-lg"
-                                            />
-                                        </div>
-                                    </div>
-                                )}
                             </div>
-                        </div>
-                        <DrawerFooter>
-                            <Button
-                                variant="destructive"
-                                disabled={rangePreset === 'all'}
-                                onClick={() => {
-                                    setRangePreset('all');
-                                    setDateRange(undefined);
-                                    updateUrl({ preset: 'all' });
-                                }}
-                            >
-                                Reset
-                            </Button>
-                            <DrawerClose asChild>
-                                <Button variant="outline">Close</Button>
-                            </DrawerClose>
-                        </DrawerFooter>
-                    </DrawerContent>
-                </Drawer>
-                <div className="border shadow-xs font-medium text-sm bg-input/30 border-input flex items-center rounded-md px-4">
-                    Current filter : <span className="text-primary ml-2">{rangePreset === 'all' ? 'All time' : rangePreset}</span>
+                            <DrawerFooter>
+                                <Button
+                                    variant="destructive"
+                                    disabled={rangePreset === 'all'}
+                                    onClick={() => {
+                                        setRangePreset('all');
+                                        setDateRange(undefined);
+                                        updateUrl({ preset: 'all' });
+                                    }}
+                                >
+                                    Reset
+                                </Button>
+                                <DrawerClose asChild>
+                                    <Button variant="outline">Close</Button>
+                                </DrawerClose>
+                            </DrawerFooter>
+                        </DrawerContent>
+                    </Drawer>
+                    <div className="border shadow-xs font-medium text-sm bg-input/30 border-input flex items-center rounded-md px-4">
+                        Current filter : <span className="text-primary ml-2">{rangePreset === 'all' ? 'All time' : rangePreset}</span>
+                    </div>
                 </div>
+                <p className="text-muted-foreground text-sm">
+                    <Info className="size-4 inline mr-1 mb-1 text-primary" />
+                    Note : Your own views are not included in the statistics when you are logged in with administrator account.
+                </p>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                 <Card>

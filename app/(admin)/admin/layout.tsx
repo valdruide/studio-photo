@@ -7,7 +7,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     if (!requireAdmin(pb)) redirect('/login');
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
             <SidebarAdmin />
             <div className="md:col-span-4">{children}</div>
         </div>
