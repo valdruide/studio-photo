@@ -25,6 +25,7 @@ import { IconGripVertical } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { Separator } from '../ui/separator';
 import { Skeleton } from '../ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 type CategoryRow = {
     id: string;
@@ -117,7 +118,16 @@ function SortableCategoryItem({ category, pathname }: SortableCategoryItemProps)
                 <SidebarMenuButton tooltip={category.title} asChild className="flex-1">
                     <Link href={`/admin/categories/${category.id}`}>
                         <span>{category.title}</span>
-                        {category.lockedByPassword && <Lock className="ml-1 text-muted-foreground" />}
+                        {category.lockedByPassword && (
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Lock className="text-muted-foreground size-4" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Locked by password</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        )}
                     </Link>
                 </SidebarMenuButton>
             </div>

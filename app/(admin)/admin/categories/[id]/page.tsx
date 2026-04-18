@@ -13,9 +13,19 @@ import { ColorPickerDialog } from '@/components/admin/colorPickerDialog';
 import { AddCollection } from '@/components/admin/addCollection';
 import { toast } from 'sonner';
 import { IconDeviceFloppy } from '@tabler/icons-react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, RefreshCcw, Save, EyeIcon, EyeOff } from 'lucide-react';
 import { useDeleteCategoryDialog } from '@/components/admin/deleteCategoryDialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 
 type Category = {
     id: string;
@@ -42,7 +52,11 @@ export default function AdminCategoryEditPage() {
 
     const [addCollectionOpen, setAddCollectionOpen] = useState(false);
 
+    const [generatePasswordOpen, setGeneratePasswordOpen] = useState(false);
     const [newPassword, setNewPassword] = useState('');
+    const [newGeneratedPassword, setNewGeneratedPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showGeneratedPassword, setShowGeneratedPassword] = useState(false);
 
     async function load() {
         setLoading(true);
@@ -142,6 +156,17 @@ export default function AdminCategoryEditPage() {
         },
     });
 
+    const handleGeneratePassword = () => {
+        const generatedPassword = Array.from({ length: 5 }, () => Math.random().toString(36).substring(2, 8)).join('-');
+        setNewGeneratedPassword(generatedPassword);
+        toast.info('New password generated. Click "Apply and copy to clipboard" to use it.');
+    };
+    const handleSaveGeneratedPassword = () => {
+        setNewPassword(newGeneratedPassword);
+        navigator.clipboard.writeText(newGeneratedPassword);
+        toast.success('New password generated and copied to clipboard');
+    };
+
     if (loading)
         return (
             <div className="space-y-5">
@@ -240,9 +265,64 @@ export default function AdminCategoryEditPage() {
                                 </div>
                             </div>
                             {cat.lockedByPassword && (
-                                <div className="space-y-2">
-                                    <Label>New password</Label>
-                                    <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                                <div className="flex gap-2">
+                                    <div className="space-y-2">
+                                        <Label>New password</Label>
+                                        <div className="flex gap-1">
+                                            <Input className='w-42' type={showPassword ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                                            <Button variant="outline" size="icon" onClick={() => setShowPassword((v) => !v)}>
+                                                {showPassword ? <EyeOff className="size-4" /> : <EyeIcon className="size-4" />}
+                                            </Button>
+                                            <Dialog open={generatePasswordOpen} onOpenChange={setGeneratePasswordOpen}>
+                                                <DialogTrigger asChild>
+                                                    <Button variant="outline" className='text-xs'>
+                                                        <RefreshCcw className="size-5" />
+                                                        Generate
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <DialogContent>
+                                                    <DialogHeader className="p-4">
+                                                        <DialogTitle>Generate new password</DialogTitle>
+                                                        <DialogDescription>Generate a new random password for this category</DialogDescription>
+                                                    </DialogHeader>
+                                                    <div className="flex items-center gap-2 mt-5 px-4">
+                                                        <Input
+                                                            type={showGeneratedPassword ? 'text' : 'password'}
+                                                            value={newGeneratedPassword}
+                                                            readOnly
+                                                            className="font-mono tracking-wide"
+                                                        />
+                                                        <Button variant="outline" size="icon" onClick={() => setShowGeneratedPassword((v) => !v)}>
+                                                            {showGeneratedPassword ? <EyeOff className="size-4" /> : <EyeIcon className="size-4" />}
+                                                        </Button>
+                                                        <Button
+                                                            variant="outline"
+                                                            onClick={() => {
+                                                                handleGeneratePassword();
+                                                            }}
+                                                        >
+                                                            <RefreshCcw className="size-4" />
+                                                            Generate
+                                                        </Button>
+                                                    </div>
+                                                    <DialogFooter className="bg-secondary/40 mt-5 border-t py-2 px-4">
+                                                        <DialogClose asChild>
+                                                            <Button variant="outline">Cancel</Button>
+                                                        </DialogClose>
+                                                        <Button
+                                                            onClick={() => {
+                                                                handleSaveGeneratedPassword();
+                                                                setGeneratePasswordOpen(false);
+                                                            }}
+                                                        >
+                                                            <Save className="size-4" />
+                                                            Apply and copy to clipboard
+                                                        </Button>
+                                                    </DialogFooter>
+                                                </DialogContent>
+                                            </Dialog>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>
