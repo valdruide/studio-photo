@@ -289,21 +289,21 @@ export function SiteHeader() {
                             <>
                                 <DropdownMenuGroup>
                                     <DropdownMenuLabel className="text-xs text-muted-foreground">My Account</DropdownMenuLabel>
-                                    <DropdownMenuItem>
-                                        <Link href="/admin/settings" className="flex items-center gap-2">
+                                    <Link href="/admin/settings">
+                                        <DropdownMenuItem>
                                             <Settings2 />
                                             Settings
-                                        </Link>
-                                    </DropdownMenuItem>
+                                        </DropdownMenuItem>
+                                    </Link>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem>
-                                        <Link href="/admin/help" className="flex items-center gap-2">
+                                    <Link href="/admin/help">
+                                        <DropdownMenuItem>
                                             <HelpCircle />
                                             Support
-                                        </Link>
-                                    </DropdownMenuItem>
+                                        </DropdownMenuItem>
+                                    </Link>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
@@ -316,12 +316,12 @@ export function SiteHeader() {
                         ) : (
                             <>
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/login" className="flex items-center gap-2">
+                                    <Link href="/login">
+                                        <DropdownMenuItem>
                                             <LogIn />
                                             Login
-                                        </Link>
-                                    </DropdownMenuItem>
+                                        </DropdownMenuItem>
+                                    </Link>
                                 </DropdownMenuGroup>
                             </>
                         )}

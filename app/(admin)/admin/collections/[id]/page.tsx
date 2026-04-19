@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -47,6 +47,7 @@ type PhotoCollection = {
 export default function AdminCollectionEditPage() {
     const params = useParams<{ id: string }>();
     const id = params.id;
+    const generatedPasswordRef = useRef<HTMLInputElement | null>(null);
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -171,44 +172,64 @@ export default function AdminCollectionEditPage() {
         toast.info('New password generated. Click "Apply and copy to clipboard" to use it.');
     };
     const copyTextToClipboard = async (text: string) => {
-        if (typeof window === 'undefined') return false;
+        if (typeof window === 'undefined') {
+            return { ok: false, method: 'none' as const };
+        }
 
+        // API moderne
         try {
             if (window.isSecureContext && navigator?.clipboard?.writeText) {
                 await navigator.clipboard.writeText(text);
-                return true;
+                return { ok: true, method: 'clipboard' as const };
             }
+        } catch (error) {
+            console.error('navigator.clipboard.writeText failed:', error);
+        }
 
+        // fallback legacy
+        try {
             const textarea = document.createElement('textarea');
             textarea.value = text;
+            textarea.setAttribute('readonly', '');
             textarea.style.position = 'fixed';
-            textarea.style.left = '-9999px';
             textarea.style.top = '0';
+            textarea.style.left = '-9999px';
+            textarea.style.opacity = '0';
+
             document.body.appendChild(textarea);
             textarea.focus();
             textarea.select();
+            textarea.setSelectionRange(0, textarea.value.length);
 
             const success = document.execCommand('copy');
             document.body.removeChild(textarea);
 
-            return success;
+            if (success) {
+                return { ok: true, method: 'execCommand' as const };
+            }
         } catch (error) {
-            console.error('Clipboard copy failed:', error);
-            return false;
+            console.error('execCommand copy failed:', error);
         }
+
+        return { ok: false, method: 'manual' as const };
     };
 
     const handleSaveGeneratedPassword = async () => {
+        if (!newGeneratedPassword) {
+            toast.error('Generate a password first');
+            return;
+        }
+
         setNewPassword(newGeneratedPassword);
 
-        const copied = await copyTextToClipboard(newGeneratedPassword);
+        const result = await copyTextToClipboard(newGeneratedPassword);
 
         setGeneratePasswordOpen(false);
 
-        if (copied) {
-            toast.success('New password generated and copied to clipboard');
+        if (result.ok) {
+            toast.success('New password applied and copied to clipboard');
         } else {
-            toast.error('Password applied, but clipboard copy failed');
+            toast.error('Password applied, but copy is blocked on this server/browser');
         }
     };
 
@@ -339,10 +360,13 @@ export default function AdminCollectionEditPage() {
                                                 </DialogHeader>
                                                 <div className="flex items-center gap-2 mt-5 px-4">
                                                     <Input
+                                                        ref={generatedPasswordRef}
                                                         type={showGeneratedPassword ? 'text' : 'password'}
                                                         value={newGeneratedPassword}
                                                         readOnly
                                                         className="font-mono tracking-wide"
+                                                        onFocus={(e) => e.target.select()}
+                                                        onClick={(e) => e.currentTarget.select()}
                                                     />
                                                     <Button variant="outline" size="icon" onClick={() => setShowGeneratedPassword((v) => !v)}>
                                                         {showGeneratedPassword ? <EyeOff className="size-4" /> : <EyeIcon className="size-4" />}
