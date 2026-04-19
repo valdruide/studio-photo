@@ -1,7 +1,6 @@
 'use client';
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
     Sidebar,
@@ -16,7 +15,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
-import { Plus, Settings2, HelpCircle, Import, LogOut, ChartColumnBig, Lock } from 'lucide-react';
+import { Plus, Settings2, HelpCircle, Import, ChartColumnBig, Lock, Bell } from 'lucide-react';
 import { AddCategory } from './addCategory';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
@@ -26,6 +25,7 @@ import { toast } from 'sonner';
 import { Separator } from '../ui/separator';
 import { Skeleton } from '../ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Badge } from '../ui/badge';
 
 type CategoryRow = {
     id: string;
@@ -62,6 +62,11 @@ const nav3 = [
         title: 'Statistics',
         href: '/admin/statistics',
         icon: ChartColumnBig,
+    },
+    {
+        title: 'Notifications',
+        href: '/admin/notifications',
+        icon: Bell,
     },
 ];
 
@@ -139,9 +144,9 @@ export default function SidebarAdmin() {
     const [categories, setCategories] = useState<CategoryRow[]>([]);
     const [AddCategoryOpen, setAddCategoryOpen] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
     const pathname = usePathname();
-    const router = useRouter();
     const sensors = useSensors(useSensor(SmartPointerSensor));
 
     async function load() {
@@ -154,6 +159,7 @@ export default function SidebarAdmin() {
                 toast.error('Failed to load categories');
                 return;
             }
+
             const json = await res.json();
             setCategories(json.items ?? []);
         } catch (error) {
@@ -164,28 +170,31 @@ export default function SidebarAdmin() {
         }
     }
 
+    const loadUnreadNotificationsCount = React.useCallback(async () => {
+        try {
+            const res = await fetch('/api/public/notifications?unread=true&page=1&perPage=1', {
+                cache: 'no-store',
+            });
+
+            if (!res.ok) {
+                console.error('Failed to load unread notifications count:', res.status);
+                return;
+            }
+
+            const json = await res.json();
+            setUnreadNotificationsCount(json.totalItems ?? 0);
+        } catch (error) {
+            console.error('Failed to load unread notifications count:', error);
+        }
+    }, []);
+
     useEffect(() => {
         load();
     }, []);
 
-    async function handleLogout() {
-        try {
-            const res = await fetch('/api/admin/logout', {
-                method: 'POST',
-            });
-
-            if (!res.ok) {
-                toast.error('Logout failed');
-                return;
-            }
-
-            router.push('/');
-            router.refresh();
-        } catch (error) {
-            console.error('Logout failed:', error);
-            toast.error('Logout failed');
-        }
-    }
+    useEffect(() => {
+        loadUnreadNotificationsCount();
+    }, [pathname, loadUnreadNotificationsCount]);
 
     async function onReorder(next: CategoryRow[]) {
         const previous = categories;
@@ -274,7 +283,17 @@ export default function SidebarAdmin() {
                                         <SidebarMenuButton tooltip={item.title} asChild>
                                             <Link href={item.href}>
                                                 <item.icon className="size-5" />
-                                                <span>{item.title}</span>
+                                                <span className="inline-flex gap-2 items-center">
+                                                    {item.title}
+                                                    {item.title === 'Notifications' && unreadNotificationsCount > 0 && (
+                                                        <Badge
+                                                            variant="destructive"
+                                                            className="text-xs flex h-4 min-w-4 items-center justify-center px-1 text-destructive-foreground"
+                                                        >
+                                                            {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                                                        </Badge>
+                                                    )}
+                                                </span>
                                             </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
@@ -296,23 +315,6 @@ export default function SidebarAdmin() {
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 ))}
-                            </SidebarMenu>
-                        </SidebarGroupContent>
-                    </SidebarGroup>
-                    <Separator className="my-2" />
-                    <SidebarGroup>
-                        <SidebarGroupContent>
-                            <SidebarMenu>
-                                <SidebarMenuItem>
-                                    <SidebarMenuButton
-                                        tooltip="logout"
-                                        onClick={handleLogout}
-                                        className="cursor-pointer text-destructive-foreground bg-destructive/60 hover:bg-destructive/90 hover:text-destructive-foreground"
-                                    >
-                                        <LogOut className="size-5" />
-                                        <span>Logout</span>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>
