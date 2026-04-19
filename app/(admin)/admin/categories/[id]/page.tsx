@@ -13,10 +13,9 @@ import { ColorPickerDialog } from '@/components/admin/colorPickerDialog';
 import { AddCollection } from '@/components/admin/addCollection';
 import { toast } from 'sonner';
 import { IconDeviceFloppy } from '@tabler/icons-react';
-import { Plus, Trash2, RefreshCcw, Save, EyeIcon, EyeOff } from 'lucide-react';
+import { Plus, Trash2, RefreshCcw, Save, EyeIcon, EyeOff, Copy } from 'lucide-react';
 import { useDeleteCategoryDialog } from '@/components/admin/deleteCategoryDialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useRef } from 'react';
 import {
     Dialog,
     DialogClose,
@@ -44,7 +43,6 @@ export default function AdminCategoryEditPage() {
     const params = useParams<{ id: string }>();
     const router = useRouter();
     const id = params.id;
-    const generatedPasswordRef = useRef<HTMLInputElement | null>(null);
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -164,64 +162,15 @@ export default function AdminCategoryEditPage() {
         toast.info('New password generated. Click "Apply and copy to clipboard" to use it.');
     };
     const copyTextToClipboard = async (text: string) => {
-        if (typeof window === 'undefined') {
-            return { ok: false, method: 'none' as const };
+        if (!navigator.clipboard) {
+            return { ok: false, error: new Error('Clipboard API not supported') };
         }
 
-        // API moderne
         try {
-            if (window.isSecureContext && navigator?.clipboard?.writeText) {
-                await navigator.clipboard.writeText(text);
-                return { ok: true, method: 'clipboard' as const };
-            }
+            await navigator.clipboard.writeText(text);
+            return { ok: true };
         } catch (error) {
-            console.error('navigator.clipboard.writeText failed:', error);
-        }
-
-        // fallback legacy
-        try {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.setAttribute('readonly', '');
-            textarea.style.position = 'fixed';
-            textarea.style.top = '0';
-            textarea.style.left = '-9999px';
-            textarea.style.opacity = '0';
-
-            document.body.appendChild(textarea);
-            textarea.focus();
-            textarea.select();
-            textarea.setSelectionRange(0, textarea.value.length);
-
-            const success = document.execCommand('copy');
-            document.body.removeChild(textarea);
-
-            if (success) {
-                return { ok: true, method: 'execCommand' as const };
-            }
-        } catch (error) {
-            console.error('execCommand copy failed:', error);
-        }
-
-        return { ok: false, method: 'manual' as const };
-    };
-
-    const handleSaveGeneratedPassword = async () => {
-        if (!newGeneratedPassword) {
-            toast.error('Generate a password first');
-            return;
-        }
-
-        setNewPassword(newGeneratedPassword);
-
-        const result = await copyTextToClipboard(newGeneratedPassword);
-
-        setGeneratePasswordOpen(false);
-
-        if (result.ok) {
-            toast.success('New password applied and copied to clipboard');
-        } else {
-            toast.error('Password applied, but copy is blocked on this server/browser');
+            return { ok: false, error };
         }
     };
 
@@ -350,13 +299,10 @@ export default function AdminCategoryEditPage() {
                                                     </DialogHeader>
                                                     <div className="flex items-center gap-2 mt-5 px-4">
                                                         <Input
-                                                            ref={generatedPasswordRef}
                                                             type={showGeneratedPassword ? 'text' : 'password'}
                                                             value={newGeneratedPassword}
                                                             readOnly
                                                             className="font-mono tracking-wide"
-                                                            onFocus={(e) => e.target.select()}
-                                                            onClick={(e) => e.currentTarget.select()}
                                                         />
                                                         <Button variant="outline" size="icon" onClick={() => setShowGeneratedPassword((v) => !v)}>
                                                             {showGeneratedPassword ? <EyeOff className="size-4" /> : <EyeIcon className="size-4" />}
@@ -371,19 +317,37 @@ export default function AdminCategoryEditPage() {
                                                             Generate
                                                         </Button>
                                                     </div>
-                                                    <DialogFooter className="bg-secondary/40 mt-5 border-t py-2 px-4">
+                                                    <DialogFooter className="bg-secondary/40 mt-5 border-t py-2 px-4 flex justify-between!">
                                                         <DialogClose asChild>
                                                             <Button variant="outline">Cancel</Button>
                                                         </DialogClose>
-                                                        <Button
-                                                            onClick={() => {
-                                                                handleSaveGeneratedPassword();
-                                                                setGeneratePasswordOpen(false);
-                                                            }}
-                                                        >
-                                                            <Save className="size-4" />
-                                                            Apply and copy to clipboard
-                                                        </Button>
+                                                        <div className="flex gap-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                onClick={async () => {
+                                                                    const result = await copyTextToClipboard(newGeneratedPassword);
+
+                                                                    if (result.ok) {
+                                                                        toast.success('Copied to clipboard');
+                                                                    } else {
+                                                                        toast.error('Copy is blocked in this environment');
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <Copy className="size-4" />
+                                                                Copy
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => {
+                                                                    setNewPassword(newGeneratedPassword);
+                                                                    setGeneratePasswordOpen(false);
+                                                                    toast.success('New password applied');
+                                                                }}
+                                                            >
+                                                                <Save className="size-4" />
+                                                                Apply password
+                                                            </Button>
+                                                        </div>
                                                     </DialogFooter>
                                                 </DialogContent>
                                             </Dialog>
