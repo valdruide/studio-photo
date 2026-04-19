@@ -170,10 +170,46 @@ export default function AdminCollectionEditPage() {
         setNewGeneratedPassword(generatedPassword);
         toast.info('New password generated. Click "Apply and copy to clipboard" to use it.');
     };
-    const handleSaveGeneratedPassword = () => {
+    const copyTextToClipboard = async (text: string) => {
+        if (typeof window === 'undefined') return false;
+
+        try {
+            if (window.isSecureContext && navigator?.clipboard?.writeText) {
+                await navigator.clipboard.writeText(text);
+                return true;
+            }
+
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            textarea.style.top = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+
+            const success = document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            return success;
+        } catch (error) {
+            console.error('Clipboard copy failed:', error);
+            return false;
+        }
+    };
+
+    const handleSaveGeneratedPassword = async () => {
         setNewPassword(newGeneratedPassword);
-        navigator.clipboard.writeText(newGeneratedPassword);
-        toast.success('New password generated and copied to clipboard');
+
+        const copied = await copyTextToClipboard(newGeneratedPassword);
+
+        setGeneratePasswordOpen(false);
+
+        if (copied) {
+            toast.success('New password generated and copied to clipboard');
+        } else {
+            toast.error('Password applied, but clipboard copy failed');
+        }
     };
 
     if (loading) return <div className="text-sm opacity-70">Loading…</div>;
