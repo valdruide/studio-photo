@@ -95,7 +95,7 @@ function LockedCategoryView({ categorySlug, categoryTitle }: { categorySlug: str
     return (
         <>
             <Card className="lg:max-w-2/3 2xl:max-w-1/2 mb-5">
-                <CardHeader>
+                <CardHeader className="gap-0">
                     <CardTitle className="text-3xl capitalize text-primary">{categorySlug}</CardTitle>
                     <CardDescription className="capitalize text-lg">{categoryTitle}</CardDescription>
                 </CardHeader>
@@ -187,7 +187,7 @@ function UnlockedCategoryView({ view }: { view: CategoryView }) {
     return (
         <>
             <Card className="lg:max-w-2/3 2xl:max-w-1/2 mb-5">
-                <CardHeader>
+                <CardHeader className="gap-0">
                     <CardTitle className="text-3xl capitalize text-primary">{view.category}</CardTitle>
                     <CardDescription className="capitalize text-lg">{view.title}</CardDescription>
                 </CardHeader>
@@ -323,7 +323,7 @@ function LockedCollectionView({ collectionSlug, collectionTitle }: { collectionS
     return (
         <>
             <Card className="lg:max-w-2/3 2xl:max-w-1/2 mb-5">
-                <CardHeader>
+                <CardHeader className="gap-0">
                     <CardTitle className="text-3xl capitalize text-primary">{collectionSlug}</CardTitle>
                     <CardDescription className="capitalize text-lg">{collectionTitle}</CardDescription>
                 </CardHeader>

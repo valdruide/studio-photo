@@ -193,91 +193,95 @@ export function SiteHeader() {
                 <h1 className="text-base font-medium">{siteTitle}</h1>
             </div>
             <div className="px-4 flex">
-                <Popover open={notificationsPopoverOpen} onOpenChange={handleNotificationsOpenChange}>
-                    <PopoverTrigger asChild>
-                        <Button variant="ghost" size="icon" className="relative">
-                            <Bell className="size-5" />
-                            {unreadNotificationsCount > 0 && (
-                                <Badge
-                                    variant="destructive"
-                                    className="absolute top-0 left-1 flex h-5 min-w-5 items-center justify-center px-1 text-destructive-foreground"
-                                >
-                                    {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
-                                </Badge>
-                            )}
-                        </Button>
-                    </PopoverTrigger>
+                {isAdmin && (
+                    <Popover open={notificationsPopoverOpen} onOpenChange={handleNotificationsOpenChange}>
+                        <PopoverTrigger asChild>
+                            <Button variant="ghost" size="icon" className="relative">
+                                <Bell className="size-5" />
+                                {unreadNotificationsCount > 0 && (
+                                    <Badge
+                                        variant="destructive"
+                                        className="absolute top-0 left-1 flex h-5 min-w-5 items-center justify-center px-1 text-destructive-foreground"
+                                    >
+                                        {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                                    </Badge>
+                                )}
+                            </Button>
+                        </PopoverTrigger>
 
-                    <PopoverContent align="end" className="w-96 p-0 overflow-hidden bg-sidebar">
-                        <div className="border-b p-4">
-                            <div className="flex items-start justify-between gap-3">
-                                <div className="space-y-0">
-                                    <PopoverTitle className="text-sm">Notifications</PopoverTitle>
-                                    <PopoverDescription className="text-sm">
-                                        {unreadNotificationsCount > 0 ? `${unreadNotificationsCount} unread` : 'No unread notifications'}
-                                    </PopoverDescription>
+                        <PopoverContent align="end" className="w-96 p-0 overflow-hidden bg-sidebar">
+                            <div className="border-b p-4">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="space-y-0">
+                                        <PopoverTitle className="text-sm">Notifications</PopoverTitle>
+                                        <PopoverDescription className="text-sm">
+                                            {unreadNotificationsCount > 0 ? `${unreadNotificationsCount} unread` : 'No unread notifications'}
+                                        </PopoverDescription>
+                                    </div>
+
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={markAllAsRead}
+                                        disabled={unreadNotificationsCount === 0 || notificationsLoading}
+                                    >
+                                        <CircleCheckBig className="size-4" />
+                                        Mark all as read
+                                    </Button>
                                 </div>
-
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={markAllAsRead}
-                                    disabled={unreadNotificationsCount === 0 || notificationsLoading}
-                                >
-                                    <CircleCheckBig className="size-4" />
-                                    Mark all as read
-                                </Button>
                             </div>
-                        </div>
 
-                        <div className="max-h-[320px] overflow-y-auto">
-                            {notificationsLoading ? (
-                                <div className="space-y-2">
-                                    <div className="h-12 rounded-md animate-pulse" />
-                                    <div className="h-12 rounded-md animate-pulse" />
-                                    <div className="h-12 rounded-md animate-pulse" />
-                                </div>
-                            ) : (
-                                <div className="divide-y">
-                                    {latestNotifications.map((notification) => (
-                                        <div key={notification.id}>
-                                            <div className="py-2 px-4">
-                                                <div className="flex items-start justify-between gap-3">
-                                                    <div className="space-y-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <p className="text-sm font-medium leading-none line-clamp-1">{notification.title}</p>-
-                                                            <p className="text-xs text-muted-foreground shrink-0">
-                                                                {new Date(notification.created).toLocaleString()}
+                            <div className="max-h-[320px] overflow-y-auto">
+                                {notificationsLoading ? (
+                                    <div className="space-y-2">
+                                        <div className="h-12 rounded-md animate-pulse" />
+                                        <div className="h-12 rounded-md animate-pulse" />
+                                        <div className="h-12 rounded-md animate-pulse" />
+                                    </div>
+                                ) : (
+                                    <div className="divide-y">
+                                        {latestNotifications.map((notification) => (
+                                            <div key={notification.id}>
+                                                <div className="py-2 px-4">
+                                                    <div className="flex items-start justify-between gap-3">
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center gap-2">
+                                                                <p className="text-sm font-medium leading-none line-clamp-1">{notification.title}</p>-
+                                                                <p className="text-xs text-muted-foreground shrink-0">
+                                                                    {new Date(notification.created).toLocaleString()}
+                                                                </p>
+                                                            </div>
+                                                            <p className="text-sm text-muted-foreground line-clamp-2">
+                                                                {notification.message
+                                                                    ? htmlToPlainText(notification.message)
+                                                                    : 'No message available.'}
                                                             </p>
                                                         </div>
-                                                        <p className="text-sm text-muted-foreground line-clamp-2">
-                                                            {notification.message ? htmlToPlainText(notification.message) : 'No message available.'}
-                                                        </p>
-                                                    </div>
 
-                                                    <span className="mt-1 size-2 shrink-0 rounded-full bg-destructive" />
+                                                        <span className="mt-1 size-2 shrink-0 rounded-full bg-destructive" />
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
 
-                        <div className="border-t px-4 py-2">
-                            <Button
-                                variant="default"
-                                className="w-full justify-center"
-                                onClick={() => {
-                                    setNotificationsPopoverOpen(false);
-                                    router.push('/admin/notifications');
-                                }}
-                            >
-                                Voir tout
-                            </Button>
-                        </div>
-                    </PopoverContent>
-                </Popover>
+                            <div className="border-t px-4 py-2">
+                                <Button
+                                    variant="default"
+                                    className="w-full justify-center"
+                                    onClick={() => {
+                                        setNotificationsPopoverOpen(false);
+                                        router.push('/admin/notifications');
+                                    }}
+                                >
+                                    Voir tout
+                                </Button>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                )}
                 <DropdownMenu open={dropdownIsOpen} onOpenChange={setDropdownIsOpen}>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="relative">
