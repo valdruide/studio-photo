@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 
 // Limite à 10 secondes pour éviter les vues multiples lors du rafraîchissement de la page.
 // N'utiliser seulement que pour les tests en local.
-// En production utiliser getTenMinuteBucket() pour limiter à 10 minutes.
+// En production utiliser getOneMinuteBucket() pour limiter à 1 minute.
 function getTenSecondBucket(date = new Date()) {
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
@@ -18,13 +18,13 @@ function getTenSecondBucket(date = new Date()) {
     return `${year}-${month}-${day}_${hours}:${minutes}:${seconds}`;
 }
 
-function getTenMinuteBucket(date = new Date()) {
+function getOneMinuteBucket(date = new Date()) {
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
     const day = String(date.getUTCDate()).padStart(2, '0');
     const hours = String(date.getUTCHours()).padStart(2, '0');
 
-    const bucketMinutes = Math.floor(date.getUTCMinutes() / 10) * 10;
+    const bucketMinutes = Math.floor(date.getUTCMinutes() / 1) * 1;
     const minutes = String(bucketMinutes).padStart(2, '0');
 
     return `${year}-${month}-${day}_${hours}:${minutes}`;
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ ok: true, skipped: 'admin' });
         }
 
-        const bucketKey = getTenMinuteBucket(); // À utiliser en production pour limiter à 10 minutes
+        const bucketKey = getOneMinuteBucket(); // À utiliser en production pour limiter à 1 minute
         // const bucketKey = getTenSecondBucket(); // À utiliser pour les tests en local, limite à 10 secondes
         const viewKey = `${photoId}_${visitorId}_${bucketKey}`;
 
