@@ -6,6 +6,8 @@ export type SiteSettings = {
     site_name?: string;
     portfolio_name?: string;
     title?: string;
+    logo?: string;
+    favicon?: string;
     site_theme?: string;
 };
 

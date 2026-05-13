@@ -54,6 +54,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     >([]);
     const [siteName, setSiteName] = React.useState('My site');
     const [portfolioName, setPortfolioName] = React.useState('Series');
+    const [logoUrl, setLogoUrl] = React.useState<string | null>(null);
     const [navSecondaryItems, setNavSecondaryItems] = React.useState<
         {
             title: string;
@@ -133,6 +134,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
                     setSiteName(item?.site_name || 'My site');
                     setPortfolioName(item?.portfolio_name || 'Series');
+                    setLogoUrl(item?.logo ? `${process.env.NEXT_PUBLIC_PB_URL}/api/files/site_settings/${item.id}/${item.logo}` : null);
 
                     const socials = [
                         item?.instagram ? { title: 'Instagram', url: item.instagram, icon: IconBrandInstagram } : null,
@@ -171,7 +173,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
                             <Link href="/">
-                                <IconFlower className="!size-5" />
+                                {logoUrl && <img src={logoUrl} alt="Logo" className="size-8" />}
                                 <span className="text-base font-semibold">{siteName}</span>
                             </Link>
                         </SidebarMenuButton>

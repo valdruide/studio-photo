@@ -23,10 +23,14 @@ import { THEMES, DEFAULT_THEME, type ThemeName } from '@/lib/themes';
 import { cn } from '@/lib/utils';
 import type { ComponentType } from 'react';
 
+type SocialField = 'instagram' | 'tiktok' | 'facebook' | 'x' | 'youtube' | 'pinterest' | 'dribbble' | 'behance' | 'reddit';
+
 type SettingsForm = {
     site_name: string;
     portfolio_name: string;
     title: string;
+    logo: File | null;
+    favicon: File | null;
     instagram: string;
     tiktok: string;
     facebook: string;
@@ -42,6 +46,8 @@ const EMPTY_SETTINGS: SettingsForm = {
     site_name: '',
     portfolio_name: '',
     title: '',
+    logo: null,
+    favicon: null,
     instagram: '',
     tiktok: '',
     facebook: '',
@@ -78,6 +84,8 @@ export default function AdminSettingsPage() {
                     site_name: item?.site_name ?? '',
                     portfolio_name: item?.portfolio_name ?? '',
                     title: item?.title ?? '',
+                    logo: null,
+                    favicon: null,
                     instagram: item?.instagram ?? '',
                     tiktok: item?.tiktok ?? '',
                     facebook: item?.facebook ?? '',
@@ -113,7 +121,7 @@ export default function AdminSettingsPage() {
 
     const possibleSocialMedia: {
         name: string;
-        field: keyof SettingsForm;
+        field: SocialField;
         placeholder: string;
         Icon: ComponentType<{ className?: string }>;
     }[] = [
@@ -194,10 +202,33 @@ export default function AdminSettingsPage() {
         try {
             setSavingSettings(true);
 
+            const formData = new FormData();
+
+            formData.append('site_name', settings.site_name);
+            formData.append('portfolio_name', settings.portfolio_name);
+            formData.append('title', settings.title);
+            formData.append('instagram', settings.instagram);
+            formData.append('tiktok', settings.tiktok);
+            formData.append('facebook', settings.facebook);
+            formData.append('x', settings.x);
+            formData.append('youtube', settings.youtube);
+            formData.append('pinterest', settings.pinterest);
+            formData.append('dribbble', settings.dribbble);
+            formData.append('behance', settings.behance);
+            formData.append('reddit', settings.reddit);
+            formData.append('site_theme', settings.site_theme);
+
+            if (settings.logo) {
+                formData.append('logo', settings.logo);
+            }
+
+            if (settings.favicon) {
+                formData.append('favicon', settings.favicon);
+            }
+
             const res = await fetch('/api/admin/settings', {
                 method: 'PATCH',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify(settings),
+                body: formData,
             });
 
             if (!res.ok) {
@@ -212,6 +243,8 @@ export default function AdminSettingsPage() {
                 site_name: item?.site_name ?? '',
                 portfolio_name: item?.portfolio_name ?? '',
                 title: item?.title ?? '',
+                logo: null,
+                favicon: null,
                 instagram: item?.instagram ?? '',
                 tiktok: item?.tiktok ?? '',
                 facebook: item?.facebook ?? '',
@@ -226,6 +259,7 @@ export default function AdminSettingsPage() {
 
             setSettings(nextSettings);
             document.documentElement.setAttribute('data-theme', nextSettings.site_theme);
+
             toast.success('Settings saved successfully');
         } catch (error) {
             console.error(error);
@@ -284,11 +318,15 @@ export default function AdminSettingsPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-sm">Logo</Label>
-                                <Input placeholder="Coming soon" disabled />
+                                <Input type="file" accept="image/*" onChange={(e) => updateSetting('logo', e.target.files?.[0] ?? null)} />
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-sm">Favicon</Label>
-                                <Input placeholder="Coming soon" disabled />
+                                <Label className="text-sm">Favicon (.ico)</Label>
+                                <Input
+                                    type="file"
+                                    accept=".ico,image/x-icon"
+                                    onChange={(e) => updateSetting('favicon', e.target.files?.[0] ?? null)}
+                                />
                             </div>
                         </div>
                         <Separator className="my-10" />

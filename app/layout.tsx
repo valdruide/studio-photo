@@ -4,7 +4,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { SiteHeader } from '@/components/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import './globals.css';
-import { getGlobalTheme } from '@/lib/pb/site-settings';
+import { getGlobalTheme, getSiteSettings } from '@/lib/pb/site-settings';
 import { Toaster } from '@/components/ui/sonner';
 
 const geistSans = Geist({
@@ -17,10 +17,21 @@ const geistMono = Geist_Mono({
     subsets: ['latin'],
 });
 
-export const metadata: Metadata = {
-    title: 'Triste Fleur',
-    description: 'Studio photo Triste Fleur',
-};
+export async function generateMetadata(): Promise<Metadata> {
+    const settings = await getSiteSettings();
+
+    const faviconUrl = settings?.favicon
+        ? `${process.env.NEXT_PUBLIC_PB_URL}/api/files/site_settings/${settings.id}/${settings.favicon}`
+        : '/favicon.ico';
+
+    return {
+        title: settings?.title || 'My Website',
+        description: `Portfolio of ${settings?.site_name || '[SITE NAME]'}`,
+        icons: {
+            icon: faviconUrl,
+        },
+    };
+}
 
 export default async function RootLayout({
     children,

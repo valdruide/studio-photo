@@ -5,6 +5,8 @@ type SettingsPayload = {
     site_name?: string;
     portfolio_name?: string;
     title?: string;
+    logo?: File;
+    favicon?: File;
     instagram?: string;
     tiktok?: string;
     facebook?: string;
@@ -22,6 +24,10 @@ function sanitizeSettings(input: any): SettingsPayload {
         site_name: typeof input.site_name === 'string' ? input.site_name.trim() : '',
         portfolio_name: typeof input.portfolio_name === 'string' ? input.portfolio_name.trim() : '',
         title: typeof input.title === 'string' ? input.title.trim() : '',
+
+        logo: input.logo instanceof File && input.logo.size > 0 ? input.logo : undefined,
+        favicon: input.favicon instanceof File && input.favicon.size > 0 ? input.favicon : undefined,
+
         instagram: typeof input.instagram === 'string' ? input.instagram.trim() : '',
         tiktok: typeof input.tiktok === 'string' ? input.tiktok.trim() : '',
         facebook: typeof input.facebook === 'string' ? input.facebook.trim() : '',
@@ -61,8 +67,25 @@ export async function GET() {
 export async function PATCH(req: Request) {
     return withAdmin(async (pb) => {
         try {
-            const body = await req.json();
-            const data = sanitizeSettings(body);
+            const formData = await req.formData();
+
+            const data = sanitizeSettings({
+                site_name: formData.get('site_name'),
+                portfolio_name: formData.get('portfolio_name'),
+                title: formData.get('title'),
+                logo: formData.get('logo'),
+                favicon: formData.get('favicon'),
+                instagram: formData.get('instagram'),
+                tiktok: formData.get('tiktok'),
+                facebook: formData.get('facebook'),
+                x: formData.get('x'),
+                youtube: formData.get('youtube'),
+                pinterest: formData.get('pinterest'),
+                dribbble: formData.get('dribbble'),
+                behance: formData.get('behance'),
+                reddit: formData.get('reddit'),
+                site_theme: formData.get('site_theme'),
+            });
 
             const result = await pb.collection('site_settings').getList(1, 1);
 
