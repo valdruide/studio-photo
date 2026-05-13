@@ -91,7 +91,7 @@ export function SiteHeader() {
 
     const loadUnreadNotificationsCount = useCallback(async () => {
         try {
-            const res = await fetch('/api/public/notifications?unread=true&page=1&perPage=1', {
+            const res = await fetch('/api/public/notifications?unread=true&page=1&perPage=300', {
                 cache: 'no-store',
             });
 

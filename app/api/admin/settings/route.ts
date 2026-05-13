@@ -107,7 +107,7 @@ export async function PATCH(req: Request) {
                     message: err?.message ?? 'Internal Server Error',
                     pb: err?.response ?? null,
                 },
-                { status: 500 },
+                { status: err?.status ?? 500 },
             );
         }
     });

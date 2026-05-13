@@ -12,13 +12,28 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
         const pb = new PocketBase(process.env.NEXT_PUBLIC_PB_URL);
 
-        const result = await pb.collection('notifications').update(id, {
-            isRead,
+        const existingReads = await pb.collection('notification_reads').getFullList({
+            filter: `notificationId = "${id}"`,
         });
 
-        return NextResponse.json(result);
+        const existingRead = existingReads[0];
+
+        if (isRead && !existingRead) {
+            const result = await pb.collection('notification_reads').create({
+                notificationId: id,
+                readAt: new Date().toISOString(),
+            });
+
+            return NextResponse.json(result);
+        }
+
+        if (!isRead && existingRead) {
+            await pb.collection('notification_reads').delete(existingRead.id);
+        }
+
+        return NextResponse.json({ success: true });
     } catch (error) {
-        console.error('Failed to update notification:', error);
-        return NextResponse.json({ error: 'Failed to update notification' }, { status: 500 });
+        console.error('Failed to update notification read state:', error);
+        return NextResponse.json({ error: 'Failed to update notification read state' }, { status: 500 });
     }
 }

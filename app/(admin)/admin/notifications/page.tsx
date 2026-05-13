@@ -76,6 +76,15 @@ export default function AdminNotificationsPage() {
     const paginationItems = useMemo(() => getPaginationItems(page, totalPages), [page, totalPages]);
 
     const markAllAsRead = async () => {
+        const previousNotifications = notifications;
+
+        setNotifications((current) =>
+            current.map((notification) => ({
+                ...notification,
+                isRead: true,
+            })),
+        );
+
         try {
             const res = await fetch('/api/public/notifications/read-all', {
                 method: 'PATCH',
@@ -84,14 +93,26 @@ export default function AdminNotificationsPage() {
             if (!res.ok) {
                 throw new Error('Failed to mark all as read');
             }
-
-            await fetchNotifications();
         } catch (err) {
             console.error(err);
+            setNotifications(previousNotifications);
         }
     };
 
     const updateNotificationReadState = async (id: string, isRead: boolean) => {
+        const previousNotifications = notifications;
+
+        setNotifications((current) =>
+            current.map((notification) =>
+                notification.id === id
+                    ? {
+                          ...notification,
+                          isRead,
+                      }
+                    : notification,
+            ),
+        );
+
         try {
             const res = await fetch(`/api/public/notifications/${id}`, {
                 method: 'PATCH',
@@ -104,10 +125,9 @@ export default function AdminNotificationsPage() {
             if (!res.ok) {
                 throw new Error('Failed to update notification');
             }
-
-            await fetchNotifications();
         } catch (err) {
             console.error(err);
+            setNotifications(previousNotifications);
         }
     };
 
@@ -253,7 +273,7 @@ const NotificationsCard = ({
             <ContextMenuTrigger>
                 <Card
                     className={cn(
-                        `relative mt-2 gap-0 border py-4 ${!notification.isRead ? 'bg-primary/10' : 'bg-sidebar-accent'}`,
+                        `relative mt-2 gap-0 border py-4 ${!notification.isRead ? 'bg-accent/20' : 'bg-sidebar-accent'}`,
                         !notification.isRead ? 'cursor-pointer transition-colors hover:bg-primary/6' : '',
                     )}
                     onClick={() => !notification.isRead && markAsRead(notification.id)}
