@@ -4,7 +4,7 @@ export type ThemeName =
     | 'midnight-ember'
     | 'forest-veil'
     | 'ivory-light'
-    | 'midnight-tokyo'
+    | 'sakura'
     | 'marmalade'
     | 'uranium'
     | 'coffee'
@@ -76,15 +76,15 @@ export const THEMES: ThemeDefinition[] = [
         },
     },
     {
-        name: 'midnight-tokyo',
-        label: 'Midnight Tokyo',
+        name: 'sakura',
+        label: 'Sakura',
         preview: {
-            background: 'oklch(0.203 0.014 285.102)',
-            card: 'oklch(0.226 0.019 280.253)',
-            primary: 'oklch(0.867 0 180)',
-            accent: 'oklch(0.197 0.016 280.374)',
-            foreground: 'oklch(0.766 0.049 276.035)',
-            border: 'oklch(0.396 0.036 278.297)',
+            background: 'oklch(0.9859 0.0076 48.6568)',
+            card: 'oklch(1 0 0)',
+            primary: 'oklch(0.7508 0.161 2.6024)',
+            accent: 'oklch(0.9239 0.0415 1.1045)',
+            foreground: 'oklch(0.4279 0.0265 46.6194)',
+            border: 'oklch(0.9138 0.0146 50.7928)',
         },
     },
     {

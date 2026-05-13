@@ -17,28 +17,28 @@ The current codebase already includes a public gallery, a dedicated admin dashbo
 ### Public website
 
 - Sidebar-based navigation with:
-  - `Home`
-  - `About`
-  - dynamically loaded categories
-  - dynamically loaded collections inside each category
+    - `Home`
+    - `About`
+    - dynamically loaded categories
+    - dynamically loaded collections inside each category
 - Public navigation only shows visible categories and visible collections from visible categories
 - Optional `All` entry per category, controlled by the category field `allowAll`
 - Site-wide dynamic settings loaded from PocketBase:
-  - site name
-  - portfolio label
-  - page title in the header
-  - social media links
-  - global theme
+    - site name
+    - portfolio label
+    - page title in the header
+    - social media links
+    - global theme
 - Gallery pages:
-  - `/{categorySlug}` for the category-wide "All" view
-  - `/{categorySlug}/{collectionSlug}` for a single collection
+    - `/{categorySlug}` for the category-wide "All" view
+    - `/{categorySlug}/{collectionSlug}` for a single collection
 - Masonry grid display for gallery images
 - Fullscreen photo viewer with:
-  - previous / next navigation
-  - slide indicators
-  - zoom lens mode
-  - mouse wheel lens-size control
-  - `Shift + scroll` zoom control
+    - previous / next navigation
+    - slide indicators
+    - zoom lens mode
+    - mouse wheel lens-size control
+    - `Shift + scroll` zoom control
 - Rich text descriptions for collections and photos, sanitized before rendering
 
 ### Visibility and access control
@@ -59,12 +59,12 @@ The current codebase already includes a public gallery, a dedicated admin dashbo
 - Dedicated admin login page
 - Protected admin layout that checks the PocketBase auth cookie on the server
 - Admin sidebar with:
-  - category list
-  - drag-and-drop category reordering
-  - quick access to statistics
-  - settings page
-  - help page
-  - mass import helper page
+    - category list
+    - drag-and-drop category reordering
+    - quick access to statistics
+    - settings page
+    - help page
+    - mass import helper page
 - Create category
 - Edit category
 - Delete category with cascading deletion of its collections and photos
@@ -75,21 +75,21 @@ The current codebase already includes a public gallery, a dedicated admin dashbo
 - Edit individual photo metadata
 - Delete photos
 - Drag-and-drop ordering for:
-  - categories
-  - collections
-  - photos
+    - categories
+    - collections
+    - photos
 
 ### Category management
 
 - Editable fields:
-  - title
-  - slug
-  - order
-  - visibility
-  - icon
-  - color
-  - `allowAll`
-  - password protection
+    - title
+    - slug
+    - order
+    - visibility
+    - icon
+    - color
+    - `allowAll`
+    - password protection
 - Category icons are selected from a mapped Tabler Icons list
 - Category color is configurable in the admin UI
 - Category passwords can be changed from the edit page
@@ -98,13 +98,13 @@ The current codebase already includes a public gallery, a dedicated admin dashbo
 ### Collection management
 
 - Editable fields:
-  - title
-  - slug
-  - description
-  - category relation
-  - order
-  - visibility
-  - password protection
+    - title
+    - slug
+    - description
+    - category relation
+    - order
+    - visibility
+    - password protection
 - Collection descriptions accept HTML and are rendered as rich text on the public site
 - Collections can be moved to another category from the admin page
 - Collections display password-lock status in the admin table
@@ -117,11 +117,11 @@ The current codebase already includes a public gallery, a dedicated admin dashbo
 - Shared description applied to all uploaded photos in one batch
 - Automatic sequential ordering on upload
 - Individual photo editing:
-  - name
-  - description
-  - order
-  - visibility
-  - collection relation
+    - name
+    - description
+    - order
+    - visibility
+    - collection relation
 - Hidden photos are visibly marked in the admin grid
 
 ### Settings system
@@ -132,15 +132,15 @@ The admin settings page currently supports:
 - `portfolio_name`
 - `title`
 - social links for:
-  - Instagram
-  - TikTok
-  - Facebook
-  - X
-  - YouTube
-  - Pinterest
-  - Dribbble
-  - Behance
-  - Reddit
+    - Instagram
+    - TikTok
+    - Facebook
+    - X
+    - YouTube
+    - Pinterest
+    - Dribbble
+    - Behance
+    - Reddit
 - global theme selection
 
 The UI also shows placeholder fields for:
@@ -158,7 +158,7 @@ The site supports multiple predefined global themes selected from admin settings
 - `deep-ocean`
 - `forest-veil`
 - `uranium`
-- `midnight-tokyo`
+- `sakura`
 - `marmalade`
 - `coffee`
 - `teal-orange`
@@ -256,15 +256,15 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ### Variable reference
 
-| Variable | Required | Used for |
-| :--- | :--- | :--- |
-| `NEXT_PUBLIC_PB_URL` | Yes | PocketBase base URL used by public and admin code |
-| `PB_ADMIN_EMAIL` | Yes | PocketBase admin/superuser auth for unlock routes and import script |
-| `PB_ADMIN_PASSWORD` | Yes | PocketBase admin/superuser auth for unlock routes and import script |
-| `LOCK_ACCESS_SECRET` | Strongly recommended | HMAC signing secret for password-access cookies |
-| `LOCK_ACCESS_TTL_SECONDS` | Optional | Lifetime of category / collection access cookies |
-| `APP_URL` | Optional | Used to infer secure cookie behavior in production |
-| `NEXT_PUBLIC_APP_URL` | Optional | Same purpose as above for secure cookie detection |
+| Variable                  | Required             | Used for                                                            |
+| :------------------------ | :------------------- | :------------------------------------------------------------------ |
+| `NEXT_PUBLIC_PB_URL`      | Yes                  | PocketBase base URL used by public and admin code                   |
+| `PB_ADMIN_EMAIL`          | Yes                  | PocketBase admin/superuser auth for unlock routes and import script |
+| `PB_ADMIN_PASSWORD`       | Yes                  | PocketBase admin/superuser auth for unlock routes and import script |
+| `LOCK_ACCESS_SECRET`      | Strongly recommended | HMAC signing secret for password-access cookies                     |
+| `LOCK_ACCESS_TTL_SECONDS` | Optional             | Lifetime of category / collection access cookies                    |
+| `APP_URL`                 | Optional             | Used to infer secure cookie behavior in production                  |
+| `NEXT_PUBLIC_APP_URL`     | Optional             | Same purpose as above for secure cookie detection                   |
 
 ## Local Development
 
@@ -289,30 +289,30 @@ npm run lint
 ### Public routes
 
 - `/`
-  - current marketing / placeholder-style homepage
+    - current marketing / placeholder-style homepage
 - `/about`
-  - current about page
+    - current about page
 - `/{categorySlug}`
-  - category "All" page when `allowAll` is enabled
+    - category "All" page when `allowAll` is enabled
 - `/{categorySlug}/{collectionSlug}`
-  - collection page
+    - collection page
 
 ### Admin routes
 
 - `/login`
-  - admin login page
+    - admin login page
 - `/admin/settings`
-  - global site settings and theme selection
+    - global site settings and theme selection
 - `/admin/statistics`
-  - aggregated photo-view analytics with date filters
+    - aggregated photo-view analytics with date filters
 - `/admin/help`
-  - admin support and FAQ page
+    - admin support and FAQ page
 - `/admin/mass-import`
-  - helper page for the import script
+    - helper page for the import script
 - `/admin/categories/{id}`
-  - category editor
+    - category editor
 - `/admin/collections/{id}`
-  - collection editor and photo manager
+    - collection editor and photo manager
 
 ## Authentication and Security Model
 
@@ -329,17 +329,17 @@ npm run lint
 - Category and collection locks use `lockedByPassword` plus `passwordHash`
 - Password verification uses `bcryptjs`
 - After a successful unlock:
-  - category access is stored in `cat_access_{categoryId}`
-  - collection access is stored in `col_access_{collectionId}`
+    - category access is stored in `cat_access_{categoryId}`
+    - collection access is stored in `col_access_{collectionId}`
 - Access cookies are:
-  - signed with HMAC-SHA256
-  - HTTP-only
-  - time-limited
-  - scoped to `/`
+    - signed with HMAC-SHA256
+    - HTTP-only
+    - time-limited
+    - scoped to `/`
 - The signed token payload contains:
-  - type
-  - target record id
-  - expiration timestamp
+    - type
+    - target record id
+    - expiration timestamp
 
 ### Rich text sanitization
 
@@ -363,17 +363,17 @@ The project is centered on PocketBase. The codebase currently depends on the fol
 
 Top-level gallery grouping.
 
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `slug` | `string` | Yes | Public URL slug for the category |
-| `title` | `string` | Yes | Display title |
-| `order` | `number` | Yes | Manual ordering value |
-| `isHidden` | `boolean` | Yes | Hides the category from public navigation and public pages |
-| `icon` | `string` | Yes in practice | Tabler icon name used in the public sidebar |
-| `color` | `string` | Yes in practice | Display color for the category icon / label |
-| `allowAll` | `boolean` | Yes | Enables the `/{categorySlug}` "All" route |
-| `lockedByPassword` | `boolean` | Yes | Enables password protection |
-| `passwordHash` | `string` | Conditional | Bcrypt hash stored when password protection is enabled |
+| Field              | Type      | Required        | Description                                                |
+| :----------------- | :-------- | :-------------- | :--------------------------------------------------------- |
+| `slug`             | `string`  | Yes             | Public URL slug for the category                           |
+| `title`            | `string`  | Yes             | Display title                                              |
+| `order`            | `number`  | Yes             | Manual ordering value                                      |
+| `isHidden`         | `boolean` | Yes             | Hides the category from public navigation and public pages |
+| `icon`             | `string`  | Yes in practice | Tabler icon name used in the public sidebar                |
+| `color`            | `string`  | Yes in practice | Display color for the category icon / label                |
+| `allowAll`         | `boolean` | Yes             | Enables the `/{categorySlug}` "All" route                  |
+| `lockedByPassword` | `boolean` | Yes             | Enables password protection                                |
+| `passwordHash`     | `string`  | Conditional     | Bcrypt hash stored when password protection is enabled     |
 
 Behavior notes:
 
@@ -386,16 +386,16 @@ Behavior notes:
 
 Child grouping inside a category.
 
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `slug` | `string` | Yes | Public URL slug for the collection |
-| `title` | `string` | Yes | Collection title |
-| `description` | `string / HTML` | No | Rich text HTML description |
-| `category` | `relation -> categories` | Yes | Parent category |
-| `order` | `number` | Yes | Manual ordering inside the category |
-| `isHidden` | `boolean` | Yes | Hides the collection from public navigation and public pages |
-| `lockedByPassword` | `boolean` | Yes | Enables password protection |
-| `passwordHash` | `string` | Conditional | Bcrypt hash stored when protection is enabled |
+| Field              | Type                     | Required    | Description                                                  |
+| :----------------- | :----------------------- | :---------- | :----------------------------------------------------------- |
+| `slug`             | `string`                 | Yes         | Public URL slug for the collection                           |
+| `title`            | `string`                 | Yes         | Collection title                                             |
+| `description`      | `string / HTML`          | No          | Rich text HTML description                                   |
+| `category`         | `relation -> categories` | Yes         | Parent category                                              |
+| `order`            | `number`                 | Yes         | Manual ordering inside the category                          |
+| `isHidden`         | `boolean`                | Yes         | Hides the collection from public navigation and public pages |
+| `lockedByPassword` | `boolean`                | Yes         | Enables password protection                                  |
+| `passwordHash`     | `string`                 | Conditional | Bcrypt hash stored when protection is enabled                |
 
 Behavior notes:
 
@@ -409,16 +409,16 @@ Behavior notes:
 
 Individual uploaded images.
 
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `collection` | `relation -> photo_collections` | Yes | Parent collection |
-| `name` | `string` | Yes | Display name |
-| `description` | `string / HTML` | No | Rich text HTML description |
-| `image` | `file` | Yes | Uploaded image file |
-| `order` | `number` | Yes | Manual ordering inside the collection |
-| `isHidden` | `boolean` | Yes | Hides the photo from public views |
-| `width` | `number` | Yes | Stored output width after processing |
-| `height` | `number` | Yes | Stored output height after processing |
+| Field         | Type                            | Required | Description                           |
+| :------------ | :------------------------------ | :------- | :------------------------------------ |
+| `collection`  | `relation -> photo_collections` | Yes      | Parent collection                     |
+| `name`        | `string`                        | Yes      | Display name                          |
+| `description` | `string / HTML`                 | No       | Rich text HTML description            |
+| `image`       | `file`                          | Yes      | Uploaded image file                   |
+| `order`       | `number`                        | Yes      | Manual ordering inside the collection |
+| `isHidden`    | `boolean`                       | Yes      | Hides the photo from public views     |
+| `width`       | `number`                        | Yes      | Stored output width after processing  |
+| `height`      | `number`                        | Yes      | Stored output height after processing |
 
 Behavior notes:
 
@@ -432,21 +432,21 @@ Behavior notes:
 
 Single-record settings collection used by both the public site and the admin panel.
 
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `site_name` | `string` | No | Sidebar brand label |
-| `portfolio_name` | `string` | No | Label for the category / collection navigation block |
-| `title` | `string` | No | Header title shown in the public layout |
-| `instagram` | `string` | No | Social URL |
-| `tiktok` | `string` | No | Social URL |
-| `facebook` | `string` | No | Social URL |
-| `x` | `string` | No | Social URL |
-| `youtube` | `string` | No | Social URL |
-| `pinterest` | `string` | No | Social URL |
-| `dribbble` | `string` | No | Social URL |
-| `behance` | `string` | No | Social URL |
-| `reddit` | `string` | No | Social URL |
-| `site_theme` | `string` | No | Selected theme name |
+| Field            | Type     | Required | Description                                          |
+| :--------------- | :------- | :------- | :--------------------------------------------------- |
+| `site_name`      | `string` | No       | Sidebar brand label                                  |
+| `portfolio_name` | `string` | No       | Label for the category / collection navigation block |
+| `title`          | `string` | No       | Header title shown in the public layout              |
+| `instagram`      | `string` | No       | Social URL                                           |
+| `tiktok`         | `string` | No       | Social URL                                           |
+| `facebook`       | `string` | No       | Social URL                                           |
+| `x`              | `string` | No       | Social URL                                           |
+| `youtube`        | `string` | No       | Social URL                                           |
+| `pinterest`      | `string` | No       | Social URL                                           |
+| `dribbble`       | `string` | No       | Social URL                                           |
+| `behance`        | `string` | No       | Social URL                                           |
+| `reddit`         | `string` | No       | Social URL                                           |
+| `site_theme`     | `string` | No       | Selected theme name                                  |
 
 Behavior notes:
 
@@ -458,14 +458,14 @@ Behavior notes:
 
 Analytics collection used to track unique viewer opens.
 
-| Field | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `photo` | `relation -> photos` | Yes | Viewed photo |
-| `collection` | `relation -> photo_collections` | Yes | Parent collection at the time of the event |
-| `category` | `relation -> categories` | Yes | Parent category at the time of the event |
-| `visitorId` | `string` | Yes | Browser-level visitor identifier stored in localStorage |
-| `viewKey` | `string` | Yes | Uniqueness key used to deduplicate repeated opens within one time bucket |
-| `created` | `datetime` | Auto | Event creation date used for date filtering |
+| Field        | Type                            | Required | Description                                                              |
+| :----------- | :------------------------------ | :------- | :----------------------------------------------------------------------- |
+| `photo`      | `relation -> photos`            | Yes      | Viewed photo                                                             |
+| `collection` | `relation -> photo_collections` | Yes      | Parent collection at the time of the event                               |
+| `category`   | `relation -> categories`        | Yes      | Parent category at the time of the event                                 |
+| `visitorId`  | `string`                        | Yes      | Browser-level visitor identifier stored in localStorage                  |
+| `viewKey`    | `string`                        | Yes      | Uniqueness key used to deduplicate repeated opens within one time bucket |
+| `created`    | `datetime`                      | Auto     | Event creation date used for date filtering                              |
 
 Recommended PocketBase constraint:
 
@@ -526,8 +526,8 @@ The README and the code both assume that the `image` file field in PocketBase is
 - A local visitor id is stored in `localStorage` under `portfolio_visitor_id`
 - When a user opens a photo in the fullscreen dialog, the frontend calls `/api/public/stats/photo-view`
 - The route builds a bucketed key:
-  - current production logic: 10-minute buckets
-  - a 10-second helper exists in code for local testing
+    - current production logic: 10-minute buckets
+    - a 10-second helper exists in code for local testing
 - If the same visitor opens the same photo inside the same bucket, the unique `viewKey` prevents a second record
 
 ### How admin analytics are computed
@@ -539,14 +539,14 @@ The README and the code both assume that the `image` file field in PocketBase is
 - excludes hidden categories, collections, and photos
 - counts views per photo, per collection, and per category
 - computes:
-  - total views
-  - most viewed photo
-  - best category
-  - best collection
-  - top photos
-  - least viewed photos
-  - top collections
-  - top categories
+    - total views
+    - most viewed photo
+    - best category
+    - best collection
+    - top photos
+    - least viewed photos
+    - top collections
+    - top categories
 
 ## Import Script
 
@@ -615,8 +615,8 @@ The import script does not fully reflect every newer admin field. In particular,
 - The mass import page is a guide and generator; it does not execute imports itself
 - The statistics page uses localized `fr-FR` date formatting in the current UI
 - The codebase contains a few mixed legacy assumptions around PocketBase auth:
-  - dashboard login uses `admin_users`
-  - unlock/import flows use PocketBase admin or superuser credentials
+    - dashboard login uses `admin_users`
+    - unlock/import flows use PocketBase admin or superuser credentials
 
 ## Deployment Notes
 
