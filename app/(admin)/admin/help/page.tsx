@@ -3,11 +3,12 @@ import { CircleHelp, Headphones, LifeBuoy, Mail, MessageSquare, Phone, Sparkles 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const faqItems = [
     {
         question: 'Why are my changes not visible right away?',
-        answer: 'Most updates appear immediately after saving, but some screens may require a refresh. If you changed content structure, reopen the page in a new tab to confirm the public view.',
+        answer: 'Most updates appear immediately after saving, but some screens may require a refresh. If you changed content structure, refresh or reopen the page in a new tab to confirm the public view.',
     },
     {
         question: 'What should I do if a client cannot access a protected gallery?',
@@ -16,6 +17,10 @@ const faqItems = [
     {
         question: 'How do I keep the admin area organized?',
         answer: 'Use clear category names, hide anything that is not ready yet, and reorder items regularly so the most active sections stay easy to reach.',
+    },
+    {
+        question: 'I have a suggestion. How can I share it?',
+        answer: 'You can share your suggestions by contacting support through email or WhatsApp. We appreciate your feedback and will consider it for future improvements.',
     },
     {
         question: 'When should I contact support?',
@@ -46,9 +51,9 @@ const contactItems = [
 
 export default function AdminHelpPage() {
     return (
-        <div className="space-y-4">
-            <Card className="overflow-hidden">
-                <CardHeader>
+        <div className="flex gap-8">
+            <div className="w-3/5 space-y-5">
+                <div className="space-y-5">
                     <div className="space-y-2">
                         <CardTitle className="flex items-center gap-2 text-2xl">
                             <LifeBuoy className="size-6 text-primary" />
@@ -59,10 +64,8 @@ export default function AdminHelpPage() {
                             running smoothly.
                         </CardDescription>
                     </div>
-                </CardHeader>
 
-                <CardContent className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
-                    <div className="rounded-xl border bg-muted/30 p-5">
+                    <div className="rounded-xl bg-card p-5">
                         <div className="flex items-start gap-3">
                             <Sparkles className="mt-0.5 size-5 text-primary" />
                             <div className="space-y-2">
@@ -74,94 +77,81 @@ export default function AdminHelpPage() {
                             </div>
                         </div>
                     </div>
-
-                    <div className="rounded-xl border bg-card p-5">
-                        <div className="flex items-start gap-3">
-                            <Headphones className="mt-0.5 size-5 text-primary" />
-                            <div className="space-y-1">
-                                <p className="font-medium">Fastest path to resolution</p>
-                                <p className="text-sm text-muted-foreground">
-                                    Please provide a screenshot and the name of the page where the issue occurred.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-                <div className="space-y-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <CircleHelp className="size-5 text-primary" />
-                                Frequently asked questions
-                            </CardTitle>
-                            <CardDescription>Short answers to the issues admins run into most often.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            {faqItems.map((item, index) => (
-                                <div key={item.question} className="rounded-xl border p-4">
-                                    <p className="font-medium">{item.question}</p>
-                                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.answer}</p>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
                 </div>
-
                 <div className="space-y-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Contact information</CardTitle>
-                            <CardDescription>Replace these placeholders with your real support details before going live.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            {contactItems.map((item) => {
-                                const Icon = item.icon;
+                    <div className="space-y-2">
+                        <CardTitle className="flex text-2xl items-center gap-2">
+                            <CircleHelp className="size-6 text-primary" />
+                            Frequently asked questions
+                        </CardTitle>
+                        <CardDescription>Short answers to the issues admins run into most often.</CardDescription>
+                    </div>
+                    <div>
+                        <Accordion type="single" collapsible className="space-y-2">
+                            {faqItems.map((item, index) => (
+                                <AccordionItem key={item.question} value={`item-${index + 1}`}>
+                                    <AccordionTrigger>{item.question}</AccordionTrigger>
+                                    <AccordionContent>{item.answer}</AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    </div>
+                </div>
+            </div>
 
-                                return (
-                                    <div key={item.title} className="rounded-xl border p-4">
-                                        <div className="flex items-start gap-3">
+            <div className="w-2/5 space-y-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Contact information</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        {contactItems.map((item) => {
+                            const Icon = item.icon;
+
+                            return (
+                                <div key={item.title} className="rounded-xl border p-4 space-y-2">
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex gap-3 items-center">
                                             <div className="rounded-lg bg-primary/10 p-2 text-primary">
                                                 <Icon className="size-5" />
                                             </div>
-                                            <div className="space-y-1">
+                                            <div>
                                                 <p className="font-medium">{item.title}</p>
                                                 <p className="text-sm">{item.value}</p>
-                                                <p className="text-sm text-muted-foreground">{item.hint}</p>
                                             </div>
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </CardContent>
-                    </Card>
+                                    <p className="text-sm text-muted-foreground">{item.hint}</p>
+                                </div>
+                            );
+                        })}
+                    </CardContent>
+                </Card>
 
-                    <Alert>
-                        <LifeBuoy className="size-4" />
-                        <AlertTitle>What to include in a support request</AlertTitle>
-                        <AlertDescription>
-                            <ul className="list-disc space-y-1 pl-5">
-                                {supportSteps.map((step) => (
-                                    <li key={step}>{step}</li>
-                                ))}
-                            </ul>
-                        </AlertDescription>
-                    </Alert>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>What to include in a support request</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+                            {supportSteps.map((step) => (
+                                <li key={step}>{step}</li>
+                            ))}
+                        </ul>
+                    </CardContent>
+                </Card>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Good admin habits</CardTitle>
-                            <CardDescription>Small checks that help prevent support requests later.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-3 text-sm text-muted-foreground">
-                            <p>Review category order regularly so your most important sections remain easy to manage.</p>
-                            <p>Test protected pages in a private window when updating passwords or access rules.</p>
-                            <p>Save changes in smaller batches when updating several settings, so issues are easier to isolate.</p>
-                        </CardContent>
-                    </Card>
-                </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Good admin habits</CardTitle>
+                        <CardDescription>Small checks that help prevent support requests later.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3 text-sm text-muted-foreground">
+                        <p>Review category order regularly so your most important sections remain easy to manage.</p>
+                        <p>Test protected pages in a private window when updating passwords or access rules.</p>
+                        <p>Save changes in smaller batches when updating several settings, so issues are easier to isolate.</p>
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );
