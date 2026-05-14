@@ -52,7 +52,7 @@ export default async function RootLayout({
                     }
                 >
                     <AppSidebar variant="inset" />
-                    <SidebarInset className="overflow-hidden">
+                    <SidebarInset>
                         <SiteHeader />
                         <div className="p-5">{children}</div>
                         <Toaster position="top-right" />

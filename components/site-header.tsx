@@ -1,9 +1,10 @@
 'use client';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Bell, User, Settings2, HelpCircle, LogOut, LogIn, CircleCheckBig, ChartColumnBig } from 'lucide-react';
 import { Badge } from './ui/badge';
+import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -49,8 +50,41 @@ export function SiteHeader() {
     const [latestNotifications, setLatestNotifications] = useState<Notification[]>([]);
     const [notificationsPopoverOpen, setNotificationsPopoverOpen] = useState(false);
     const [notificationsLoading, setNotificationsLoading] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
+    const isScrolledRef = useRef(false);
     const pathname = usePathname();
     const router = useRouter();
+
+    useEffect(() => {
+        let frameId: number | null = null;
+
+        const updateScrollState = () => {
+            frameId = null;
+            const nextIsScrolled = window.scrollY > 0;
+
+            if (isScrolledRef.current !== nextIsScrolled) {
+                isScrolledRef.current = nextIsScrolled;
+                setIsScrolled(nextIsScrolled);
+            }
+        };
+
+        const handleScroll = () => {
+            if (frameId === null) {
+                frameId = window.requestAnimationFrame(updateScrollState);
+            }
+        };
+
+        updateScrollState();
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        return () => {
+            if (frameId !== null) {
+                window.cancelAnimationFrame(frameId);
+            }
+
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
 
     const check = useCallback(() => {
         fetch('/api/admin/me', { cache: 'no-store' })
@@ -186,7 +220,12 @@ export function SiteHeader() {
     };
 
     return (
-        <header className="z-10 justify-between flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+        <header
+            className={cn(
+                'transition-[width,height] sticky top-0 z-30 flex h-(--header-height) shrink-0 items-center gap-2 border-b ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)',
+                isScrolled && 'bg-background/80 backdrop-blur-sm',
+            )}
+        >
             <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
