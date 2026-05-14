@@ -114,7 +114,7 @@ function LockedCategoryView({ categorySlug, categoryTitle }: { categorySlug: str
                         <AlertDialogDescription>Enter the password to access this category.</AlertDialogDescription>
                     </AlertDialogHeader>
 
-                    <div className="space-y-4">
+                    <div className="space-y-4 px-3 pb-3">
                         <Input
                             type="password"
                             placeholder="Password"

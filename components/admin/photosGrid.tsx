@@ -80,7 +80,7 @@ function SortableCard({
                 </div>
             )}
 
-            <div className="absolute left-2 top-2 rounded bg-background px-2 py-1 text-sm border-2 aspect-square text-foreground">
+            <div className="absolute left-2 top-2 rounded-md bg-background px-2 py-1 text-sm border aspect-square text-foreground">
                 {photo.order ?? '-'}
             </div>
             <DropdownMenu data-no-dnd modal={false}>
@@ -90,9 +90,8 @@ function SortableCard({
                     onPointerDown={(e) => e.stopPropagation()}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <IconDots />
+                    <Button variant="outline" size="icon" className="size-7 bg-background! border">
+                        <IconDots className="size-4" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
