@@ -6,16 +6,19 @@ import {
     Sidebar,
     SidebarContent,
     SidebarHeader,
+    SidebarGroupContent,
+    SidebarGroup,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarGroup,
-    SidebarGroupContent,
+    SidebarMenuSubItem,
+    SidebarMenuSub,
+    SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
-import { Plus, Settings2, HelpCircle, Import, ChartColumnBig, Lock, Bell } from 'lucide-react';
+import { Plus, Settings2, HelpCircle, Import, ChartColumnBig, Lock, Bell, ChevronRight } from 'lucide-react';
 import { AddCategory } from './addCategory';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
@@ -26,6 +29,7 @@ import { Separator } from '../ui/separator';
 import { Skeleton } from '../ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '../ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
 
 type CategoryRow = {
     id: string;
@@ -59,16 +63,31 @@ const nav2 = [
 
 const nav3 = [
     {
-        title: 'Statistics',
-        href: '/admin/statistics',
-        icon: ChartColumnBig,
-    },
-    {
         title: 'Notifications',
         href: '/admin/notifications',
         icon: Bell,
     },
 ];
+
+const statisticsNav = {
+    name: 'Statistics',
+    href: '/admin/statistics',
+    icon: ChartColumnBig,
+    items: [
+        {
+            title: 'Overview',
+            url: '/admin/statistics/overview',
+        },
+        {
+            title: 'Photos',
+            url: '/admin/statistics/photos',
+        },
+        {
+            title: 'Activity',
+            url: '/admin/statistics/activity',
+        },
+    ],
+};
 
 class SmartPointerSensor extends PointerSensor {
     static activators = [
@@ -276,7 +295,33 @@ export default function SidebarAdmin() {
                     </SidebarGroup>
                     <Separator className="my-2" />
                     <SidebarGroup>
-                        <SidebarGroupContent>
+                        <SidebarGroupContent className="space-y-1">
+                            <SidebarMenu>
+                                <Collapsible asChild defaultOpen={true} className="group/collapsible">
+                                    <SidebarMenuItem>
+                                        <CollapsibleTrigger asChild>
+                                            <SidebarMenuButton tooltip={statisticsNav.name}>
+                                                <statisticsNav.icon className="size-5" />
+                                                <span>{statisticsNav.name}</span>
+                                                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                                            </SidebarMenuButton>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent>
+                                            <SidebarMenuSub>
+                                                {statisticsNav.items.map((subItem) => (
+                                                    <SidebarMenuSubItem key={subItem.title}>
+                                                        <SidebarMenuSubButton asChild isActive={pathname === subItem.url}>
+                                                            <Link className="capitalize" href={subItem.url}>
+                                                                {subItem.title}
+                                                            </Link>
+                                                        </SidebarMenuSubButton>
+                                                    </SidebarMenuSubItem>
+                                                ))}
+                                            </SidebarMenuSub>
+                                        </CollapsibleContent>
+                                    </SidebarMenuItem>
+                                </Collapsible>
+                            </SidebarMenu>
                             <SidebarMenu>
                                 {nav3.map((item) => (
                                     <SidebarMenuItem key={item.href} className={cn({ 'bg-sidebar-accent rounded-md': pathname === item.href })}>

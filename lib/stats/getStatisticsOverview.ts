@@ -16,6 +16,12 @@ type RankedEntity = {
     views: number;
 };
 
+export type StatisticsHeatmapPoint = {
+    day: number; // 0 = dimanche, 1 = lundi...
+    hour: number; // 0 -> 23
+    value: number;
+};
+
 export type StatisticsOverview = {
     totalViews: number;
     mostViewedPhoto: RankedPhoto | null;
@@ -25,6 +31,8 @@ export type StatisticsOverview = {
     leastPhotos: RankedPhoto[];
     topCollections: RankedEntity[];
     topCategories: RankedEntity[];
+    heatmapData: StatisticsHeatmapPoint[];
+    lastPhotosViewed: RankedPhoto[];
 };
 
 type CounterMap = Map<
@@ -52,6 +60,31 @@ function incrementCounter(map: CounterMap, id: string, name: string, srcThumb?: 
         views: 1,
         srcThumb,
         lockedByPassword,
+    });
+}
+
+function incrementHeatmapCounter(map: Map<string, StatisticsHeatmapPoint>, created: string) {
+    const createdAt = new Date(created);
+
+    if (Number.isNaN(createdAt.getTime())) {
+        return;
+    }
+
+    const day = createdAt.getDay(); // 0 = dimanche
+    const hour = createdAt.getHours(); // 0 -> 23
+    const key = `${day}-${hour}`;
+
+    const existing = map.get(key);
+
+    if (existing) {
+        existing.value += 1;
+        return;
+    }
+
+    map.set(key, {
+        day,
+        hour,
+        value: 1,
     });
 }
 
@@ -88,6 +121,7 @@ export async function getStatisticsOverview(range?: StatisticsRange): Promise<St
     const photosMap: CounterMap = new Map();
     const collectionsMap: CounterMap = new Map();
     const categoriesMap: CounterMap = new Map();
+    const heatmapMap = new Map<string, StatisticsHeatmapPoint>();
 
     for (const record of records as any[]) {
         const photo = record.expand?.photo;
@@ -108,6 +142,7 @@ export async function getStatisticsOverview(range?: StatisticsRange): Promise<St
                 pbFileUrl(pb.baseURL, photo, 'image', PB_THUMBS.grid),
                 isLockedByPassword,
             );
+            incrementHeatmapCounter(heatmapMap, record.created);
         }
 
         if (isCollectionVisible) {
@@ -163,6 +198,29 @@ export async function getStatisticsOverview(range?: StatisticsRange): Promise<St
         .slice(0, 5)
         .map(({ id, name, views }) => ({ id, name, views }));
 
+    const heatmapData = Array.from(heatmapMap.values()).sort((a, b) => {
+        if (a.day !== b.day) return a.day - b.day;
+        return a.hour - b.hour;
+    });
+
+    const lastPhotosViewed = (records as any[])
+        .filter((record) => record.expand?.photo && !record.expand?.photo.isHidden)
+        .slice(0, 10)
+        .map((record) => {
+            const photo = record.expand.photo;
+            const collection = record.expand.collection;
+            const category = record.expand.category;
+            const lockedByPassword = Boolean(collection?.lockedByPassword || category?.lockedByPassword);
+
+            return {
+                id: photo.id,
+                name: photo.name ?? 'Untitled photo',
+                views: photo.views ?? 0,
+                srcThumb: pbFileUrl(pb.baseURL, photo, 'image', PB_THUMBS.grid),
+                lockedByPassword,
+            };
+        });
+
     return {
         totalViews: records.length,
         mostViewedPhoto: topPhotos[0] ?? null,
@@ -172,5 +230,7 @@ export async function getStatisticsOverview(range?: StatisticsRange): Promise<St
         leastPhotos,
         topCollections,
         topCategories,
+        lastPhotosViewed,
+        heatmapData,
     };
 }

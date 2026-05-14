@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { IconDots, type Icon } from '@tabler/icons-react';
-import { cn } from '@/lib/utils';
+import { type Icon } from '@tabler/icons-react';
+import { usePathname } from 'next/navigation';
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -31,6 +31,8 @@ export function NavSeries({
     }[];
     label: string;
 }) {
+    const pathname = usePathname();
+
     return (
         <SidebarGroup>
             <SidebarGroupLabel>{label || 'Series'}</SidebarGroupLabel>
@@ -53,7 +55,7 @@ export function NavSeries({
                                     <SidebarMenuSub>
                                         {item.items?.map((subItem) => (
                                             <SidebarMenuSubItem key={subItem.title}>
-                                                <SidebarMenuSubButton asChild>
+                                                <SidebarMenuSubButton asChild isActive={pathname === subItem.url}>
                                                     <Link className="capitalize" href={subItem.url}>
                                                         {subItem.title}
                                                     </Link>

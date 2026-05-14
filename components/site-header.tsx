@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Bell, User, Settings2, HelpCircle, LogOut, LogIn, CircleCheckBig } from 'lucide-react';
+import { Bell, User, Settings2, HelpCircle, LogOut, LogIn, CircleCheckBig, ChartColumnBig } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import Link from 'next/link';
@@ -294,16 +294,22 @@ export function SiteHeader() {
                                 <DropdownMenuGroup>
                                     <DropdownMenuLabel className="text-xs text-muted-foreground">My Account</DropdownMenuLabel>
                                     <Link href="/admin/settings">
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem className="hover:bg-sidebar-accent! hover:text-sidebar-accent-foreground!">
                                             <Settings2 />
                                             Settings
+                                        </DropdownMenuItem>
+                                    </Link>
+                                    <Link href="/admin/statistics/overview">
+                                        <DropdownMenuItem className="hover:bg-sidebar-accent! hover:text-sidebar-accent-foreground!">
+                                            <ChartColumnBig />
+                                            Statistics
                                         </DropdownMenuItem>
                                     </Link>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
                                     <Link href="/admin/help">
-                                        <DropdownMenuItem>
+                                        <DropdownMenuItem className="hover:bg-sidebar-accent! hover:text-sidebar-accent-foreground!">
                                             <HelpCircle />
                                             Support
                                         </DropdownMenuItem>
