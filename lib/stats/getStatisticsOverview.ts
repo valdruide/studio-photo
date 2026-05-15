@@ -17,7 +17,6 @@ type LastViewedPhoto = {
     viewDate: string;
     srcThumb?: string;
     lockedByPassword?: boolean;
-    totalPhotoViews: number;
 };
 
 type RankedEntity = {
@@ -618,7 +617,6 @@ export async function getStatisticsOverview(range?: StatisticsRange): Promise<St
                 id: photo.id,
                 name: photo.name ?? 'Untitled photo',
                 viewDate: viewDate ?? 'N/A',
-                totalPhotoViews: photosMap.get(photo.id)?.views ?? 0,
                 srcThumb: pbFileUrl(pb.baseURL, photo, 'image', PB_THUMBS.grid),
                 lockedByPassword,
             };

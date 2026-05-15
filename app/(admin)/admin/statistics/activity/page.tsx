@@ -110,17 +110,14 @@ export default function ActivityStatisticsPage() {
                                     <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-black/90"></div>
                                     <img src={photo.srcThumb} alt={photo.name} className="h-full w-full object-cover" />
                                     <div className="absolute bottom-0 left-0 right-0 p-3">
-                                        <p className="truncate text-sm font-medium text-white">{photo.name}</p>
                                         <div className="flex justify-between">
+                                            <p className="truncate text-sm font-medium text-white">{photo.name}</p>
                                             <div className="flex gap-1 items-center text-white/70">
                                                 <Clock className="size-4" />
                                                 <p className="text-xs ">
                                                     {new Date(photo.viewDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </div>
-                                            <p className="text-xs ">
-                                                {photo.totalPhotoViews} {photo.totalPhotoViews === 1 ? 'view' : 'views'}
-                                            </p>
                                         </div>
                                     </div>
                                 </div>
