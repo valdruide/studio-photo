@@ -7,6 +7,7 @@ import { TopPhotos } from '@/components/admin/statistics/top-photos';
 import { TopCategoryOrTopCollection } from '@/components/admin/statistics/top-category-and-collection';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TotalViewsChart } from '@/components/admin/statistics/charts/total-views-chart';
+import { TopPhotoEvolutionChart } from '@/components/admin/statistics/charts/top-photo-evolution';
 
 export default function OverviewPage() {
     const { stats, isLoading, error } = useStatistics();
@@ -52,18 +53,11 @@ export default function OverviewPage() {
                 </div>
             </div>
             {/* Period summary */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Period summary</CardTitle>
-                    <CardDescription>Summary of the current period compared to the previous one.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid gap-4 md:grid-cols-2">
-                        <TotalViewsChart data={stats.viewsChartData} trend={stats.trends?.totalViews} />
-                        <TotalViewsChart data={stats.viewsChartData} trend={stats.trends?.totalViews} />
-                    </div>
-                </CardContent>
-            </Card>
+
+            <div className="grid gap-4 md:grid-cols-2 items-start">
+                <TotalViewsChart data={stats.viewsChartData} />
+                <TopPhotoEvolutionChart data={stats.topPhotoEvolution} />
+            </div>
         </div>
     );
 }

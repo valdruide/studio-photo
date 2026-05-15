@@ -38,18 +38,24 @@ type StatisticsClientProps = {
     onRefresh?: () => void;
 };
 
+const DEFAULT_STATS_PRESET = '30d';
+
 export function StatisticsToolbar({ initialPreset, initialFrom, initialTo, onRefresh }: StatisticsClientProps) {
     const normalizedPreset =
-        initialPreset === '24h' || initialPreset === '7d' || initialPreset === '30d' || initialPreset === 'custom' ? initialPreset : 'all';
+        initialPreset === 'all' || initialPreset === '24h' || initialPreset === '7d' || initialPreset === '30d' || initialPreset === 'custom'
+            ? initialPreset
+            : DEFAULT_STATS_PRESET;
+    const defaultTo = new Date();
+    const defaultFrom = addDays(defaultTo, -30);
 
     const [rangePreset, setRangePreset] = useState<'all' | '24h' | '7d' | '30d' | 'custom'>(normalizedPreset);
     const [dateRange, setDateRange] = useState<DateRange | undefined>(
-        initialFrom || initialTo
-            ? {
-                  from: initialFrom ? new Date(initialFrom) : undefined,
-                  to: initialTo ? new Date(initialTo) : undefined,
-              }
-            : undefined,
+        normalizedPreset === 'all'
+            ? undefined
+            : {
+                  from: initialFrom ? new Date(initialFrom) : defaultFrom,
+                  to: initialTo ? new Date(initialTo) : defaultTo,
+              },
     );
 
     const router = useRouter();
@@ -59,7 +65,11 @@ export function StatisticsToolbar({ initialPreset, initialFrom, initialTo, onRef
     function updateUrl(next: { preset?: string; from?: Date; to?: Date }) {
         const params = new URLSearchParams(searchParams.toString());
 
-        if (!next.preset || next.preset === 'all') {
+        if (next.preset === 'all') {
+            params.set('preset', 'all');
+            params.delete('from');
+            params.delete('to');
+        } else if (!next.preset) {
             params.delete('preset');
             params.delete('from');
             params.delete('to');

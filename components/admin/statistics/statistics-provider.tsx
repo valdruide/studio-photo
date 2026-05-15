@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { addDays } from 'date-fns';
 import { StatisticsToolbar } from '@/components/admin/statistics/statistics-toolbar';
 import type { StatisticsOverview } from '@/lib/stats/getStatisticsOverview';
 
@@ -13,6 +14,7 @@ type StatisticsContextValue = {
 };
 
 const StatisticsContext = createContext<StatisticsContextValue | null>(null);
+const DEFAULT_STATS_PRESET = '30d';
 
 export function useStatistics() {
     const context = useContext(StatisticsContext);
@@ -43,6 +45,14 @@ export function StatisticsProvider({ children }: { children: ReactNode }) {
             params.delete('preset');
             params.delete('from');
             params.delete('to');
+        }
+
+        if (!params.has('preset') && !params.has('from') && !params.has('to')) {
+            const now = new Date();
+
+            params.set('preset', DEFAULT_STATS_PRESET);
+            params.set('from', addDays(now, -30).toISOString());
+            params.set('to', now.toISOString());
         }
 
         return params.toString();

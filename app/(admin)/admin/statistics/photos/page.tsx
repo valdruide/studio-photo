@@ -21,7 +21,7 @@ export default function PhotosStatisticsPage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                 <KpiCard title="Total photo views" value={stats.totalViews} icon={<Eye className="size-5" />} trend={stats.trends?.totalViews} />
                 <KpiCard

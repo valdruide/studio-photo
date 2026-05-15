@@ -100,8 +100,8 @@ export default function ActivityStatisticsPage() {
                         {stats.lastPhotosViewed.length === 0 ? (
                             <p className="text-sm text-muted-foreground">No recent views.</p>
                         ) : (
-                            stats.lastPhotosViewed.map((photo) => (
-                                <div key={photo.id} className="group relative aspect-square overflow-hidden rounded-xl border bg-muted/40">
+                            stats.lastPhotosViewed.map((photo, index) => (
+                                <div key={photo.id + index} className="group relative aspect-square overflow-hidden rounded-xl border bg-muted/40">
                                     {photo.lockedByPassword && !showLockedTopPhotos && (
                                         <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl backdrop-blur-lg">
                                             <Lock className="size-6 text-white" />

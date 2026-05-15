@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Folder } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { StatisticsOverview } from '@/lib/stats/getStatisticsOverview';
 import { Button } from '@/components/ui/button';
@@ -25,11 +25,8 @@ export function TopCategoryOrTopCollection({ topCategory, topCollection, maxNumb
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-xl">
-                    <Folder className="size-5 text-primary" />
-                    {type === 'category' ? 'Top categories' : 'Top collections'}
-                </CardTitle>
-                <CardDescription>Ranked by unique photo views.</CardDescription>
+                <CardTitle className="text-xl">{type === 'category' ? 'Top categories' : 'Top collections'}</CardTitle>
+                <CardDescription>Ranked by unique photo views</CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-3">

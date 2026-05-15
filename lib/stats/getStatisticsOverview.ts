@@ -42,6 +42,23 @@ export type StatisticsViewsChartPoint = {
     views: number;
 };
 
+export type StatisticsTopPhotoEvolutionPoint = {
+    day: string;
+    photo1?: number;
+    photo2?: number;
+    photo3?: number;
+};
+
+export type StatisticsTopPhotoEvolutionPhoto = {
+    key: 'photo1' | 'photo2' | 'photo3';
+    id: string;
+    name: string;
+    currentWeekViews: number;
+    previousWeekViews: number;
+    growth: number;
+    srcThumb: string;
+};
+
 export type StatisticsOverview = {
     totalViews: number;
     mostViewedPhoto: RankedPhoto | null;
@@ -53,6 +70,10 @@ export type StatisticsOverview = {
     topCategories: RankedEntity[];
     heatmapData: StatisticsHeatmapPoint[];
     viewsChartData: StatisticsViewsChartPoint[];
+    topPhotoEvolution: {
+        photos: StatisticsTopPhotoEvolutionPhoto[];
+        chartData: StatisticsTopPhotoEvolutionPoint[];
+    };
     lastPhotosViewed: LastViewedPhoto[];
     trends?: {
         totalViews?: KpiTrend;
@@ -316,6 +337,152 @@ function getViewsChartData(records: StatisticRecord[]): StatisticsViewsChartPoin
     return Array.from(buckets.values());
 }
 
+function startOfDay(date: Date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function addDays(date: Date, days: number) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+}
+
+function getDayKey(date: Date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function getPhotoView(record: StatisticRecord, pbBaseUrl: string) {
+    const photo = record.expand?.photo;
+    const collection = record.expand?.collection;
+    const category = record.expand?.category;
+
+    const isCategoryVisible = !!category && !category.isHidden;
+    const isCollectionVisible = !!collection && !collection.isHidden && isCategoryVisible;
+    const isPhotoVisible = !!photo && !photo.isHidden && isCollectionVisible;
+
+    if (!isPhotoVisible) {
+        return null;
+    }
+
+    return {
+        id: photo.id,
+        name: photo.name ?? 'Untitled photo',
+        srcThumb: pbFileUrl(pbBaseUrl, photo, 'image', PB_THUMBS.grid),
+    };
+}
+
+function getGrowthValue(current: number, previous: number) {
+    if (previous === 0) {
+        return current === 0 ? 0 : current * 100;
+    }
+
+    return Math.round(((current - previous) / previous) * 100);
+}
+
+function getTopPhotoEvolution(records: StatisticRecord[], pbBaseUrl: string): StatisticsOverview['topPhotoEvolution'] {
+    const today = startOfDay(new Date());
+    const currentFrom = addDays(today, -6);
+    const nextDay = addDays(today, 1);
+    const previousFrom = addDays(currentFrom, -7);
+    const dayKeys = Array.from({ length: 7 }, (_, index) => {
+        const date = addDays(currentFrom, index);
+
+        return {
+            key: getDayKey(date),
+            label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        };
+    });
+    const photos = new Map<
+        string,
+        {
+            id: string;
+            name: string;
+            srcThumb: string;
+            currentWeekViews: number;
+            previousWeekViews: number;
+            dailyViews: Map<string, number>;
+        }
+    >();
+
+    for (const record of records) {
+        const viewedAt = new Date(record.created);
+
+        if (Number.isNaN(viewedAt.getTime()) || viewedAt < previousFrom || viewedAt >= nextDay) {
+            continue;
+        }
+
+        const photo = getPhotoView(record, pbBaseUrl);
+
+        if (!photo) {
+            continue;
+        }
+
+        const existing = photos.get(photo.id) ?? {
+            id: photo.id,
+            name: photo.name,
+            srcThumb: photo.srcThumb,
+            currentWeekViews: 0,
+            previousWeekViews: 0,
+            dailyViews: new Map<string, number>(),
+        };
+
+        if (viewedAt >= currentFrom) {
+            const dayKey = getDayKey(viewedAt);
+
+            existing.currentWeekViews += 1;
+            existing.dailyViews.set(dayKey, (existing.dailyViews.get(dayKey) ?? 0) + 1);
+        } else {
+            existing.previousWeekViews += 1;
+        }
+
+        photos.set(photo.id, existing);
+    }
+
+    const topPhotos = Array.from(photos.values())
+        .filter((photo) => photo.currentWeekViews > photo.previousWeekViews)
+        .map((photo) => ({
+            ...photo,
+            growth: getGrowthValue(photo.currentWeekViews, photo.previousWeekViews),
+        }))
+        .sort((a, b) => {
+            if (b.growth !== a.growth) return b.growth - a.growth;
+            if (b.currentWeekViews !== a.currentWeekViews) return b.currentWeekViews - a.currentWeekViews;
+            return a.name.localeCompare(b.name);
+        })
+        .slice(0, 3)
+        .map((photo, index) => ({
+            key: `photo${index + 1}` as StatisticsTopPhotoEvolutionPhoto['key'],
+            id: photo.id,
+            name: photo.name,
+            srcThumb: photo.srcThumb,
+            currentWeekViews: photo.currentWeekViews,
+            previousWeekViews: photo.previousWeekViews,
+            growth: photo.growth,
+            dailyViews: photo.dailyViews,
+        }));
+
+    return {
+        photos: topPhotos.map((photo) => ({
+            key: photo.key,
+            id: photo.id,
+            name: photo.name,
+            srcThumb: photo.srcThumb,
+            currentWeekViews: photo.currentWeekViews,
+            previousWeekViews: photo.previousWeekViews,
+            growth: photo.growth,
+        })),
+        chartData: dayKeys.map((day) => {
+            const point: StatisticsTopPhotoEvolutionPoint = {
+                day: day.label,
+            };
+
+            for (const photo of topPhotos) {
+                point[photo.key] = photo.dailyViews.get(day.key) ?? 0;
+            }
+
+            return point;
+        }),
+    };
+}
+
 function getPreviousRange(range?: StatisticsRange): StatisticsRange | null {
     if (!range?.from || !range.to) return null;
 
@@ -349,6 +516,7 @@ export async function getStatisticsOverview(range?: StatisticsRange): Promise<St
     const allRecords = await getStatisticsRecords(pb);
     const { photosMap, collectionsMap, categoriesMap, heatmapMap } = summarizeRecords(records, pb.baseURL);
     const viewsChartData = getViewsChartData(allRecords);
+    const topPhotoEvolution = getTopPhotoEvolution(allRecords, pb.baseURL);
 
     const topPhotos = Array.from(photosMap.values())
         .sort((a, b) => {
@@ -468,6 +636,7 @@ export async function getStatisticsOverview(range?: StatisticsRange): Promise<St
         lastPhotosViewed,
         heatmapData,
         viewsChartData,
+        topPhotoEvolution,
         trends,
     };
 }
