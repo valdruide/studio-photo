@@ -67,13 +67,13 @@ export function StatisticsToolbar({ initialPreset, initialFrom, initialTo, onRef
             params.set('preset', next.preset);
 
             if (next.from) {
-                params.set('from', startOfDay(next.from).toISOString());
+                params.set('from', next.preset === 'custom' ? startOfDay(next.from).toISOString() : next.from.toISOString());
             } else {
                 params.delete('from');
             }
 
             if (next.to) {
-                params.set('to', endOfDay(next.to).toISOString());
+                params.set('to', next.preset === 'custom' ? endOfDay(next.to).toISOString() : next.to.toISOString());
             } else {
                 params.delete('to');
             }

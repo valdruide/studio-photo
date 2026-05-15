@@ -24,6 +24,7 @@ export async function GET(request: Request) {
         try {
             const { searchParams } = new URL(request.url);
             const stats = await getStatisticsOverview({
+                preset: searchParams.get('preset') ?? undefined,
                 from: searchParams.get('from') ?? undefined,
                 to: searchParams.get('to') ?? undefined,
             });
