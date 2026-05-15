@@ -23,17 +23,16 @@ export default function OverviewPage() {
 
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-                <KpiCard title="Total photo views" value={stats.totalViews} icon={<Eye className="size-5" />} />
-                <KpiCard title="Most viewed photo" value={stats.mostViewedPhoto?.name ?? 'N/A'} icon={<ImageIcon className="size-5" />} />
-                <KpiCard title="Best performing category" value={stats.bestCategory?.name ?? 'N/A'} icon={<Folder className="size-5" />} />
-                <KpiCard title="Best performing collection" value={stats.bestCollection?.name ?? 'N/A'} icon={<Layers3 className="size-5" />} />
-            </div>
-
             {/* Top performing photos */}
-            <div className="grid xl:grid-cols-2 gap-4 items-start">
-                <TopPhotos photos={stats.topPhotos} maxNumberOfPhotos={1} isOverview />
-                <div className="grid grid-cols-1 gap-4 xl:grid-cols-1">
+            <div className="grid xl:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <KpiCard title="Total photo views" value={stats.totalViews} icon={<Eye className="size-5" />} />
+                        <KpiCard title="Best performing category" value={stats.bestCategory?.name ?? 'N/A'} icon={<Folder className="size-5" />} />
+                    </div>
+                    <TopPhotos photos={stats.topPhotos} maxNumberOfPhotos={1} isOverview className="flex-1" />
+                </div>
+                <div className="space-y-4">
                     {/* Top categories */}
                     <TopCategoryOrTopCollection topCategory={stats.topCategories} maxNumberOfCategories={2} isOverview type="category" />
                     {/* Top collections */}

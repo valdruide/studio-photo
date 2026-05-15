@@ -21,12 +21,13 @@ type TopPhotosProps = {
     maxNumberOfPhotos: number;
     photos: StatisticsOverview['topPhotos'];
     isOverview?: boolean;
+    className?: string;
 };
 
-export function TopPhotos({ maxNumberOfPhotos, photos, isOverview }: TopPhotosProps) {
+export function TopPhotos({ maxNumberOfPhotos, photos, isOverview, className }: TopPhotosProps) {
     const [showLockedTopPhotos, setShowLockedTopPhotos] = useState(false);
     return (
-        <Card className="overflow-hidden">
+        <Card className={cn('overflow-hidden', className)}>
             <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                     <div>
@@ -73,7 +74,9 @@ export function TopPhotos({ maxNumberOfPhotos, photos, isOverview }: TopPhotosPr
                                 <div className="absolute bottom-0 left-0 right-0 p-3">
                                     <div className="min-w-0">
                                         <p className="truncate text-sm font-medium text-white">{photo.name}</p>
-                                        <p className="text-xs text-white/70">{photo.views} views</p>
+                                        <p className="text-xs text-white/70">
+                                            {photo.views} {photo.views === 1 ? 'view' : 'views'}
+                                        </p>
                                     </div>
                                 </div>
                             </div>

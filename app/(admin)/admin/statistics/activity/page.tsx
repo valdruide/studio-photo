@@ -5,7 +5,7 @@ import { ActivityHeatmap } from '@/components/admin/statistics/heatmap';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Lock } from 'lucide-react';
+import { Clock, Eye, Lock } from 'lucide-react';
 
 export default function ActivityStatisticsPage() {
     const { stats, isLoading, error } = useStatistics();
@@ -111,6 +111,17 @@ export default function ActivityStatisticsPage() {
                                     <img src={photo.srcThumb} alt={photo.name} className="h-full w-full object-cover" />
                                     <div className="absolute bottom-0 left-0 right-0 p-3">
                                         <p className="truncate text-sm font-medium text-white">{photo.name}</p>
+                                        <div className="flex justify-between">
+                                            <div className="flex gap-1 items-center text-white/70">
+                                                <Clock className="size-4" />
+                                                <p className="text-xs ">
+                                                    {new Date(photo.viewDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </p>
+                                            </div>
+                                            <p className="text-xs ">
+                                                {photo.totalPhotoViews} {photo.totalPhotoViews === 1 ? 'view' : 'views'}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             ))

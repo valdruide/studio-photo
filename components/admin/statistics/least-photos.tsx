@@ -51,7 +51,9 @@ export function LeastPhotos({ stats }: LeastPhotosProps) {
                                 <div className="flex items-end justify-between gap-2">
                                     <div className="min-w-0">
                                         <p className="truncate text-sm font-medium text-white">{photo.name}</p>
-                                        <p className="text-xs text-white/70">{photo.views} views</p>
+                                        <p className="text-xs text-white/70">
+                                            {photo.views} {photo.views <= 1 ? 'view' : 'views'}
+                                        </p>
                                     </div>
                                     <TrendingDown className="size-4 shrink-0 text-white/70" />
                                 </div>

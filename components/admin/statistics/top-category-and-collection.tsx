@@ -47,7 +47,9 @@ export function TopCategoryOrTopCollection({ topCategory, topCollection, maxNumb
                         <div className="min-w-0 flex-1">
                             <div className="flex items-center justify-between gap-3">
                                 <p className="truncate font-medium">{item.name}</p>
-                                <span className="text-sm text-muted-foreground">{item.views} photos viewed</span>
+                                <span className="text-sm text-muted-foreground">
+                                    {item.views} {item.views <= 1 ? 'photo viewed' : 'photos viewed'}
+                                </span>
                             </div>
                             <div className="mt-2 h-2 rounded-full bg-muted">
                                 <div className="h-2 rounded-full bg-primary" style={{ width: `${100 - index * 12}%` }} />

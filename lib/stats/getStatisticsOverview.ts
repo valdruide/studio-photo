@@ -10,6 +10,15 @@ type RankedPhoto = {
     lockedByPassword?: boolean;
 };
 
+type LastViewedPhoto = {
+    id: string;
+    name: string;
+    viewDate: string;
+    srcThumb?: string;
+    lockedByPassword?: boolean;
+    totalPhotoViews: number;
+};
+
 type RankedEntity = {
     id: string;
     name: string;
@@ -32,7 +41,7 @@ export type StatisticsOverview = {
     topCollections: RankedEntity[];
     topCategories: RankedEntity[];
     heatmapData: StatisticsHeatmapPoint[];
-    lastPhotosViewed: RankedPhoto[];
+    lastPhotosViewed: LastViewedPhoto[];
 };
 
 type CounterMap = Map<
@@ -211,11 +220,13 @@ export async function getStatisticsOverview(range?: StatisticsRange): Promise<St
             const collection = record.expand.collection;
             const category = record.expand.category;
             const lockedByPassword = Boolean(collection?.lockedByPassword || category?.lockedByPassword);
+            const viewDate = record.created;
 
             return {
                 id: photo.id,
                 name: photo.name ?? 'Untitled photo',
-                views: photo.views ?? 0,
+                viewDate: viewDate ?? 'N/A',
+                totalPhotoViews: photosMap.get(photo.id)?.views ?? 0,
                 srcThumb: pbFileUrl(pb.baseURL, photo, 'image', PB_THUMBS.grid),
                 lockedByPassword,
             };
