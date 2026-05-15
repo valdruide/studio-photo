@@ -110,7 +110,7 @@ export function StatisticsProvider({ children }: { children: ReactNode }) {
 
     return (
         <StatisticsContext.Provider value={value}>
-            <div className="space-y-6">
+            <div className="space-y-4">
                 <StatisticsToolbar
                     key={pathname}
                     initialPreset={searchParams.get('preset') ?? undefined}
