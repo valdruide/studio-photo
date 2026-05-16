@@ -92,11 +92,11 @@ function DialogContentWide({
                 data-slot="dialog-content-wide"
                 className={cn(
                     // ✅ lightbox sizing
-                    'bg-background fixed top-[50%] left-[50%] z-50 translate-x-[-50%] translate-y-[-50%] rounded-lg shadow-lg outline-none',
+                    'bg-background fixed inset-0 z-50 h-screen w-screen max-w-screen p-0 outline-none',
                     // ✅ big + responsive, not limited to sm:max-w-lg
-                    'w-screen max-w-screen',
+                    '',
                     // ✅ no padding by default
-                    'p-0',
+                    '',
                     className,
                 )}
                 {...props}

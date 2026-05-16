@@ -17,7 +17,7 @@ function encode(payload: Record<string, unknown>) {
     return Buffer.from(JSON.stringify(payload)).toString('base64url');
 }
 
-function decode<T = any>(payload: string): T | null {
+function decode<T = unknown>(payload: string): T | null {
     try {
         return JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
     } catch {
@@ -83,6 +83,26 @@ export function verifyCollectionAccessToken(token: string, expectedCollectionId:
 
     if (parsed.type !== 'collection') return false;
     if (parsed.collectionId !== expectedCollectionId) return false;
+    if (typeof parsed.exp !== 'number') return false;
+    if (Date.now() / 1000 > parsed.exp) return false;
+
+    return true;
+}
+
+export function makeProofingGalleryAccessToken(galleryId: string) {
+    return makeSignedToken({
+        type: 'proofing-gallery',
+        galleryId,
+        exp: Math.floor(Date.now() / 1000) + LOCK_ACCESS_TTL_SECONDS,
+    });
+}
+
+export function verifyProofingGalleryAccessToken(token: string, expectedGalleryId: string) {
+    const parsed = verifySignedToken(token);
+    if (!parsed) return false;
+
+    if (parsed.type !== 'proofing-gallery') return false;
+    if (parsed.galleryId !== expectedGalleryId) return false;
     if (typeof parsed.exp !== 'number') return false;
     if (Date.now() / 1000 > parsed.exp) return false;
 

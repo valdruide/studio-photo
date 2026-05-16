@@ -11,7 +11,7 @@ type TopPhotoEvolutionChartProps = {
     data: StatisticsOverview['topPhotoEvolution'];
 };
 
-const lineColors = ['var(--chart-1)', 'var(--chart-4)', 'var(--chart-5)'];
+const lineColors = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)'];
 
 export function TopPhotoEvolutionChart({ data }: TopPhotoEvolutionChartProps) {
     const chartConfig = useMemo(

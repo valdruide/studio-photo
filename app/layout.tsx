@@ -1,8 +1,5 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { AppSidebar } from '@/components/app-sidebar';
-import { SiteHeader } from '@/components/site-header';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import './globals.css';
 import { getGlobalTheme, getSiteSettings } from '@/lib/pb/site-settings';
 import { Toaster } from '@/components/ui/sonner';
@@ -43,21 +40,8 @@ export default async function RootLayout({
     return (
         <html lang="en" data-theme={theme}>
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-                <SidebarProvider
-                    style={
-                        {
-                            '--sidebar-width': 'calc(var(--spacing) * 72)',
-                            '--header-height': 'calc(var(--spacing) * 12)',
-                        } as React.CSSProperties
-                    }
-                >
-                    <AppSidebar variant="inset" />
-                    <SidebarInset>
-                        <SiteHeader />
-                        <div className="p-5">{children}</div>
-                        <Toaster position="top-right" />
-                    </SidebarInset>
-                </SidebarProvider>
+                <div>{children}</div>
+                <Toaster position="top-right" />
             </body>
         </html>
     );

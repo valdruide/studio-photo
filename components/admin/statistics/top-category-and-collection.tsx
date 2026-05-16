@@ -49,7 +49,7 @@ export function TopCategoryOrTopCollection({ topCategory, topCollection, maxNumb
                                 </span>
                             </div>
                             <div className="mt-2 h-2 rounded-full bg-muted">
-                                <div className="h-2 rounded-full bg-primary" style={{ width: `${100 - index * 12}%` }} />
+                                <div className="h-2 rounded-full bg-chart-2" style={{ width: `${100 - index * 12}%` }} />
                             </div>
                         </div>
                     </div>
