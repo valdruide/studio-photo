@@ -50,11 +50,6 @@ const nav2 = [
         icon: Settings2,
     },
     {
-        title: 'Mass Import',
-        href: '/admin/mass-import',
-        icon: Import,
-    },
-    {
         title: 'Help',
         href: '/admin/help',
         icon: HelpCircle,
