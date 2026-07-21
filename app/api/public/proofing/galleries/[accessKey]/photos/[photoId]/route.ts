@@ -35,6 +35,10 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ accessKey
 
         if (!currentPhoto) return new NextResponse('Photo not found', { status: 404 });
 
+        if (hasSelectedUpdate && gallery.status === 'validated') {
+            return NextResponse.json({ message: 'Gallery already validated' }, { status: 423 });
+        }
+
         if (nextSelected === true && !currentPhoto.isSelected) {
             const selectedCount = photos.filter((photo) => photo.isSelected).length;
             if (selectedCount >= gallery.selectionLimit) {

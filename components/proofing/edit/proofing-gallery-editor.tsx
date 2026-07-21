@@ -26,7 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import type { ProofingGallery, ProofingGalleryPhoto } from '@/lib/proofing/getProofingGalleries';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Check, FileText, ImagePlus, Images, Loader2, MessageCircle, Save, Search, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Check, FileText, ImagePlus, Images, Loader2, MessageCircle, Save, Search, Share2, Trash2, X } from 'lucide-react';
 
 type ProofingGalleryEditorProps = {
     gallery: ProofingGallery;
@@ -123,6 +123,17 @@ export function ProofingGalleryEditor({ gallery, photos: initialPhotos }: Proofi
             router.refresh();
         } finally {
             setSaving(false);
+        }
+    }
+
+    async function shareGallery(accessKey: string) {
+        const url = `${window.location.origin}/proofing/galleries/${accessKey}`;
+
+        try {
+            await navigator.clipboard.writeText(url);
+            toast.success('Gallery link copied');
+        } catch {
+            toast.info(url);
         }
     }
 
@@ -374,6 +385,10 @@ export function ProofingGalleryEditor({ gallery, photos: initialPhotos }: Proofi
                                 <div className="grid gap-2">
                                     <Label>Access key</Label>
                                     <Input value={draft.accessKey} onChange={(event) => setDraft({ ...draft, accessKey: event.target.value })} />
+                                    <Button type="button" variant="secondary" onClick={() => shareGallery(draft.accessKey)} disabled={!draft.accessKey.trim()}>
+                                        <Share2 className="size-4" />
+                                        Copy link
+                                    </Button>
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="grid gap-2">

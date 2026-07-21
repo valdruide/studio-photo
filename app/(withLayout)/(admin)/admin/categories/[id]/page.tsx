@@ -46,6 +46,7 @@ export default function AdminCategoryEditPage() {
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [savingPassword, setSavingPassword] = useState(false);
 
     const [cat, setCat] = useState<Category | null>(null);
     const [collections, setCollections] = useState<CollectionRow[]>([]);
@@ -141,6 +142,56 @@ export default function AdminCategoryEditPage() {
         }
     }
 
+    async function savePassword(password: string) {
+        if (!cat) return;
+
+        const nextPassword = password.trim();
+        if (!nextPassword) {
+            toast.error('Password cannot be empty');
+            return;
+        }
+
+        setSavingPassword(true);
+
+        try {
+            const res = await fetch(`/api/admin/categories/${id}`, {
+                method: 'PATCH',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({
+                    title: cat.title,
+                    slug: cat.slug,
+                    order: cat.order,
+                    icon: cat.icon,
+                    color: cat.color,
+                    isHidden: Boolean(cat.isHidden),
+                    allowAll: Boolean(cat.allowAll),
+                    lockedByPassword: true,
+                    password: nextPassword,
+                }),
+            });
+
+            if (res.ok) {
+                const updated = await res.json();
+                setCat({
+                    ...updated,
+                    allowAll: updated.allowAll ?? true,
+                    color: updated.color ?? '#FFFFFF',
+                    icon: updated.icon ?? 'IconFolderFilled',
+                });
+                setNewPassword('');
+                setGeneratePasswordOpen(false);
+                toast.success('Password saved successfully');
+            } else {
+                const errorText = await res.text();
+                toast.error(`Failed to save password: ${res.status} ${errorText}`);
+            }
+        } catch {
+            toast.error('Failed to save password');
+        } finally {
+            setSavingPassword(false);
+        }
+    }
+
     const deleteDialog = useDeleteCategoryDialog({
         onDelete: async (catId: string) => {
             const res = await fetch(`/api/admin/categories/${catId}`, { method: 'DELETE' });
@@ -159,7 +210,7 @@ export default function AdminCategoryEditPage() {
     const handleGeneratePassword = () => {
         const generatedPassword = Array.from({ length: 5 }, () => Math.random().toString(36).substring(2, 8)).join('-');
         setNewGeneratedPassword(generatedPassword);
-        toast.info('New password generated. Click "Apply and copy to clipboard" to use it.');
+        toast.info('New password generated. Click "Apply password" to save it.');
     };
     const copyTextToClipboard = async (text: string) => {
         if (!navigator.clipboard) {
@@ -281,9 +332,19 @@ export default function AdminCategoryEditPage() {
                                                 type={showPassword ? 'text' : 'password'}
                                                 value={newPassword}
                                                 onChange={(e) => setNewPassword(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        savePassword(newPassword);
+                                                    }
+                                                }}
                                             />
                                             <Button variant="outline" size="icon" onClick={() => setShowPassword((v) => !v)}>
                                                 {showPassword ? <EyeOff className="size-4" /> : <EyeIcon className="size-4" />}
+                                            </Button>
+                                            <Button onClick={() => savePassword(newPassword)} disabled={savingPassword || !newPassword.trim()}>
+                                                <Save className="size-4" />
+                                                Apply
                                             </Button>
                                             <Dialog open={generatePasswordOpen} onOpenChange={setGeneratePasswordOpen}>
                                                 <DialogTrigger asChild>
@@ -338,11 +399,8 @@ export default function AdminCategoryEditPage() {
                                                                 Copy
                                                             </Button>
                                                             <Button
-                                                                onClick={() => {
-                                                                    setNewPassword(newGeneratedPassword);
-                                                                    setGeneratePasswordOpen(false);
-                                                                    toast.success('New password applied');
-                                                                }}
+                                                                onClick={() => savePassword(newGeneratedPassword)}
+                                                                disabled={savingPassword || !newGeneratedPassword.trim()}
                                                             >
                                                                 <Save className="size-4" />
                                                                 Apply password

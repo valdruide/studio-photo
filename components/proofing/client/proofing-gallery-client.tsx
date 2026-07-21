@@ -102,7 +102,8 @@ export function ProofingGalleryClient({ gallery: initialGallery, photos: initial
 
         if (!response.ok) {
             setPhotos(previous);
-            if (response.status === 409) toast.error('Selection limit reached');
+            if (response.status === 423) toast.error('Gallery already validated');
+            else if (response.status === 409) toast.error('Selection limit reached');
             else toast.error('Photo update failed');
             return;
         }
@@ -112,6 +113,11 @@ export function ProofingGalleryClient({ gallery: initialGallery, photos: initial
     }
 
     function toggleSelected(photo: ProofingGalleryPhoto) {
+        if (isValidated) {
+            toast.error('Gallery already validated');
+            return;
+        }
+
         if (!photo.isSelected && selectionLimitReached) {
             toast.error('Selection limit reached');
             return;
@@ -264,6 +270,7 @@ export function ProofingGalleryClient({ gallery: initialGallery, photos: initial
                                         photo={photo}
                                         saving={savingPhotoId === photo.id}
                                         selectionLimitReached={selectionLimitReached}
+                                        isValidated={isValidated}
                                         onOpen={openPhoto}
                                         onToggleSelected={toggleSelected}
                                     />
@@ -303,7 +310,7 @@ export function ProofingGalleryClient({ gallery: initialGallery, photos: initial
                 onActiveIdChange={setActivePhotoId}
                 renderDetails={(photo) => {
                     const saving = savingPhotoId === photo.id;
-                    const selectDisabled = !photo.isSelected && selectionLimitReached;
+                    const selectDisabled = isValidated || (!photo.isSelected && selectionLimitReached);
 
                     return (
                         <div className="space-y-4 mt-3">
@@ -340,16 +347,18 @@ function ClientPhotoTile({
     photo,
     saving,
     selectionLimitReached,
+    isValidated,
     onOpen,
     onToggleSelected,
 }: {
     photo: ProofingGalleryPhoto;
     saving: boolean;
     selectionLimitReached: boolean;
+    isValidated: boolean;
     onOpen: (photoId: string) => void;
     onToggleSelected: (photo: ProofingGalleryPhoto) => void;
 }) {
-    const selectDisabled = !photo.isSelected && selectionLimitReached;
+    const selectDisabled = isValidated || (!photo.isSelected && selectionLimitReached);
 
     return (
         <article className="overflow-hidden rounded-md border bg-card relative group">
@@ -457,7 +466,7 @@ function SelectionDrawer({
                                             type="button"
                                             variant="destructive"
                                             size="icon"
-                                            disabled={savingPhotoId === photo.id}
+                                            disabled={isValidated || savingPhotoId === photo.id}
                                             onClick={() => onToggleSelected(photo)}
                                         >
                                             {savingPhotoId === photo.id ? <Loader2 className="size-4 animate-spin" /> : <Minus className="size-4" />}
@@ -472,7 +481,7 @@ function SelectionDrawer({
                         </div>
                     )}
                     {/* while max selected photos is not reached -> add a blank square to indicate available slots */}
-                    {selectedCount < selectionLimit ? (
+                    {!isValidated && selectedCount < selectionLimit ? (
                         <>
                             {Array.from({ length: selectionLimit - selectedCount }).map((_, index) => (
                                 <div
