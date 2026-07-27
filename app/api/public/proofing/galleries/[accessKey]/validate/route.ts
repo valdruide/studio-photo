@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyProofingGalleryAccessToken } from '@/lib/accessWhenLockedByPassword';
-import { getProofingGalleryPasswordAccess, updateProofingGallery } from '@/lib/proofing/getProofingGalleries';
+import { createLocalNotification } from '@/lib/notifications/notifications';
+import {
+    getProofingGallery,
+    getProofingGalleryPasswordAccess,
+    getProofingGalleryPhotos,
+    updateProofingGallery,
+} from '@/lib/proofing/getProofingGalleries';
 
 export const runtime = 'nodejs';
 
@@ -16,10 +22,34 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ accessKey:
 
         if (!hasAccess) return new NextResponse('Unauthorized', { status: 401 });
 
+        const [gallery, photos] = await Promise.all([getProofingGallery(accessKey), getProofingGalleryPhotos(galleryAccess.id)]);
+        const wasAlreadyValidated = gallery.status === 'validated';
+        const selectedCount = photos.filter((photo) => photo.isSelected).length;
+
         const updated = await updateProofingGallery(galleryAccess.id, {
             status: 'validated',
             validatedAt: new Date().toISOString(),
         });
+
+        if (!wasAlreadyValidated) {
+            try {
+                await createLocalNotification({
+                    title: 'Gallery validated',
+                    message: `The gallery "${updated.title}" was validated with ${selectedCount} selected photo${selectedCount > 1 ? 's' : ''}.`,
+                    type: 'proofing_gallery_validated',
+                    targetUrl: `/proofing/edit/${updated.id}`,
+                    metadata: {
+                        galleryId: updated.id,
+                        galleryTitle: updated.title,
+                        clientName: updated.clientName,
+                        clientEmail: updated.clientEmail,
+                        selectedCount,
+                    },
+                });
+            } catch (notificationError) {
+                console.error('Failed to create proofing validation notification:', notificationError);
+            }
+        }
 
         return NextResponse.json(updated);
     } catch (err) {

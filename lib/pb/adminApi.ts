@@ -1,11 +1,20 @@
 import 'server-only';
 import { NextResponse } from 'next/server';
-import { getPBAdmin, requireAdmin } from './adminServer';
+import { exportAdminAuthCookie, getPBAdminFromCookie, getPBAdminFromCurrentCookies } from './adminServer';
 
-export async function withAdmin<T>(fn: (pb: Awaited<ReturnType<typeof getPBAdmin>>) => Promise<T>) {
-    const pb = await getPBAdmin();
-    if (!requireAdmin(pb)) {
+type AdminPocketBase = NonNullable<Awaited<ReturnType<typeof getPBAdminFromCookie>>>;
+
+export async function withAdmin<T>(fn: (pb: AdminPocketBase) => Promise<T>, req?: Request) {
+    const pb = req ? await getPBAdminFromCookie(req.headers.get('cookie')) : await getPBAdminFromCurrentCookies();
+    if (!pb) {
         return new NextResponse('Unauthorized', { status: 401 });
     }
-    return fn(pb);
+
+    const result = await fn(pb);
+
+    if (result instanceof NextResponse) {
+        result.headers.append('Set-Cookie', exportAdminAuthCookie(pb));
+    }
+
+    return result;
 }

@@ -1,10 +1,11 @@
 // app\(admin)\admin\notifications\page.tsx
 'use client';
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { CircleCheckBig, EyeOff, ChevronRight, ChevronLeft } from 'lucide-react';
+import { CircleCheckBig, EyeOff, ChevronRight, ChevronLeft, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu';
 import { PaginationEllipsisJump } from '@/components/pagination-ellipsis-jump';
@@ -14,6 +15,7 @@ type Notification = {
     id: string;
     title: string;
     message: string;
+    targetUrl?: string;
     isRead: boolean;
     created: string;
 };
@@ -273,14 +275,25 @@ const NotificationsCard = ({
             <ContextMenuTrigger>
                 <Card
                     className={cn(
-                        `relative mt-2 gap-0 border py-4 ${!notification.isRead ? 'bg-accent/20' : 'bg-sidebar-accent'}`,
-                        !notification.isRead ? 'cursor-pointer transition-colors hover:bg-primary/6' : '',
+                        `relative mt-2 gap-0 border py-4 ${!notification.isRead ? 'bg-sidebar-accent' : 'bg-accent/20'}`,
+                        !notification.isRead ? 'transition-colors' : '',
                     )}
-                    onClick={() => !notification.isRead && markAsRead(notification.id)}
                 >
-                    {!notification.isRead && <div className="absolute -top-2 -right-2 size-4 rounded-full bg-destructive" />}
+                    {!notification.isRead ? (
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="absolute right-3 top-3 z-10 size-8"
+                            onClick={() => markAsRead(notification.id)}
+                            aria-label="Mark notification as read"
+                            title="Mark as read"
+                        >
+                            <CircleCheckBig className="size-4" />
+                        </Button>
+                    ) : null}
 
-                    <CardHeader>
+                    <CardHeader className={!notification.isRead ? 'pr-14' : undefined}>
                         <div className="flex w-full items-center gap-2">
                             <CardTitle>{notification.title}</CardTitle>-
                             <CardDescription>Received at {new Date(notification.created).toLocaleString()}</CardDescription>
@@ -289,6 +302,14 @@ const NotificationsCard = ({
 
                     <CardContent>
                         {notification.message ? <div dangerouslySetInnerHTML={{ __html: notification.message }} /> : 'No message available.'}
+                        {notification.targetUrl ? (
+                            <Button asChild variant="outline" size="sm" className="mt-4">
+                                <Link href={notification.targetUrl}>
+                                    <ExternalLink className="size-4" />
+                                    Open gallery
+                                </Link>
+                            </Button>
+                        ) : null}
                     </CardContent>
                 </Card>
             </ContextMenuTrigger>

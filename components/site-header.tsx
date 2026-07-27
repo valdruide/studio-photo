@@ -24,6 +24,7 @@ type Notification = {
     id: string;
     title: string;
     message: string;
+    targetUrl?: string;
     isRead: boolean;
     created: string;
 };
@@ -180,22 +181,12 @@ export function SiteHeader() {
     }
 
     async function handleLogout() {
-        try {
-            const res = await fetch('/api/admin/logout', {
-                method: 'POST',
-            });
-
-            if (!res.ok) {
-                toast.error('Logout failed');
-                return;
-            }
-
-            router.push('/');
-            router.refresh();
-        } catch (error) {
-            console.error('Logout failed:', error);
-            toast.error('Logout failed');
-        }
+        setIsAdmin(false);
+        setDropdownIsOpen(false);
+        setNotificationsPopoverOpen(false);
+        setUnreadNotificationsCount(0);
+        setLatestNotifications([]);
+        window.location.assign('/api/admin/logout');
     }
 
     function handleCloseAuto() {
@@ -281,7 +272,22 @@ export function SiteHeader() {
                                     <div className="divide-y">
                                         {latestNotifications.map((notification) => (
                                             <div key={notification.id}>
-                                                <div className="py-2 px-4">
+                                                <div
+                                                    role={notification.targetUrl ? 'button' : undefined}
+                                                    tabIndex={notification.targetUrl ? 0 : undefined}
+                                                    className={cn('py-2 px-4', notification.targetUrl && 'cursor-pointer hover:bg-sidebar-accent')}
+                                                    onClick={() => {
+                                                        if (!notification.targetUrl) return;
+                                                        setNotificationsPopoverOpen(false);
+                                                        router.push(notification.targetUrl);
+                                                    }}
+                                                    onKeyDown={(event) => {
+                                                        if (!notification.targetUrl || (event.key !== 'Enter' && event.key !== ' ')) return;
+                                                        event.preventDefault();
+                                                        setNotificationsPopoverOpen(false);
+                                                        router.push(notification.targetUrl);
+                                                    }}
+                                                >
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div className="space-y-1">
                                                             <div className="flex items-center gap-2">
@@ -361,7 +367,13 @@ export function SiteHeader() {
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem variant="destructive" onClick={handleLogout}>
+                                    <DropdownMenuItem
+                                        variant="destructive"
+                                        onSelect={(event) => {
+                                            event.preventDefault();
+                                            void handleLogout();
+                                        }}
+                                    >
                                         <LogOut className="text-destructive" />
                                         Log out
                                     </DropdownMenuItem>
