@@ -74,7 +74,7 @@ export default function HomePage() {
                                 Des images, des matières et des ambiances pensées comme des pièces à part entière
                             </p>
                             <p className="text-base leading-7 text-muted-foreground sm:text-lg">
-                                J'explore la photographie et la création visuelle à travers des compositions sensibles, texturées et parfois plus
+                                J&apos;explore la photographie et la création visuelle à travers des compositions sensibles, texturées et parfois plus
                                 expérimentales. Cette page présente un aperçu de mon univers, entre séries, recherches esthétiques et images
                                 construites.
                             </p>

@@ -6,6 +6,7 @@ import {
     getProofingGalleryPhotos,
     updateProofingGalleryPhoto,
 } from '@/lib/proofing/getProofingGalleries';
+import { isPublicProofingGalleryAccessible } from '@/lib/proofing/publicProofingAccess';
 
 export const runtime = 'nodejs';
 
@@ -15,6 +16,8 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ accessKey
         if (!accessKey || !photoId) return new NextResponse('Missing accessKey or photoId', { status: 400 });
 
         const galleryAccess = await getProofingGalleryPasswordAccess(accessKey);
+        if (!isPublicProofingGalleryAccessible(galleryAccess)) return new NextResponse('Not found', { status: 404 });
+
         const token = req.cookies.get(`proof_access_${galleryAccess.id}`)?.value;
         const hasAccess =
             !galleryAccess.hasPassword || (token ? verifyProofingGalleryAccessToken(token, galleryAccess.id) : false);
@@ -35,7 +38,7 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ accessKey
 
         if (!currentPhoto) return new NextResponse('Photo not found', { status: 404 });
 
-        if (hasSelectedUpdate && gallery.status === 'validated') {
+        if (gallery.status === 'validated') {
             return NextResponse.json({ message: 'Gallery already validated' }, { status: 423 });
         }
 

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { LOCK_ACCESS_TTL_SECONDS, makeProofingGalleryAccessToken } from '@/lib/accessWhenLockedByPassword';
 import { verifyLockPassword } from '@/lib/passwordLock';
 import { getProofingGalleryPasswordAccess } from '@/lib/proofing/getProofingGalleries';
+import { isPublicProofingGalleryAccessible } from '@/lib/proofing/publicProofingAccess';
 
 export const runtime = 'nodejs';
 
@@ -16,6 +17,10 @@ export async function POST(req: Request, ctx: { params: Promise<{ accessKey: str
         }
 
         const gallery = await getProofingGalleryPasswordAccess(accessKey);
+
+        if (!isPublicProofingGalleryAccessible(gallery)) {
+            return NextResponse.json({ ok: false, message: 'Gallery not found' }, { status: 404 });
+        }
 
         if (!gallery.hasPassword) {
             return NextResponse.json({ ok: true });

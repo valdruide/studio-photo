@@ -1,7 +1,9 @@
 import 'server-only';
 
+import sanitizeHtml from 'sanitize-html';
 import type { RecordModel } from 'pocketbase';
 import { getPBAdmin } from '@/lib/pb/adminServer';
+import { normalizeInternalUrl } from '@/lib/security/internalUrl';
 
 const LOCAL_NOTIFICATIONS_COLLECTION = 'local_notifications';
 const NOTIFICATION_READS_COLLECTION = 'notification_reads';
@@ -62,6 +64,44 @@ function withLocalPrefix(id: string) {
     return `${LOCAL_NOTIFICATION_PREFIX}${id}`;
 }
 
+function sanitizeNotificationMessage(value?: string) {
+    if (!value) return '';
+
+    return sanitizeHtml(value, {
+        allowedTags: [
+            'div',
+            'p',
+            'br',
+            'strong',
+            'b',
+            'em',
+            'i',
+            'u',
+            'h2',
+            'h3',
+            'h4',
+            'ul',
+            'ol',
+            'li',
+            'blockquote',
+            'a',
+            'code',
+            'pre',
+            'span',
+            'small',
+        ],
+        allowedAttributes: {
+            '*': ['class'],
+            a: ['href', 'title', 'target', 'rel', 'class'],
+        },
+        allowedSchemes: ['http', 'https', 'mailto'],
+        allowProtocolRelative: false,
+        transformTags: {
+            a: sanitizeHtml.simpleTransform('a', { rel: 'noopener noreferrer' }, true),
+        },
+    });
+}
+
 async function getGlobalNotifications(): Promise<NotificationItem[]> {
     const apiUrl = process.env.NOTIFICATIONS_API_URL;
     const clientKey = process.env.NOTIFICATIONS_CLIENT_KEY;
@@ -84,8 +124,8 @@ async function getGlobalNotifications(): Promise<NotificationItem[]> {
     return (result.items ?? []).map((notification) => ({
         id: withGlobalPrefix(notification.id),
         title: notification.title,
-        message: notification.message ?? '',
-        targetUrl: notification.targetUrl,
+        message: sanitizeNotificationMessage(notification.message),
+        targetUrl: normalizeInternalUrl(notification.targetUrl),
         created: notification.created,
         isRead: false,
     }));
@@ -99,8 +139,8 @@ async function getLocalNotifications(pb: Awaited<ReturnType<typeof getPBAdmin>>)
     return records.map((notification) => ({
         id: withLocalPrefix(notification.id),
         title: notification.title,
-        message: notification.message ?? '',
-        targetUrl: notification.targetUrl,
+        message: sanitizeNotificationMessage(notification.message),
+        targetUrl: normalizeInternalUrl(notification.targetUrl),
         created: notification.created,
         isRead: false,
     }));
@@ -201,9 +241,9 @@ export async function createLocalNotification(input: CreateLocalNotificationInpu
 
     return pb.collection(LOCAL_NOTIFICATIONS_COLLECTION).create({
         title: input.title,
-        message: input.message ?? '',
+        message: sanitizeNotificationMessage(input.message),
         type: input.type ?? '',
-        targetUrl: input.targetUrl ?? '',
+        targetUrl: normalizeInternalUrl(input.targetUrl) ?? '',
         metadata: input.metadata ?? null,
     });
 }

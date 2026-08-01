@@ -1,6 +1,6 @@
 // app\(admin)\admin\notifications\page.tsx
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { ContextMenu, ContextMenuContent, ContextMenuGroup, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu';
 import { PaginationEllipsisJump } from '@/components/pagination-ellipsis-jump';
 import { getPaginationItems } from '@/lib/pagination/pagination';
+import { normalizeInternalUrl } from '@/lib/security/internalUrl';
 
 type Notification = {
     id: string;
@@ -37,7 +38,7 @@ export default function AdminNotificationsPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
 
-    const fetchNotifications = async () => {
+    const fetchNotifications = useCallback(async () => {
         try {
             setIsLoading(true);
             setError(null);
@@ -62,11 +63,11 @@ export default function AdminNotificationsPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [page, perPage]);
 
     useEffect(() => {
         fetchNotifications();
-    }, [page, perPage]);
+    }, [fetchNotifications]);
 
     const goToPage = (value: number) => {
         const safePage = Math.max(1, Math.min(totalPages, value));
@@ -270,6 +271,8 @@ const NotificationsCard = ({
     markAsRead: (id: string) => void;
     markAsUnread: (id: string) => void;
 }) => {
+    const targetUrl = normalizeInternalUrl(notification.targetUrl);
+
     return (
         <ContextMenu>
             <ContextMenuTrigger>
@@ -302,9 +305,9 @@ const NotificationsCard = ({
 
                     <CardContent>
                         {notification.message ? <div dangerouslySetInnerHTML={{ __html: notification.message }} /> : 'No message available.'}
-                        {notification.targetUrl ? (
+                        {targetUrl ? (
                             <Button asChild variant="outline" size="sm" className="mt-4">
-                                <Link href={notification.targetUrl}>
+                                <Link href={targetUrl}>
                                     <ExternalLink className="size-4" />
                                     Open gallery
                                 </Link>

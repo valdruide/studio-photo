@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Popover, PopoverContent, PopoverTrigger, PopoverTitle, PopoverDescription } from '@/components/ui/popover';
+import { normalizeInternalUrl } from '@/lib/security/internalUrl';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,6 +20,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { BreadcrumbsHeader } from './breadcrumbs';
 
 type Notification = {
     id: string;
@@ -221,6 +223,8 @@ export function SiteHeader() {
                 <SidebarTrigger className="-ml-1" />
                 <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
                 <h1 className="text-base font-medium">{siteTitle}</h1>
+                <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
+                <BreadcrumbsHeader pathname={pathname} />
             </div>
             <div className="px-4 flex">
                 {isAdmin && (
@@ -270,44 +274,51 @@ export function SiteHeader() {
                                     </div>
                                 ) : (
                                     <div className="divide-y">
-                                        {latestNotifications.map((notification) => (
-                                            <div key={notification.id}>
-                                                <div
-                                                    role={notification.targetUrl ? 'button' : undefined}
-                                                    tabIndex={notification.targetUrl ? 0 : undefined}
-                                                    className={cn('py-2 px-4', notification.targetUrl && 'cursor-pointer hover:bg-sidebar-accent')}
-                                                    onClick={() => {
-                                                        if (!notification.targetUrl) return;
-                                                        setNotificationsPopoverOpen(false);
-                                                        router.push(notification.targetUrl);
-                                                    }}
-                                                    onKeyDown={(event) => {
-                                                        if (!notification.targetUrl || (event.key !== 'Enter' && event.key !== ' ')) return;
-                                                        event.preventDefault();
-                                                        setNotificationsPopoverOpen(false);
-                                                        router.push(notification.targetUrl);
-                                                    }}
-                                                >
-                                                    <div className="flex items-start justify-between gap-3">
-                                                        <div className="space-y-1">
-                                                            <div className="flex items-center gap-2">
-                                                                <p className="text-sm font-medium leading-none line-clamp-1">{notification.title}</p>-
-                                                                <p className="text-xs text-muted-foreground shrink-0">
-                                                                    {new Date(notification.created).toLocaleString()}
+                                        {latestNotifications.map((notification) => {
+                                            const targetUrl = normalizeInternalUrl(notification.targetUrl);
+
+                                            return (
+                                                <div key={notification.id}>
+                                                    <div
+                                                        role={targetUrl ? 'button' : undefined}
+                                                        tabIndex={targetUrl ? 0 : undefined}
+                                                        className={cn('py-2 px-4', targetUrl && 'cursor-pointer hover:bg-sidebar-accent')}
+                                                        onClick={() => {
+                                                            if (!targetUrl) return;
+                                                            setNotificationsPopoverOpen(false);
+                                                            router.push(targetUrl);
+                                                        }}
+                                                        onKeyDown={(event) => {
+                                                            if (!targetUrl || (event.key !== 'Enter' && event.key !== ' ')) return;
+                                                            event.preventDefault();
+                                                            setNotificationsPopoverOpen(false);
+                                                            router.push(targetUrl);
+                                                        }}
+                                                    >
+                                                        <div className="flex items-start justify-between gap-3">
+                                                            <div className="space-y-1">
+                                                                <div className="flex items-center gap-2">
+                                                                    <p className="text-sm font-medium leading-none line-clamp-1">
+                                                                        {notification.title}
+                                                                    </p>
+                                                                    -
+                                                                    <p className="text-xs text-muted-foreground shrink-0">
+                                                                        {new Date(notification.created).toLocaleString()}
+                                                                    </p>
+                                                                </div>
+                                                                <p className="text-sm text-muted-foreground line-clamp-2">
+                                                                    {notification.message
+                                                                        ? htmlToPlainText(notification.message)
+                                                                        : 'No message available.'}
                                                                 </p>
                                                             </div>
-                                                            <p className="text-sm text-muted-foreground line-clamp-2">
-                                                                {notification.message
-                                                                    ? htmlToPlainText(notification.message)
-                                                                    : 'No message available.'}
-                                                            </p>
-                                                        </div>
 
-                                                        <span className="mt-1 size-2 shrink-0 rounded-full bg-destructive" />
+                                                            <span className="mt-1 size-2 shrink-0 rounded-full bg-destructive" />
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>

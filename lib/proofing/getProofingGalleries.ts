@@ -169,6 +169,8 @@ export async function getProofingGalleryPasswordAccess(idOrAccessKey: string) {
         accessKey: String(record.accessKey ?? ''),
         hasPassword: Boolean(record.passwordHash),
         passwordHash: String(record.passwordHash ?? ''),
+        expiresAt: normalizeDate(record.expiresAt),
+        status: normalizeStatus(record.status),
     };
 }
 

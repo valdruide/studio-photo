@@ -5,7 +5,7 @@ import { ActivityHeatmap } from '@/components/admin/statistics/heatmap';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Clock, Eye, Lock } from 'lucide-react';
+import { CalendarDays, Clock, Lock } from 'lucide-react';
 
 export default function ActivityStatisticsPage() {
     const { stats, isLoading, error } = useStatistics();
@@ -100,28 +100,39 @@ export default function ActivityStatisticsPage() {
                         {stats.lastPhotosViewed.length === 0 ? (
                             <p className="text-sm text-muted-foreground">No recent views.</p>
                         ) : (
-                            stats.lastPhotosViewed.map((photo, index) => (
-                                <div key={photo.id + index} className="group relative aspect-square overflow-hidden rounded-xl border bg-muted/40">
-                                    {photo.lockedByPassword && !showLockedTopPhotos && (
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl backdrop-blur-lg">
-                                            <Lock className="size-6 text-white" />
-                                        </div>
-                                    )}
-                                    <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-black/90"></div>
-                                    <img src={photo.srcThumb} alt={photo.name} className="h-full w-full object-cover" />
-                                    <div className="absolute bottom-0 left-0 right-0 p-3">
-                                        <div className="flex justify-between">
-                                            <p className="truncate text-sm font-medium text-white">{photo.name}</p>
-                                            <div className="flex gap-1 items-center text-white/70">
-                                                <Clock className="size-4" />
-                                                <p className="text-xs ">
-                                                    {new Date(photo.viewDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </p>
+                            stats.lastPhotosViewed.map((photo, index) => {
+                                const viewedAt = new Date(photo.viewDate);
+                                const hasValidViewDate = !Number.isNaN(viewedAt.getTime());
+
+                                return (
+                                    <div key={photo.id + index} className="group relative aspect-square overflow-hidden rounded-xl border bg-muted/40">
+                                        {photo.lockedByPassword && !showLockedTopPhotos && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl backdrop-blur-lg">
+                                                <Lock className="size-6 text-white" />
+                                            </div>
+                                        )}
+                                        <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-black/90"></div>
+                                        <img src={photo.srcThumb} alt={photo.name} className="h-full w-full object-cover" />
+                                        <div className="absolute bottom-0 left-0 right-0 p-3">
+                                            <div className="flex items-end justify-between gap-2">
+                                                <p className="min-w-0 truncate text-sm font-medium text-white">{photo.name}</p>
+                                                <time dateTime={photo.viewDate} className="shrink-0 text-right text-xs text-white/75">
+                                                    <span className="flex items-center justify-end gap-1">
+                                                        <CalendarDays className="size-3.5" />
+                                                        {hasValidViewDate ? viewedAt.toLocaleDateString('fr-FR') : 'N/A'}
+                                                    </span>
+                                                    <span className="mt-0.5 flex items-center justify-end gap-1">
+                                                        <Clock className="size-3.5" />
+                                                        {hasValidViewDate
+                                                            ? viewedAt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+                                                            : 'N/A'}
+                                                    </span>
+                                                </time>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
                 </CardContent>

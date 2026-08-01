@@ -1,23 +1,9 @@
 import { NextResponse } from 'next/server';
 import PocketBase from 'pocketbase';
-import { cookies } from 'next/headers';
+import type { RecordModel } from 'pocketbase';
+import { getPBAdminFromCookie } from '@/lib/pb/adminServer';
 
-// Limite à 10 secondes pour éviter les vues multiples lors du rafraîchissement de la page.
-// N'utiliser seulement que pour les tests en local.
-// En production utiliser getOneMinuteBucket() pour limiter à 1 minute.
-function getTenSecondBucket(date = new Date()) {
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-
-    const bucketSeconds = Math.floor(date.getUTCSeconds() / 10) * 10;
-    const seconds = String(bucketSeconds).padStart(2, '0');
-
-    return `${year}-${month}-${day}_${hours}:${minutes}:${seconds}`;
-}
-
+// Group repeated views by minute to avoid counting refresh spam as new activity.
 function getOneMinuteBucket(date = new Date()) {
     const year = date.getUTCFullYear();
     const month = String(date.getUTCMonth() + 1).padStart(2, '0');
@@ -30,29 +16,89 @@ function getOneMinuteBucket(date = new Date()) {
     return `${year}-${month}-${day}_${hours}:${minutes}`;
 }
 
+function asIdList(value: unknown) {
+    if (Array.isArray(value)) return value.map(String);
+    if (typeof value === 'string') return [value];
+    return [];
+}
+
+function relationContains(value: unknown, expectedId: string) {
+    return asIdList(value).includes(expectedId);
+}
+
+function isValidVisitorId(value: unknown) {
+    return typeof value === 'string' && value.length >= 8 && value.length <= 128 && /^[a-zA-Z0-9_.:-]+$/.test(value);
+}
+
+async function validateVisiblePhotoViewTarget(
+    pb: PocketBase,
+    {
+        photoId,
+        collectionId,
+        categoryId,
+    }: {
+        photoId: string;
+        collectionId: string;
+        categoryId: string;
+    },
+) {
+    const [photo, collection, category] = await Promise.all([
+        pb.collection('photos').getOne<RecordModel>(photoId).catch(() => null),
+        pb.collection('photo_collections').getOne<RecordModel>(collectionId).catch(() => null),
+        pb.collection('categories').getOne<RecordModel>(categoryId).catch(() => null),
+    ]);
+
+    if (!photo || !collection || !category) return false;
+    if (Boolean(photo.isHidden) || Boolean(collection.isHidden) || Boolean(category.isHidden)) return false;
+    if (!relationContains(photo.collection, collectionId)) return false;
+    if (!relationContains(collection.category, categoryId)) return false;
+
+    return true;
+}
+
+function getPocketBaseErrorData(error: unknown) {
+    if (typeof error !== 'object' || error === null || !('response' in error)) {
+        return { message: '', data: {} as Record<string, unknown> };
+    }
+
+    const response = (error as { response?: { message?: unknown; data?: unknown } }).response;
+
+    return {
+        message: typeof response?.message === 'string' ? response.message : '',
+        data: typeof response?.data === 'object' && response.data !== null ? response.data as Record<string, unknown> : {},
+    };
+}
+
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { photoId, collectionId, categoryId, visitorId } = body ?? {};
+        const photoId = typeof body?.photoId === 'string' ? body.photoId.trim() : '';
+        const collectionId = typeof body?.collectionId === 'string' ? body.collectionId.trim() : '';
+        const categoryId = typeof body?.categoryId === 'string' ? body.categoryId.trim() : '';
+        const visitorId = typeof body?.visitorId === 'string' ? body.visitorId.trim() : '';
 
         if (!photoId || !collectionId || !categoryId || !visitorId) {
             return NextResponse.json({ ok: false, error: 'Missing required fields' }, { status: 400 });
         }
 
+        if (!isValidVisitorId(visitorId)) {
+            return NextResponse.json({ ok: false, error: 'Invalid visitorId' }, { status: 400 });
+        }
+
         const pb = new PocketBase(process.env.NEXT_PUBLIC_PB_URL);
 
-        // Charger le cookie utilisateur
-        const cookieStore = await cookies();
-        pb.authStore.loadFromCookie(cookieStore.toString());
-
-        // Si admin connecté → skip la comptabilisation de la vue pour ne pas poluer les stats
-        if (pb.authStore.isValid) {
+        // Si admin connecté, skip la comptabilisation de la vue pour ne pas polluer les stats.
+        if (await getPBAdminFromCookie(req.headers.get('cookie'))) {
             console.log('View skipped (admin)');
             return NextResponse.json({ ok: true, skipped: 'admin' });
         }
 
-        const bucketKey = getOneMinuteBucket(); // À utiliser en production pour limiter à 1 minute
-        // const bucketKey = getTenSecondBucket(); // À utiliser pour les tests en local, limite à 10 secondes
+        const isValidTarget = await validateVisiblePhotoViewTarget(pb, { photoId, collectionId, categoryId });
+        if (!isValidTarget) {
+            return NextResponse.json({ ok: false, error: 'Invalid photo target' }, { status: 404 });
+        }
+
+        const bucketKey = getOneMinuteBucket();
         const viewKey = `${photoId}_${visitorId}_${bucketKey}`;
 
         try {
@@ -65,9 +111,8 @@ export async function POST(req: Request) {
             });
 
             return NextResponse.json({ ok: true, created: true });
-        } catch (error: any) {
-            const message = error?.response?.message ?? '';
-            const data = error?.response?.data ?? {};
+        } catch (error: unknown) {
+            const { message, data } = getPocketBaseErrorData(error);
 
             const isDuplicate = message.toLowerCase().includes('unique') || !!data?.viewKey;
 

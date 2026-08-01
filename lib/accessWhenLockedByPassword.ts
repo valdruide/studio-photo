@@ -1,6 +1,13 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 
-const SECRET = process.env.LOCK_ACCESS_SECRET || 'dev-secret-change-me';
+function getLockAccessSecret() {
+    const secret = process.env.LOCK_ACCESS_SECRET;
+
+    if (secret) return secret;
+    if (process.env.NODE_ENV !== 'production') return 'dev-secret-change-me';
+
+    throw new Error('LOCK_ACCESS_SECRET is missing');
+}
 
 // prod normale = 30 minutes
 const DEFAULT_ACCESS_TTL_SECONDS = 60 * 30;
@@ -10,7 +17,7 @@ export const LOCK_ACCESS_TTL_SECONDS = Number(process.env.LOCK_ACCESS_TTL_SECOND
 // const THIRTY_DAYS_IN_SECONDS = 60 * 60 * 24 * 30;
 
 function sign(value: string) {
-    return createHmac('sha256', SECRET).update(value).digest('base64url');
+    return createHmac('sha256', getLockAccessSecret()).update(value).digest('base64url');
 }
 
 function encode(payload: Record<string, unknown>) {
