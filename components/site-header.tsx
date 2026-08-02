@@ -357,7 +357,7 @@ export function SiteHeader() {
                                     <Link href="/admin/settings">
                                         <DropdownMenuItem className="hover:bg-sidebar-accent! hover:text-sidebar-accent-foreground!">
                                             <Settings2 />
-                                            Settings
+                                            Admin
                                         </DropdownMenuItem>
                                     </Link>
                                     <Link href="/admin/statistics/overview">

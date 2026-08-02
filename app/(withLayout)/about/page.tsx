@@ -1,11 +1,11 @@
-'use client';
-
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Camera, Flower2, Layers3, Sparkles, WandSparkles } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { PageBuilderRender } from '@/components/page-builder/page-builder-render';
+import { getPublishedSitePageData } from '@/lib/page-builder/site-pages';
 
 import tristan from '@/public/assets/images/tristan.png';
 
@@ -30,7 +30,7 @@ const pillars = [
     },
 ];
 
-function EditorialFrame({ label, tone }: { label: string; tone: string }) {
+function EditorialFrame({ label }: { label: string }) {
     return (
         <div className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card/60">
             <Image src={tristan} alt="Tristan" quality={100} />
@@ -47,7 +47,17 @@ function EditorialFrame({ label, tone }: { label: string; tone: string }) {
     );
 }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+    const builderData = await getPublishedSitePageData('about');
+
+    if (builderData) {
+        return (
+            <main className="min-h-screen">
+                <PageBuilderRender data={builderData} />
+            </main>
+        );
+    }
+
     return (
         <main className="min-h-screen px-6 md:px-8">
             <section>
@@ -57,7 +67,7 @@ export default function AboutPage() {
                         <div className="space-y-5">
                             <p className="text-sm uppercase tracking-[0.28em] text-muted-foreground">Triste Fleur</p>
                             <p className="text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-                                Créateur de de mélancolie et d'atmosphères à travers la photographie
+                                Créateur de de mélancolie et d&apos;atmosphères à travers la photographie
                             </p>
                             <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
                                 Triste Fleur est un projet de création visuelle qui explore les émotions, les textures et les ambiances à travers la
@@ -68,7 +78,7 @@ export default function AboutPage() {
 
                         <Button asChild size="lg" className="rounded-full px-6">
                             <a href="#contact">
-                                Parler d'un projet
+                                Parler d&apos;un projet
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </a>
                         </Button>
@@ -76,7 +86,7 @@ export default function AboutPage() {
 
                     <div className="w-full lg:w-1/3">
                         <div className="pt-8">
-                            <EditorialFrame label="Auto portrait" tone="bg-linear-to-br from-zinc-700 via-zinc-800 to-zinc-950" />
+                            <EditorialFrame label="Auto portrait" />
                         </div>
                     </div>
                 </div>
@@ -90,7 +100,7 @@ export default function AboutPage() {
                             Démarche
                         </div>
                         <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                            Des images qui privilégient l'ambiance plutôt que l'effet.
+                            Des images qui privilégient l&apos;ambiance plutôt que l&apos;effet.
                         </h2>
                         <p className="leading-7 text-muted-foreground">
                             Le résultat peut prendre la forme d’un portrait ou d’une série studio avec une direction éditoriale. L’objectif reste le
@@ -123,19 +133,19 @@ export default function AboutPage() {
                 <div className="max-w-3xl">
                     <div className="space-y-4">
                         <p className="text-sm uppercase tracking-[0.24em] text-orange-400">-18 🔥 </p>
-                        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">L'Art du nu</h2>
+                        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">L&apos;Art du nu</h2>
                         <p className="leading-7 text-muted-foreground">
                             <span className="font-semibold text-lg text-foreground">
                                 La nudité est un thème encore trop souvent associé au porno. Encore plus chez les hommes
                             </span>
                             <br />
                             <br />
-                            Je cherche à réconcilier le nu masculin et féminin avec une approche artistique, pour démontrer qu'un corps, même
-                            "stimulé", peut être traité avec sensibilité et poésie tout en offrant de beaux clichés sensuels et érotiques.
+                            Je cherche à réconcilier le nu masculin et féminin avec une approche artistique, pour démontrer qu&apos;un corps, même
+                            &quot;stimulé&quot;, peut être traité avec sensibilité et poésie tout en offrant de beaux clichés sensuels et érotiques.
                         </p>
                         <p className="leading-7 text-muted-foreground">
-                            Je travail aussi sur des "focus" plus intimes, des détails du corps, des textures de peau, des jeux de lumière sur les
-                            formes, pour créer une esthétique plus organique et moins "lisse" que ce que l'on voit habituellement dans la photographie
+                            Je travail aussi sur des &quot;focus&quot; plus intimes, des détails du corps, des textures de peau, des jeux de lumière sur les
+                            formes, pour créer une esthétique plus organique et moins &quot;lisse&quot; que ce que l&apos;on voit habituellement dans la photographie
                             de nu.
                         </p>
                     </div>

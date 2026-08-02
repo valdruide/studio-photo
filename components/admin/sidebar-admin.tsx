@@ -18,7 +18,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
-import { Plus, Settings2, HelpCircle, Import, ChartColumnBig, Lock, Bell, ChevronRight } from 'lucide-react';
+import { Plus, Settings2, HelpCircle, ChartColumnBig, Lock, Bell, ChevronRight, LayoutGrid } from 'lucide-react';
 import { AddCategory } from './addCategory';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
@@ -64,6 +64,14 @@ const nav3 = [
     },
 ];
 
+const pageBuilderNav = [
+    {
+        title: 'Pages',
+        href: '/admin/pages',
+        icon: LayoutGrid,
+    },
+];
+
 const statisticsNav = {
     name: 'Statistics',
     href: '/admin/statistics',
@@ -88,7 +96,7 @@ class SmartPointerSensor extends PointerSensor {
     static activators = [
         {
             eventName: 'onPointerDown' as const,
-            handler: ({ nativeEvent }: any) => {
+            handler: ({ nativeEvent }: { nativeEvent: PointerEvent }) => {
                 const target = nativeEvent?.target as HTMLElement | null;
                 if (!target) return false;
 
@@ -285,6 +293,23 @@ export default function SidebarAdmin() {
                                         </SortableContext>
                                     </DndContext>
                                 )}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                    <Separator className="my-2" />
+                    <SidebarGroup>
+                        <SidebarGroupContent className="space-y-1">
+                            <SidebarMenu>
+                                {pageBuilderNav.map((item) => (
+                                    <SidebarMenuItem key={item.title} className={cn({ 'bg-sidebar-accent rounded-md': pathname === item.href })}>
+                                        <SidebarMenuButton tooltip={item.title} asChild>
+                                            <Link href={item.href}>
+                                                <item.icon className="size-5" />
+                                                <span>{item.title}</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
                             </SidebarMenu>
                         </SidebarGroupContent>
                     </SidebarGroup>
