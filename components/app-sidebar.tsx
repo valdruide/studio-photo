@@ -5,7 +5,6 @@ import * as React from 'react';
 import PocketBase from 'pocketbase';
 import {
     IconBrandInstagram,
-    IconFlower,
     IconHomeFilled,
     IconHeartFilled,
     IconBrandTiktok,
@@ -17,6 +16,8 @@ import {
     IconBrandBehance,
     IconBrandReddit,
     IconFolderFilled,
+    IconStarFilled,
+    type Icon,
 } from '@tabler/icons-react';
 import { ICONS_MAP } from '@/lib/categories/iconsMap';
 import { NavSeries } from '@/components/nav-series';
@@ -46,7 +47,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const [series, setSeries] = React.useState<
         {
             name: string;
-            icon: any;
+            icon: Icon;
             color?: string;
             isActive?: boolean;
             items?: { title: string; url: string }[];
@@ -54,12 +55,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     >([]);
     const [siteName, setSiteName] = React.useState('My site');
     const [portfolioName, setPortfolioName] = React.useState('Series');
+    const [featuredName, setFeaturedName] = React.useState('Featured');
+    const [hasFeaturedPhotos, setHasFeaturedPhotos] = React.useState(false);
     const [logoUrl, setLogoUrl] = React.useState<string | null>(null);
     const [navSecondaryItems, setNavSecondaryItems] = React.useState<
         {
             title: string;
             url: string;
-            icon: any;
+            icon: Icon;
         }[]
     >([]);
 
@@ -69,7 +72,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         async function load() {
             const pb = new PocketBase(process.env.NEXT_PUBLIC_PB_URL!);
 
-            const [categories, collections] = await Promise.all([
+            const [categories, collections, featuredRes] = await Promise.all([
                 pb.collection('categories').getFullList<Category>({
                     sort: 'order',
                     filter: 'isHidden = false',
@@ -78,7 +81,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     sort: 'order',
                     filter: 'isHidden = false && category.isHidden = false',
                 }),
+                fetch('/api/public/featured', { cache: 'no-store' }),
             ]);
+            const featured = featuredRes.ok ? await featuredRes.json() : null;
 
             // Map collections by category
             const byCat = new Map<string, PhotoCollection[]>();
@@ -104,11 +109,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 };
             });
 
-            if (!cancelled) setSeries(built);
+            if (!cancelled) {
+                setSeries(built);
+                setHasFeaturedPhotos(Boolean(featured?.hasFeaturedPhotos));
+                setFeaturedName(featured?.featuredName || 'Featured');
+            }
         }
 
         load().catch(() => {
-            if (!cancelled) setSeries([]);
+            if (!cancelled) {
+                setSeries([]);
+                setHasFeaturedPhotos(false);
+            }
         });
 
         return () => {
@@ -134,6 +146,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
                     setSiteName(item?.site_name || 'My site');
                     setPortfolioName(item?.portfolio_name || 'Series');
+                    setFeaturedName(item?.featured_name || 'Featured');
                     setLogoUrl(item?.logo ? `${process.env.NEXT_PUBLIC_PB_URL}/api/files/site_settings/${item.id}/${item.logo}` : null);
 
                     const socials = [
@@ -149,7 +162,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     ].filter(Boolean) as {
                         title: string;
                         url: string;
-                        icon: any;
+                        icon: Icon;
                     }[];
 
                     setNavSecondaryItems(socials);
@@ -182,6 +195,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
             <SidebarContent>
                 <NavMain items={data.navMain} />
+                {hasFeaturedPhotos && <NavMain items={[{ title: featuredName, url: '/featured', icon: IconStarFilled }]} />}
                 <NavSeries items={series} label={portfolioName} />
                 <NavSecondary items={navSecondaryItems} className="mt-auto" />
             </SidebarContent>

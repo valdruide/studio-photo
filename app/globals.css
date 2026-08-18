@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import '@puckeditor/core/no-external.css';
 @import '../styles/themes.css';
 
 @theme inline {
@@ -86,4 +87,116 @@
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: var(--color-primary);
+}
+
+.puck-dark-theme {
+    --puck-color-surface: #17171c;
+    --puck-color-surface-muted: #202027;
+    --puck-color-surface-subtle: #25252d;
+    --puck-color-surface-inverse: #f7f7fb;
+    --puck-color-border: #34343d;
+    --puck-color-border-hover: #555566;
+    --puck-color-border-muted: #2b2b34;
+    --puck-color-border-inverse: #c8c8d4;
+    --puck-color-text: #f5f5f7;
+    --puck-color-text-secondary: #c9c9d2;
+    --puck-color-text-muted: #a3a3b1;
+    --puck-color-text-subtle: #7d7d8e;
+    --puck-color-text-inverse: #111116;
+    --puck-color-interactive: #8b5cf6;
+    --puck-color-interactive-hover: #a78bfa;
+    --puck-color-interactive-active: #c4b5fd;
+    --puck-color-interactive-subtle: #322653;
+    --puck-color-interactive-soft: #251d3d;
+    --puck-color-interactive-soft-hover: #30264c;
+    --puck-color-interactive-neutral-hover: #2f2f38;
+    --puck-color-interactive-inverse-hover: #6d4bd6;
+    --puck-color-interactive-inverse-active: #5b3fbd;
+    --puck-color-focus-ring: #a78bfa;
+    --puck-color-selection-bg: color-mix(in srgb, #8b5cf6 28%, transparent);
+    --puck-color-selection-border: #a78bfa;
+    --puck-color-highlight: #f0abfc;
+    --puck-color-bg-disabled: #2b2b34;
+    --puck-color-text-disabled: #858596;
+    --puck-color-overlay-backdrop: color-mix(in srgb, #050507 82%, transparent);
+
+    --puck-header-color-bg: #141419;
+    --puck-header-color-text: #f5f5f7;
+    --puck-sidebar-left-color-bg: #15151a;
+    --puck-sidebar-right-color-bg: #18181e;
+    --puck-pluginbar-color-bg: #111116;
+    --puck-pluginbar-color-bg-hover: #24242c;
+    --puck-pluginbar-color-text: #a3a3b1;
+    --puck-pluginbar-color-text-hover: #f5f5f7;
+    --puck-pluginbar-color-text-selected: #c4b5fd;
+    --puck-canvas-color-text: #f5f5f7;
+    --puck-canvas-color-bg: #0f0f13;
+    --puck-canvas-preview-color-bg: #17171c;
+
+    --puck-drawer-category-color-text: #a3a3b1;
+    --puck-drawer-category-color-bg-hover: #24242c;
+    --puck-drawer-category-color-text-hover: #f5f5f7;
+    --puck-drawer-category-color-bg-active: #30264c;
+    --puck-drawer-item-color-bg: #202027;
+    --puck-drawer-item-color-text: #f5f5f7;
+    --puck-drawer-item-color-border: #34343d;
+    --puck-drawer-item-color-bg-hover: #282832;
+    --puck-drawer-item-color-text-hover: #c4b5fd;
+
+    --puck-field-color-surface: #18181e;
+    --puck-field-color-bg: #202027;
+    --puck-field-color-bg-hover: #282832;
+    --puck-field-color-bg-active: #30264c;
+    --puck-field-color-text: #f5f5f7;
+    --puck-field-color-text-hover: #ffffff;
+    --puck-field-color-text-active: #c4b5fd;
+    --puck-field-color-border: #34343d;
+    --puck-field-color-border-hover: #66667a;
+    --puck-field-color-border-focus: #a78bfa;
+    --puck-field-color-border-dragging: #8b5cf6;
+    --puck-field-color-bg-disabled: #25252d;
+    --puck-field-color-border-disabled: #34343d;
+    --puck-field-color-text-disabled: #858596;
+    --puck-field-label-color-text: #c9c9d2;
+    --puck-field-label-color-icon: #858596;
+    --puck-field-array-add-color-icon: #c4b5fd;
+    --puck-field-richtext-menu-color-bg: #202027;
+    --puck-field-richtext-menu-color-separator: #34343d;
+    --puck-field-external-detach-color-bg: #202027;
+    --puck-field-external-detach-color-text: #a3a3b1;
+
+    --puck-outline-color-text: #c9c9d2;
+    --puck-outline-color-icon: #f0abfc;
+    --puck-outline-color-bg-hover: #24242c;
+    --puck-outline-color-text-hover: #f5f5f7;
+    --puck-outline-color-border-hover: #34343d;
+    --puck-outline-color-bg-selected: #30264c;
+    --puck-outline-color-border-selected: #8b5cf6;
+
+    --puck-button-primary-color-bg: #8b5cf6;
+    --puck-button-primary-color-bg-hover: #7c3aed;
+    --puck-button-primary-color-bg-active: #6d28d9;
+    --puck-button-primary-color-text: #ffffff;
+    --puck-button-primary-color-border: transparent;
+    --puck-button-secondary-color-bg: transparent;
+    --puck-button-secondary-color-bg-hover: #24242c;
+    --puck-button-secondary-color-bg-active: #30264c;
+    --puck-button-secondary-color-text: #f5f5f7;
+    --puck-button-secondary-color-border: #555566;
+
+    --puck-iconbutton-color-bg: transparent;
+    --puck-iconbutton-color-bg-hover: #24242c;
+    --puck-iconbutton-color-bg-active: #30264c;
+    --puck-iconbutton-color-icon: #c9c9d2;
+    --puck-iconbutton-color-icon-hover: #f5f5f7;
+    --puck-iconbutton-color-icon-active: #c4b5fd;
+    --puck-iconbutton-color-icon-disabled: #66667a;
+
+    --puck-slot-color-bg: color-mix(in srgb, #8b5cf6 18%, transparent);
+    --puck-slot-color-border: #8b5cf6;
+    --puck-slot-component-color-overlay: color-mix(in srgb, #8b5cf6 16%, transparent);
+    --puck-slot-component-color-overlay-border: #a78bfa;
+    --puck-slot-component-color-border-selected: #a78bfa;
+    --puck-slot-component-color-placeholder: #c4b5fd;
+    --puck-slot-component-color-border-dragging: #f0abfc;
 }

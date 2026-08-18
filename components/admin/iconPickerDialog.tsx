@@ -7,16 +7,17 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { IconFolderFilled } from '@tabler/icons-react';
+import { IconFolderFilled, type Icon } from '@tabler/icons-react';
 
 type Props = {
     value?: string | null;
     onChange: (iconName: string) => void;
     triggerLabel?: string;
     currentColor?: string;
+    disabled?: boolean;
 };
 
-export function IconPickerDialog({ value, onChange, triggerLabel = 'Choose icon', currentColor }: Props) {
+export function IconPickerDialog({ value, onChange, triggerLabel = 'Choose icon', currentColor, disabled }: Props) {
     const [q, setQ] = React.useState('');
 
     const entries = React.useMemo(() => {
@@ -26,12 +27,12 @@ export function IconPickerDialog({ value, onChange, triggerLabel = 'Choose icon'
         return all.filter(([name]) => name.toLowerCase().includes(query));
     }, [q]);
 
-    const SelectedIcon = value && ICONS_MAP[value] ? (ICONS_MAP[value] as any) : IconFolderFilled;
+    const SelectedIcon: Icon = value && ICONS_MAP[value] ? ICONS_MAP[value] : IconFolderFilled;
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button type="button" variant="secondary">
+                <Button type="button" variant="secondary" disabled={disabled}>
                     <SelectedIcon className="size-5" />
                     {triggerLabel}
                 </Button>
@@ -49,7 +50,7 @@ export function IconPickerDialog({ value, onChange, triggerLabel = 'Choose icon'
                         <div className="w-3/4 grid grid-cols-6 sm:grid-cols-7 md:grid-cols-8 gap-2 max-h-[420px] overflow-auto">
                             {entries.map(([name, Icon]) => {
                                 const isSelected = value === name;
-                                const Comp = Icon as any;
+                                const Comp = Icon;
 
                                 return (
                                     <Button

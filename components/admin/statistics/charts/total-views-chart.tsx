@@ -33,7 +33,7 @@ export function TotalViewsChart({ data }: TotalViewsChartProps) {
         <Card>
             <CardHeader>
                 <CardTitle>Total views</CardTitle>
-                <CardDescription>All-time monthly comparison</CardDescription>
+                <CardDescription>Monthly comparison</CardDescription>
             </CardHeader>
             <CardContent>
                 {hasData ? (

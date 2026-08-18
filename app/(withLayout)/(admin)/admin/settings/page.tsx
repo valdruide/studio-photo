@@ -28,6 +28,7 @@ type SocialField = 'instagram' | 'tiktok' | 'facebook' | 'x' | 'youtube' | 'pint
 type SettingsForm = {
     site_name: string;
     portfolio_name: string;
+    featured_name: string;
     title: string;
     logo: File | null;
     favicon: File | null;
@@ -45,6 +46,7 @@ type SettingsForm = {
 const EMPTY_SETTINGS: SettingsForm = {
     site_name: '',
     portfolio_name: '',
+    featured_name: '',
     title: '',
     logo: null,
     favicon: null,
@@ -83,6 +85,7 @@ export default function AdminSettingsPage() {
                 const nextSettings: SettingsForm = {
                     site_name: item?.site_name ?? '',
                     portfolio_name: item?.portfolio_name ?? '',
+                    featured_name: item?.featured_name ?? '',
                     title: item?.title ?? '',
                     logo: null,
                     favicon: null,
@@ -206,6 +209,7 @@ export default function AdminSettingsPage() {
 
             formData.append('site_name', settings.site_name);
             formData.append('portfolio_name', settings.portfolio_name);
+            formData.append('featured_name', settings.featured_name);
             formData.append('title', settings.title);
             formData.append('instagram', settings.instagram);
             formData.append('tiktok', settings.tiktok);
@@ -242,6 +246,7 @@ export default function AdminSettingsPage() {
             const nextSettings: SettingsForm = {
                 site_name: item?.site_name ?? '',
                 portfolio_name: item?.portfolio_name ?? '',
+                featured_name: item?.featured_name ?? '',
                 title: item?.title ?? '',
                 logo: null,
                 favicon: null,
@@ -306,6 +311,14 @@ export default function AdminSettingsPage() {
                                     placeholder="Portfolio Name"
                                     value={settings.portfolio_name}
                                     onChange={(e) => updateSetting('portfolio_name', e.target.value)}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-sm">Featured Name</Label>
+                                <Input
+                                    placeholder="Featured"
+                                    value={settings.featured_name}
+                                    onChange={(e) => updateSetting('featured_name', e.target.value)}
                                 />
                             </div>
                             <div className="space-y-2">

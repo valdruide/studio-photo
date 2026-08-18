@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -57,6 +57,9 @@ export default function AdminCollectionEditPage() {
 
     const [photos, setPhotos] = useState<Photo[]>([]);
     const [photosDirty, setPhotosDirty] = useState(false);
+    const pendingPhotoOrder = useRef<Photo[] | null>(null);
+    const photoOrderSaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const photoOrderSaveId = useRef(0);
 
     const [openEditorSheet, setOpenEditorSheet] = useState(false);
     const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
@@ -71,12 +74,12 @@ export default function AdminCollectionEditPage() {
 
     const PB_URL = (process.env.NEXT_PUBLIC_PB_URL ?? '').replace(/\/$/, '');
 
-    function getImageUrl(p: any) {
+    function getImageUrl(p: { collectionId?: string; id: string; image?: string }) {
         // PocketBase: /api/files/{collectionId}/{recordId}/{filename}
         return `${PB_URL}/api/files/${p.collectionId}/${p.id}/${p.image}`;
     }
 
-    async function load() {
+    const load = useCallback(async () => {
         setLoading(true);
 
         const [colRes, catsRes, photosRes] = await Promise.all([
@@ -99,11 +102,19 @@ export default function AdminCollectionEditPage() {
         setCol(colJson);
         setCategories(catsJson.items ?? []);
         setLoading(false);
-    }
+    }, [id]);
 
     useEffect(() => {
         load();
-    }, [id]);
+    }, [load]);
+
+    useEffect(() => {
+        return () => {
+            if (photoOrderSaveTimeout.current) {
+                clearTimeout(photoOrderSaveTimeout.current);
+            }
+        };
+    }, []);
 
     async function save() {
         if (!col) return;
@@ -130,25 +141,86 @@ export default function AdminCollectionEditPage() {
             setCol(updated);
             setNewPassword('');
 
-            if (photosDirty) {
-                await fetch('/api/admin/photos', {
-                    method: 'PATCH',
-                    headers: { 'content-type': 'application/json' },
-                    body: JSON.stringify({
-                        updates: photos.map((p, index) => ({
-                            id: p.id,
-                            order: index + 1,
-                        })),
-                    }),
-                });
-            }
+            const photoOrderSaved = photosDirty ? await flushPhotoOrderSave() : true;
 
             toast.success('Collection saved successfully');
-            await load();
+            if (photoOrderSaved) {
+                await load();
+            }
         } else {
             const errorText = await res.text();
             toast.error(`Failed to save collection: ${res.status} ${errorText}`);
         }
+    }
+
+    async function savePhotoOrder(nextPhotos: Photo[], saveId: number) {
+        try {
+            const res = await fetch('/api/admin/photos', {
+                method: 'PATCH',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({
+                    updates: nextPhotos.map((p, index) => ({
+                        id: p.id,
+                        order: index + 1,
+                    })),
+                }),
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text().catch(() => '');
+                if (photoOrderSaveId.current === saveId) {
+                    setPhotosDirty(true);
+                    toast.error(`Failed to save photo order: ${res.status} ${errorText}`);
+                }
+                return false;
+            }
+
+            if (photoOrderSaveId.current === saveId) {
+                setPhotosDirty(false);
+                toast.success('Photo order saved');
+            }
+            return true;
+        } catch {
+            if (photoOrderSaveId.current === saveId) {
+                setPhotosDirty(true);
+                toast.error('Failed to save photo order');
+            }
+            return false;
+        }
+    }
+
+    function schedulePhotoOrderSave(nextPhotos: Photo[]) {
+        setPhotos(nextPhotos);
+        setPhotosDirty(true);
+        pendingPhotoOrder.current = nextPhotos;
+
+        if (photoOrderSaveTimeout.current) {
+            clearTimeout(photoOrderSaveTimeout.current);
+        }
+
+        const saveId = photoOrderSaveId.current + 1;
+        photoOrderSaveId.current = saveId;
+        photoOrderSaveTimeout.current = setTimeout(() => {
+            photoOrderSaveTimeout.current = null;
+            const nextOrder = pendingPhotoOrder.current;
+            pendingPhotoOrder.current = null;
+            if (nextOrder) {
+                savePhotoOrder(nextOrder, saveId);
+            }
+        }, 1000);
+    }
+
+    async function flushPhotoOrderSave() {
+        if (photoOrderSaveTimeout.current) {
+            clearTimeout(photoOrderSaveTimeout.current);
+            photoOrderSaveTimeout.current = null;
+        }
+
+        const nextOrder = pendingPhotoOrder.current ?? photos;
+        pendingPhotoOrder.current = null;
+        const saveId = photoOrderSaveId.current + 1;
+        photoOrderSaveId.current = saveId;
+        return savePhotoOrder(nextOrder, saveId);
     }
 
     async function savePassword(password: string) {
@@ -210,6 +282,55 @@ export default function AdminCollectionEditPage() {
         },
     });
 
+    async function movePhoto(photoId: string, targetCollectionId: string) {
+        if (photosDirty) {
+            const orderSaved = await flushPhotoOrderSave();
+            if (!orderSaved) {
+                throw new Error('Photo order save failed');
+            }
+        }
+
+        const res = await fetch(`/api/admin/photos/${photoId}/move`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ targetCollectionId }),
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text().catch(() => '');
+            toast.error(`Failed to move photo: ${res.status} ${errorText}`);
+            throw new Error('Photo move failed');
+        }
+
+        setPhotos((prev) => prev.filter((p) => p.id !== photoId));
+        setPhotosDirty(false);
+
+        if (selectedPhotoId === photoId) {
+            setOpenEditorSheet(false);
+            setSelectedPhotoId(null);
+        }
+
+        toast.success('Photo moved successfully');
+    }
+
+    async function toggleFeaturedPhoto(photo: Photo) {
+        const res = await fetch(`/api/admin/photos/${photo.id}/featured`, {
+            method: 'PATCH',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ isFeatured: !photo.isFeatured }),
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text().catch(() => '');
+            toast.error(res.status === 409 ? 'You can feature up to 3 photos' : `Failed to update featured photo: ${res.status} ${errorText}`);
+            return;
+        }
+
+        const updated: Photo = await res.json();
+        setPhotos((prev) => prev.map((item) => (item.id === updated.id ? { ...item, ...updated } : item)));
+        toast.success(updated.isFeatured ? 'Photo added to featured' : 'Photo removed from featured');
+    }
+
     const handleGeneratePassword = () => {
         const generatedPassword = Array.from({ length: 5 }, () => Math.random().toString(36).substring(2, 8)).join('-');
         setNewGeneratedPassword(generatedPassword);
@@ -261,7 +382,7 @@ export default function AdminCollectionEditPage() {
                 getImageUrl={getImageUrl}
                 onRequestDelete={(photoId) => deleteDialog.request(photoId)}
                 onSaved={(updated) => {
-                    setPhotos((prev: any[]) => {
+                    setPhotos((prev) => {
                         const next = prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p));
                         next.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
                         return next;
@@ -434,8 +555,8 @@ export default function AdminCollectionEditPage() {
                         <div className="space-y-2">
                             <CardTitle>Photos</CardTitle>
                             <CardDescription>
-                                ℹ️ Drag and drop to reorder photos. <br />
-                                ⚠️ Don't forget to save the collection after making changes!
+                                Drag and drop to reorder photos. <br />
+                                The new order is saved automatically when you release the photo.
                             </CardDescription>
                         </div>
                         <Button onClick={() => setAddPhotosOpen(true)}>
@@ -451,11 +572,13 @@ export default function AdminCollectionEditPage() {
                                 photos={photos}
                                 getImageUrl={getImageUrl}
                                 onReorder={(next) => {
-                                    setPhotos(next);
-                                    setPhotosDirty(true);
+                                    schedulePhotoOrderSave(next);
                                 }}
                                 onEdit={openPhotoEditor}
                                 onDelete={(photoId) => deleteDialog.request(photoId)}
+                                onMove={movePhoto}
+                                currentCollectionId={id}
+                                onToggleFeatured={toggleFeaturedPhoto}
                             />
                         )}
                     </CardContent>

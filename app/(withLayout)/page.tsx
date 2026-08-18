@@ -4,6 +4,8 @@ import { ArrowRight, ImageIcon, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PageBuilderRender } from '@/components/page-builder/page-builder-render';
+import { getPublishedSitePageData } from '@/lib/page-builder/site-pages';
 
 const featuredWorks = [
     {
@@ -55,7 +57,17 @@ function PlaceholderVisual({ label }: { label: string }) {
     );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+    const builderData = await getPublishedSitePageData('homepage');
+
+    if (builderData) {
+        return (
+            <main className="min-h-screen">
+                <PageBuilderRender data={builderData} />
+            </main>
+        );
+    }
+
     return (
         <main className="min-h-screen">
             <section>
@@ -172,7 +184,7 @@ export default function HomePage() {
                         <Button asChild size="lg" className="rounded-full px-6 z-10">
                             <Link href="mailto:contact.tristefleur@gmail.com">
                                 Me contacter
-                                <ArrowRight className="ml-2 h-4 w-4" />
+                                <ArrowRight className="h-4 w-4" />
                             </Link>
                         </Button>
                     </div>

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import PocketBase from 'pocketbase';
 import type { RecordModel } from 'pocketbase';
-import { getPBAdminFromCookie } from '@/lib/pb/adminServer';
+import { getPBAdmin, getPBAdminFromCookie } from '@/lib/pb/adminServer';
 
 // Group repeated views by minute to avoid counting refresh spam as new activity.
 function getOneMinuteBucket(date = new Date()) {
@@ -30,8 +29,8 @@ function isValidVisitorId(value: unknown) {
     return typeof value === 'string' && value.length >= 8 && value.length <= 128 && /^[a-zA-Z0-9_.:-]+$/.test(value);
 }
 
-async function validateVisiblePhotoViewTarget(
-    pb: PocketBase,
+async function validatePhotoViewTarget(
+    pb: Awaited<ReturnType<typeof getPBAdmin>>,
     {
         photoId,
         collectionId,
@@ -49,11 +48,13 @@ async function validateVisiblePhotoViewTarget(
     ]);
 
     if (!photo || !collection || !category) return false;
-    if (Boolean(photo.isHidden) || Boolean(collection.isHidden) || Boolean(category.isHidden)) return false;
     if (!relationContains(photo.collection, collectionId)) return false;
     if (!relationContains(collection.category, categoryId)) return false;
 
-    return true;
+    const isVisible = !Boolean(photo.isHidden) && !Boolean(collection.isHidden) && !Boolean(category.isHidden);
+    const isFeaturedOverride = Boolean(photo.isFeatured);
+
+    return isVisible || isFeaturedOverride;
 }
 
 function getPocketBaseErrorData(error: unknown) {
@@ -85,7 +86,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ ok: false, error: 'Invalid visitorId' }, { status: 400 });
         }
 
-        const pb = new PocketBase(process.env.NEXT_PUBLIC_PB_URL);
+        const pb = await getPBAdmin();
 
         // Si admin connecté, skip la comptabilisation de la vue pour ne pas polluer les stats.
         if (await getPBAdminFromCookie(req.headers.get('cookie'))) {
@@ -93,7 +94,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ ok: true, skipped: 'admin' });
         }
 
-        const isValidTarget = await validateVisiblePhotoViewTarget(pb, { photoId, collectionId, categoryId });
+        const isValidTarget = await validatePhotoViewTarget(pb, { photoId, collectionId, categoryId });
         if (!isValidTarget) {
             return NextResponse.json({ ok: false, error: 'Invalid photo target' }, { status: 404 });
         }

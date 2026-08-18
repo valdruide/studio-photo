@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { IconDots, IconGripVertical } from '@tabler/icons-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,7 +24,7 @@ class SmartPointerSensor extends PointerSensor {
     static activators = [
         {
             eventName: 'onPointerDown' as const,
-            handler: ({ nativeEvent }: any) => {
+            handler: ({ nativeEvent }: { nativeEvent?: Event }) => {
                 const target = nativeEvent?.target as HTMLElement | null;
                 if (!target) return false;
 
@@ -43,9 +45,33 @@ export type CollectionRow = {
 };
 
 function SortableCollectionRow({ col, onDelete }: { col: CollectionRow; onDelete: (collectionId: string) => void }) {
+    const router = useRouter();
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id: col.id,
     });
+
+    const editHref = `/admin/collections/${col.id}`;
+
+    function openEditPage() {
+        router.push(editHref);
+    }
+
+    function handleRowClick(e: React.MouseEvent<HTMLTableRowElement>) {
+        const target = e.target as HTMLElement | null;
+        if (target?.closest('a, button, [role="menuitem"], [data-row-action]')) return;
+
+        openEditPage();
+    }
+
+    function handleRowKeyDown(e: React.KeyboardEvent<HTMLTableRowElement>) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+
+        const target = e.target as HTMLElement | null;
+        if (target?.closest('a, button, [role="menuitem"], [data-row-action]')) return;
+
+        e.preventDefault();
+        openEditPage();
+    }
 
     const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
@@ -53,11 +79,21 @@ function SortableCollectionRow({ col, onDelete }: { col: CollectionRow; onDelete
     };
 
     return (
-        <TableRow ref={setNodeRef} style={style} className={cn(isDragging && 'relative z-10 bg-muted/50')}>
+        <TableRow
+            ref={setNodeRef}
+            style={style}
+            role="link"
+            tabIndex={0}
+            aria-label={`Edit ${col.title}`}
+            onClick={handleRowClick}
+            onKeyDown={handleRowKeyDown}
+            className={cn('cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring', isDragging && 'relative z-10 bg-muted/50')}
+        >
             <TableCell>
                 <button
                     type="button"
                     data-dnd-handle
+                    data-row-action
                     {...attributes}
                     {...listeners}
                     className="inline-flex items-center justify-center rounded-sm p-1 text-muted-foreground cursor-grab active:cursor-grabbing"
@@ -88,7 +124,10 @@ function SortableCollectionRow({ col, onDelete }: { col: CollectionRow; onDelete
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
-                            <Link href={`/admin/collections/${col.id}`}>Edit</Link>
+                            <Link href={editHref}>
+                                <Pencil className="size-4" />
+                                Edit
+                            </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             variant="destructive"
@@ -97,6 +136,7 @@ function SortableCollectionRow({ col, onDelete }: { col: CollectionRow; onDelete
                                 onDelete(col.id);
                             }}
                         >
+                            <Trash2 className="size-4" />
                             Delete
                         </DropdownMenuItem>
                     </DropdownMenuContent>

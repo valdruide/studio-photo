@@ -4,6 +4,7 @@ import { withAdmin } from '@/lib/pb/adminApi';
 type SettingsPayload = {
     site_name?: string;
     portfolio_name?: string;
+    featured_name?: string;
     title?: string;
     logo?: File;
     favicon?: File;
@@ -19,10 +20,18 @@ type SettingsPayload = {
     site_theme?: string;
 };
 
-function sanitizeSettings(input: any): SettingsPayload {
+type RawSettingsInput = Record<string, FormDataEntryValue | File | null>;
+type RouteError = {
+    message?: string;
+    response?: unknown;
+    status?: number;
+};
+
+function sanitizeSettings(input: RawSettingsInput): SettingsPayload {
     return {
         site_name: typeof input.site_name === 'string' ? input.site_name.trim() : '',
         portfolio_name: typeof input.portfolio_name === 'string' ? input.portfolio_name.trim() : '',
+        featured_name: typeof input.featured_name === 'string' ? input.featured_name.trim() : '',
         title: typeof input.title === 'string' ? input.title.trim() : '',
 
         logo: input.logo instanceof File && input.logo.size > 0 ? input.logo : undefined,
@@ -49,14 +58,15 @@ export async function GET() {
             return NextResponse.json({
                 item: result.items[0] ?? null,
             });
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const error = err as RouteError;
             console.error('GET /api/admin/settings failed:', err);
-            console.error('PB response:', err?.response);
+            console.error('PB response:', error.response);
 
             return NextResponse.json(
                 {
-                    message: err?.message ?? 'Internal Server Error',
-                    pb: err?.response ?? null,
+                    message: error.message ?? 'Internal Server Error',
+                    pb: error.response ?? null,
                 },
                 { status: 500 },
             );
@@ -72,6 +82,7 @@ export async function PATCH(req: Request) {
             const data = sanitizeSettings({
                 site_name: formData.get('site_name'),
                 portfolio_name: formData.get('portfolio_name'),
+                featured_name: formData.get('featured_name'),
                 title: formData.get('title'),
                 logo: formData.get('logo'),
                 favicon: formData.get('favicon'),
@@ -98,16 +109,17 @@ export async function PATCH(req: Request) {
             }
 
             return NextResponse.json({ item });
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const error = err as RouteError;
             console.error('PATCH /api/admin/settings failed:', err);
-            console.error('PB response:', err?.response);
+            console.error('PB response:', error.response);
 
             return NextResponse.json(
                 {
-                    message: err?.message ?? 'Internal Server Error',
-                    pb: err?.response ?? null,
+                    message: error.message ?? 'Internal Server Error',
+                    pb: error.response ?? null,
                 },
-                { status: err?.status ?? 500 },
+                { status: error.status ?? 500 },
             );
         }
     });
