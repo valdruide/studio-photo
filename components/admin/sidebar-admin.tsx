@@ -18,7 +18,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
-import { Plus, Settings2, HelpCircle, ChartColumnBig, Lock, Bell, ChevronRight, LayoutGrid } from 'lucide-react';
+import { Plus, Settings2, HelpCircle, ChartColumnBig, Lock, Bell, ChevronRight, LayoutGrid, Star, Images } from 'lucide-react';
 import { AddCategory } from './addCategory';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
@@ -65,6 +65,16 @@ const nav3 = [
 ];
 
 const pageBuilderNav = [
+    {
+        title: 'Featured',
+        href: '/admin/featured',
+        icon: Star,
+    },
+    {
+        title: 'Client proofing',
+        href: '/proofing/galleries',
+        icon: Images,
+    },
     {
         title: 'Pages',
         href: '/admin/pages',

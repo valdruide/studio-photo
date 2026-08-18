@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Bell, User, Settings2, HelpCircle, LogOut, LogIn, CircleCheckBig, ChartColumnBig, LayoutGrid } from 'lucide-react';
+import { Bell, User, Settings2, HelpCircle, LogOut, LogIn, CircleCheckBig, ChartColumnBig, Images } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -340,7 +340,7 @@ export function SiteHeader() {
                 )}
                 <Link href="/proofing/galleries">
                     <Button variant="ghost" size="icon">
-                        <LayoutGrid className="size-5" />
+                        <Images className="size-5" />
                     </Button>
                 </Link>
                 <DropdownMenu open={dropdownIsOpen} onOpenChange={setDropdownIsOpen}>

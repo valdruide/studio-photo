@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutGrid } from 'lucide-react';
+import { LayoutGrid, Contact } from 'lucide-react';
 import { Separator } from '../ui/separator';
 
 export default function SidebarProofing() {
@@ -34,6 +34,14 @@ export default function SidebarProofing() {
                                         <Link href="/proofing/galleries">
                                             <LayoutGrid className="size-5" />
                                             <span>Galleries</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton disabled tooltip="Clients" asChild isActive={pathname.startsWith('/proofing/clients')}>
+                                        <Link href="/proofing/clients" aria-disabled>
+                                            <Contact className="size-5" />
+                                            <span>Clients</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
