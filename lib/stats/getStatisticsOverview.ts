@@ -97,6 +97,7 @@ type EntityRecord = RecordModel & {
     name?: string;
     title?: string;
     isHidden?: boolean;
+    isFeatured?: boolean;
     lockedByPassword?: boolean;
     expand?: {
         collection?: EntityRecord;
@@ -155,6 +156,16 @@ function incrementHeatmapCounter(map: Map<string, StatisticsHeatmapPoint>, creat
     });
 }
 
+function isCountablePhotoView(photo?: EntityRecord, collection?: EntityRecord, category?: EntityRecord) {
+    if (!photo || !collection || !category) return false;
+
+    const isCategoryVisible = !category.isHidden;
+    const isCollectionVisible = !collection.isHidden && isCategoryVisible;
+    const isPhotoVisible = !photo.isHidden && isCollectionVisible;
+
+    return isPhotoVisible || Boolean(photo.isFeatured);
+}
+
 type StatisticsRange = {
     preset?: string;
     from?: string;
@@ -202,9 +213,9 @@ function summarizeRecords(records: StatisticRecord[], pbBaseUrl: string): Statis
         const collection = record.expand?.collection;
         const category = record.expand?.category;
 
-        const isCategoryVisible = !!category && !category.isHidden;
-        const isCollectionVisible = !!collection && !collection.isHidden && isCategoryVisible;
-        const isPhotoVisible = !!photo && !photo.isHidden && isCollectionVisible;
+        const isCategoryVisible = !!category && (!category.isHidden || Boolean(photo?.isFeatured));
+        const isCollectionVisible = !!collection && ((!collection.isHidden && isCategoryVisible) || Boolean(photo?.isFeatured));
+        const isPhotoVisible = !!photo && !!collection && !!category && isCountablePhotoView(photo, collection, category);
 
         const isLockedByPassword = Boolean(collection?.lockedByPassword || category?.lockedByPassword);
 
@@ -219,11 +230,11 @@ function summarizeRecords(records: StatisticRecord[], pbBaseUrl: string): Statis
             incrementHeatmapCounter(heatmapMap, record.created);
         }
 
-        if (isCollectionVisible) {
+        if (isCollectionVisible && collection) {
             incrementCounter(collectionsMap, collection.id, collection.title ?? 'Untitled collection');
         }
 
-        if (isCategoryVisible) {
+        if (isCategoryVisible && category) {
             incrementCounter(categoriesMap, category.id, category.title ?? 'Untitled category');
         }
     }
@@ -353,11 +364,7 @@ function getPhotoView(record: StatisticRecord, pbBaseUrl: string) {
     const collection = record.expand?.collection;
     const category = record.expand?.category;
 
-    const isCategoryVisible = !!category && !category.isHidden;
-    const isCollectionVisible = !!collection && !collection.isHidden && isCategoryVisible;
-    const isPhotoVisible = !!photo && !photo.isHidden && isCollectionVisible;
-
-    if (!isPhotoVisible) {
+    if (!photo || !collection || !category || !isCountablePhotoView(photo, collection, category)) {
         return null;
     }
 
@@ -529,7 +536,7 @@ export async function getStatisticsOverview(range?: StatisticsRange): Promise<St
             const collection = photo.expand?.collection;
             const category = photo.expand?.collection?.expand?.category;
 
-            return !photo.isHidden && collection && !collection.isHidden && category && !category.isHidden;
+            return isCountablePhotoView(photo, collection, category);
         })
         .map((photo) => {
             const existing = photosMap.get(photo.id);
@@ -604,7 +611,14 @@ export async function getStatisticsOverview(range?: StatisticsRange): Promise<St
         .flatMap((record) => {
             const photo = record.expand?.photo;
 
-            return photo && !photo.isHidden ? [{ record, photo }] : [];
+            const collection = record.expand?.collection;
+            const category = record.expand?.category;
+
+            if (!photo || !collection || !category || !isCountablePhotoView(photo, collection, category)) {
+                return [];
+            }
+
+            return [{ record, photo }];
         })
         .slice(0, 10)
         .map(({ record, photo }) => {

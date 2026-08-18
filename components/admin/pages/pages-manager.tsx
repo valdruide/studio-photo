@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { IconDots } from '@tabler/icons-react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
 
 import {
     AlertDialog,
@@ -140,15 +140,35 @@ export function PagesManager({ initialPages }: PagesManagerProps) {
         }
     }
 
+    function openEditPage(slug: BuilderPage) {
+        router.push(editHref(slug));
+    }
+
+    function handleRowClick(event: React.MouseEvent<HTMLTableRowElement>, page: AdminBuilderPageRow) {
+        const target = event.target as HTMLElement | null;
+        if (target?.closest('a, button, input, textarea, select, [role="menuitem"], [data-row-action]')) return;
+
+        openEditPage(page.slug);
+    }
+
+    function handleRowKeyDown(event: React.KeyboardEvent<HTMLTableRowElement>, page: AdminBuilderPageRow) {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+
+        const target = event.target as HTMLElement | null;
+        if (target?.closest('a, button, input, textarea, select, [role="menuitem"], [data-row-action]')) return;
+
+        event.preventDefault();
+        openEditPage(page.slug);
+    }
+
     return (
         <Card>
             <CardHeader>
-                <div>
+                <div className="space-y-2">
                     <CardTitle>Pages</CardTitle>
                     <CardDescription>Manage the editable homepage and about page.</CardDescription>
                 </div>
             </CardHeader>
-
             <CardContent>
                 <div className="rounded-md border">
                     <Table className="overflow-hidden">
@@ -164,7 +184,15 @@ export function PagesManager({ initialPages }: PagesManagerProps) {
                         </TableHeader>
                         <TableBody>
                             {pages.map((page) => (
-                                <TableRow key={page.slug}>
+                                <TableRow
+                                    key={page.slug}
+                                    role="link"
+                                    tabIndex={0}
+                                    aria-label={`Edit ${page.title}`}
+                                    onClick={(event) => handleRowClick(event, page)}
+                                    onKeyDown={(event) => handleRowKeyDown(event, page)}
+                                    className="cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                >
                                     <TableCell className="font-medium">{page.title}</TableCell>
                                     <TableCell>
                                         <Select
@@ -196,7 +224,10 @@ export function PagesManager({ initialPages }: PagesManagerProps) {
                                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                 <DropdownMenuSeparator />
                                                 <DropdownMenuItem asChild>
-                                                    <Link href={editHref(page.slug)}>Edit</Link>
+                                                    <Link href={editHref(page.slug)}>
+                                                        <Pencil className="size-4" />
+                                                        Edit
+                                                    </Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem asChild>
                                                     <Link href={publicHref(page.slug)}>
@@ -212,6 +243,7 @@ export function PagesManager({ initialPages }: PagesManagerProps) {
                                                         setPageToDelete(page);
                                                     }}
                                                 >
+                                                    <Trash2 className="size-4" />
                                                     Delete
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
